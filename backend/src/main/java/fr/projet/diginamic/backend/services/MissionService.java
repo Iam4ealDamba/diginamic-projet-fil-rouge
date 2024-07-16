@@ -67,7 +67,6 @@ public class MissionService {
         return missionRepository.findById(id).map(mission -> {
             mission.setLabel(updatedMission.getLabel());
             mission.setDailyRate(updatedMission.getDailyRate());
-            mission.setStatus(updatedMission.getStatus());
             mission.setStartDate(updatedMission.getStartDate());
             mission.setEndDate(updatedMission.getEndDate());
             mission.setTransport(updatedMission.getTransport());
