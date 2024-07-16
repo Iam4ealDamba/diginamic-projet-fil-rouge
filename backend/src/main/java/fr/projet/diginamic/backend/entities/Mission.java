@@ -1,6 +1,7 @@
 package fr.projet.diginamic.backend.entities;
 
 import fr.projet.diginamic.backend.enums.TransportEnum;
+import fr.projet.diginamic.backend.enums.Status;
 
 import java.util.Date;
 
@@ -58,7 +59,7 @@ public class Mission {
 	// Current status of the mission (e.g., pending, approved)
 	@Size(min = 2, max = 100)
 	@Column(name = "status", length = 150, nullable = false)
-	private String status;
+	private Status status;
 
 	// Starting date of the mission
 	@Temporal(TemporalType.DATE)
