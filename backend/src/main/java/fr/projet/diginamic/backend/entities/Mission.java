@@ -121,7 +121,7 @@ public class Mission {
 	 */
 	@ManyToOne
 	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-	private User user;
+	private UserEntity user;
 
 	/**
 	 * Nature of the mission.
@@ -136,4 +136,5 @@ public class Mission {
 	@OneToOne
 	@JoinColumn(name = "expense_id", referencedColumnName = "id")
 	private Expense expense;
+	
 }
