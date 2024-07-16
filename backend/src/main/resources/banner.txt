@@ -1,0 +1,26 @@
+
+
+________                                              ________     ___       ________                                       
+`MMMMMMMb.                  68b                       `MMMMMMM 68b `MM       `MMMMMMMb.                                     
+ MM    `Mb                  Y89           /            MM    \ Y89  MM        MM    `Mb                                     
+ MM     MM ___  __   _____  ___   ____   /M            MM      ___  MM        MM     MM   _____  ___   ___   __      ____   
+ MM     MM `MM 6MM  6MMMMMb `MM  6MMMMb /MMMMM         MM   ,  `MM  MM        MM     MM  6MMMMMb `MM    MM  6MMbMMM 6MMMMb  
+ MM    .M9  MM69 " 6M'   `Mb MM 6M'  `Mb MM            MMMMMM   MM  MM        MM    .M9 6M'   `Mb MM    MM 6M'`Mb  6M'  `Mb 
+ MMMMMMM9'  MM'    MM     MM MM MM    MM MM            MM   `   MM  MM        MMMMMMM9' MM     MM MM    MM MM  MM  MM    MM 
+ MM         MM     MM     MM MM MMMMMMMM MM            MM       MM  MM        MM  \M\   MM     MM MM    MM YM.,M9  MMMMMMMM 
+ MM         MM     MM     MM MM MM       MM            MM       MM  MM        MM   \M\  MM     MM MM    MM  YMM9   MM       
+ MM         MM     YM.   ,M9 MM YM    d9 YM.  ,        MM       MM  MM        MM    \M\ YM.   ,M9 YM.   MM (M      YM    d9 
+_MM_       _MM_     YMMMMM9  MM  YMMMM9   YMMM9       _MM_     _MM__MM_      _MM_    \M\_YMMMMM9   YMMM9MM_ YMMMMb. YMMMM9  
+                             MM                                                                            6M    Yb         
+                         (8) M9                                                                            YM.   d9         
+                          YMM9                                                                              YMMMM9          
+
+
+Application Group : ${spring.application.group}
+Application Name : ${spring.application.name}
+Application Version : ${spring.application.version}
+Application Host : ${server.port}
+Team : Lysiane, Thibault, Fouad, Jordi
+Powered by Spring Boot ${spring-boot.version}
+
+
