@@ -25,10 +25,10 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * The Mission entity class represents a mission assigned to an employee. It
- * includes details about the mission such as start and end dates, the nature of
- * the mission, the starting and destination cities, transport type, and the
- * associated costs etc.
+ * The Mission entity class represents a mission assigned to an
+ * employee{@link User}. It includes details about the mission such as start and
+ * end dates, the nature of the mission, the starting and destination cities,
+ * transport type, and the associated costs etc.
  */
 
 @NoArgsConstructor
@@ -41,71 +41,98 @@ import lombok.ToString;
 @Table(name = "MISSION")
 public class Mission {
 
-	// Unique identifier for the mission
+	/**
+	 * Unique identifier for the mission.
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
 
-	// Short descriptive title of the mission
+	/**
+	 * Short descriptive title of the mission.
+	 */
 	@Column(name = "label", length = 150)
 	private String label;
 
-	// Daily rate for the mission
+	/**
+	 * Daily rate for the mission.
+	 */
 	@Min(value = 1)
 	@Column(name = "daily_rate", nullable = false)
 	private Double dailyRate;
 
-	// Current status of the mission (e.g., pending, approved)
-	@Size(min = 2, max = 100)
+	/**
+	 * Current status of the mission (e.g., pending, approved).
+	 */
 	@Column(name = "status", length = 150, nullable = false)
 	private Status status;
 
-	// Starting date of the mission
+	/**
+	 * Starting date of the mission.
+	 */
 	@Temporal(TemporalType.DATE)
 	@Column(name = "start_date", nullable = false)
 	private Date startDate;
 
-	// Ending date of the mission
+	/**
+	 * Ending date of the mission.
+	 */
 	@Temporal(TemporalType.DATE)
 	@Column(name = "end_date", nullable = false)
 	private Date endDate;
 
-	// Transport mode for the mission
+	/**
+	 * Transport mode for the mission.
+	 */
 	@Size(min = 2, max = 150)
 	@Column(name = "transport", length = 150)
 	private Transport transport;
 
-	// Departure city for the mission
+	/**
+	 * Departure city for the mission.
+	 */
 	@Size(min = 2, max = 150)
 	@Column(name = "departure_city", length = 150, nullable = false)
 	private String departureCity;
 
-	// Arrival city for the mission
+	/**
+	 * Arrival city for the mission.
+	 */
 	@Size(min = 2, max = 150)
 	@Column(name = "arrival_city", length = 150, nullable = false)
 	private String arrivalCity;
 
-	// Date when the bonus is given
+	/**
+	 * Date when the bonus is given.
+	 */
 	@Column(name = "bonus_date")
 	private Date bonusDate;
 
-	// Bonus amount for the mission
-	@Min(value = 1)
+	/**
+	 * Bonus amount for the mission.
+	 */
+	@Min(value = 0)
 	@Column(name = "bonus_amount")
 	private Double bonusAmount;
 
-	// The employee assigned to the mission
+	/**
+	 * The employee assigned to the mission.
+	 */
 	@ManyToOne
 	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
 	private User user;
 
-//  Nature of the mission
+	/**
+	 * Nature of the mission.
+	 */
 	@ManyToOne
 	@JoinColumn(name = "mission_nature_id", referencedColumnName = "id", nullable = false)
 	private MissionNature missionNature;
 
-	// Expense report associated with the mission
+	/**
+	 * Expense report associated with the mission.
+	 */
 	@OneToOne
 	@JoinColumn(name = "expense_id", referencedColumnName = "id")
 	private Expense expense;
