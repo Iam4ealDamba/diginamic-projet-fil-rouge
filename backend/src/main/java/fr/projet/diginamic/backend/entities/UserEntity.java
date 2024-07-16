@@ -1,7 +1,7 @@
 package fr.projet.diginamic.backend.entities;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,8 +27,8 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @Entity
-public class User {
-
+@Table(name = "users")
+public class UserEntity {
     /** The id of the user */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,13 +54,19 @@ public class User {
     @Column(name = "password")
     public String password;
 
+    // Relationships
+
     /** The manager of the user */
     @ManyToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "id", nullable = true)
-    public User manager;
+    public UserEntity manager;
 
-    /** The employees of the user */
+    /** The collaborators of the user */
     @OneToMany(mappedBy = "manager")
-    public Set<User> employees;
+    public List<UserEntity> collaborators;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = true)
+    public Role role;
 
 }
