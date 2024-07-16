@@ -95,7 +95,7 @@ public class Mission {
 	// The employee assigned to the mission
 	@ManyToOne
 	@JoinColumn(name = "utilisateur_id", referencedColumnName = "id", nullable = false)
-	private Utilisateur utilisateur;
+	private User utilisateur;
 
 //  Nature of the mission
 	@ManyToOne
@@ -105,6 +105,6 @@ public class Mission {
 	// Expense report associated with the mission
 	@OneToOne
 	@JoinColumn(name = "note_de_frais_id", referencedColumnName = "id")
-	private NoteDeFrais noteDeFrais;
+	private NoteDeFrais expense;
 
 }
