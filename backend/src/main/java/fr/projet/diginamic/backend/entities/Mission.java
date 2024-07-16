@@ -45,13 +45,13 @@ public class Mission {
 	private Integer id;
 
 	// Short descriptive title of the mission
-	@Column(name = "libelle", length = 150)
-	private String libelle;
+	@Column(name = "label", length = 150)
+	private String label;
 
 	// Daily rate for the mission
 	@Min(value = 1)
-	@Column(name = "montant_tjm", nullable = false)
-	private Double montantTjm;
+	@Column(name = "daily_rate", nullable = false)
+	private Double dailyRate;
 
 	// Current status of the mission (e.g., pending, approved)
 	@Size(min = 2, max = 100)
@@ -60,51 +60,50 @@ public class Mission {
 
 	// Starting date of the mission
 	@Temporal(TemporalType.DATE)
-	@Column(name = "date_debut", nullable = false)
-	private Date dateDebut;
+	@Column(name = "start_date", nullable = false)
+	private Date startDate;
 
 	// Ending date of the mission
 	@Temporal(TemporalType.DATE)
-	@Column(name = "date_fin", nullable = false)
-	private Date dateFin;
+	@Column(name = "end_date", nullable = false)
+	private Date endDate;
 
 	// Transport mode for the mission
 	@Size(min = 2, max = 150)
 	@Column(name = "transport", length = 150)
-	private String transport;
+	private Transport transport;
 
 	// Departure city for the mission
 	@Size(min = 2, max = 150)
-	@Column(name = "ville_depart", length = 150, nullable = false)
-	private String villeDepart;
+	@Column(name = "departure_city", length = 150, nullable = false)
+	private String departureCity;
 
 	// Arrival city for the mission
 	@Size(min = 2, max = 150)
-	@Column(name = "ville_arrivee", length = 150, nullable = false)
-	private String villeArrivee;
+	@Column(name = "arrival_city", length = 150, nullable = false)
+	private String arrivalCity;
 
 	// Date when the bonus is given
-	@Column(name = "date_prime")
-	private Date datePrime;
+	@Column(name = "bonus_date")
+	private Date bonusDate;
 
 	// Bonus amount for the mission
 	@Min(value = 1)
-	@Column(name = "montant_prime")
-	private Double montantPrime;
+	@Column(name = "bonus_amount")
+	private Double bonusAmount;
 
 	// The employee assigned to the mission
 	@ManyToOne
-	@JoinColumn(name = "utilisateur_id", referencedColumnName = "id", nullable = false)
-	private User utilisateur;
+	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+	private User user;
 
 //  Nature of the mission
 	@ManyToOne
-	@JoinColumn(name = "nature_mission_id", referencedColumnName = "id", nullable = false)
-	private NatureMission natureMission;
+	@JoinColumn(name = "mission_nature_id", referencedColumnName = "id", nullable = false)
+	private MissionNature missionNature;
 
 	// Expense report associated with the mission
 	@OneToOne
-	@JoinColumn(name = "note_de_frais_id", referencedColumnName = "id")
-	private NoteDeFrais expense;
-
+	@JoinColumn(name = "expense_id", referencedColumnName = "id")
+	private Expense expense;
 }
