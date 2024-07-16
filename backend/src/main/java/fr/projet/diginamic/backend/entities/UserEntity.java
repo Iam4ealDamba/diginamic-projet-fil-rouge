@@ -35,11 +35,11 @@ public class UserEntity {
     public Integer id;
 
     /** The firstname of the user */
-    @Column(name = "firstname")
+    @Column(name = "first_name")
     public String firstName;
 
     /** The lastname of the user */
-    @Column(name = "lastname")
+    @Column(name = "last_name")
     public String lastName;
 
     /** The birtgdate of the user */
