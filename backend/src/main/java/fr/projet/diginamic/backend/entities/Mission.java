@@ -1,5 +1,7 @@
 package fr.projet.diginamic.backend.entities;
 
+import fr.projet.diginamic.backend.enums.TransportEnum;
+
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -42,7 +44,7 @@ public class Mission {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private Integer id;
+	private Long id;
 
 	// Short descriptive title of the mission
 	@Column(name = "label", length = 150)
