@@ -1,23 +1,80 @@
 package fr.projet.diginamic.backend.controllers;
 
-import fr.projet.diginamic.backend.entities.NatureMission;
+import fr.projet.diginamic.backend.dtos.NatureMissionDTO;
+import fr.projet.diginamic.backend.services.NatureMissionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 /**
- * REST Controller for NatureMission entity
+ * REST controller for managing NatureMission entities.
  */
 @RestController
 @RequestMapping("/api/missions/natures")
 public class NatureMissionController {
-    @Autowired
-    private NatureMissionService service;
 
+    @Autowired
+    private NatureMissionService natureMissionService;
+
+    /**
+     * Get a list of all NatureMissions.
+     *
+     * @return a list of NatureMissionDTO.
+     */
     @GetMapping
-    public List<NatureMission> getAllNaturesMissions() {
-        return service.findAll();
+    public ResponseEntity<List<NatureMissionDTO>> getNaturesMissions() {
+        List<NatureMissionDTO> naturesMissions = natureMissionService.getAllNatureMissions();
+        return ResponseEntity.ok(naturesMissions);
+    }
+
+    /**
+     * Get a NatureMission by ID.
+     *
+     * @param natureId the ID of the NatureMission.
+     * @return a NatureMissionDTO.
+     */
+    @GetMapping("/{natureId}")
+    public ResponseEntity<NatureMissionDTO> getNatureMission(@PathVariable Integer natureId) {
+        return natureMissionService.getNatureMissionById(natureId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Create a new NatureMission.
+     *
+     * @param natureMissionDTO the NatureMissionDTO to create.
+     * @return the created NatureMissionDTO.
+     */
+    @PostMapping
+    public ResponseEntity<NatureMissionDTO> postNatureMission(@RequestBody NatureMissionDTO natureMissionDTO) {
+        NatureMissionDTO createdNatureMission = natureMissionService.createNatureMission(natureMissionDTO);
+        return ResponseEntity.ok(createdNatureMission);
+    }
+
+    /**
+     * Update an existing NatureMission.
+     *
+     * @param natureId         the ID of the NatureMission to update.
+     * @param natureMissionDTO the updated NatureMissionDTO.
+     * @return the updated NatureMissionDTO.
+     */
+    @PutMapping("/{natureId}")
+    public ResponseEntity<NatureMissionDTO> putNatureMission(@PathVariable Integer natureId, @RequestBody NatureMissionDTO natureMissionDTO) {
+        NatureMissionDTO updatedNatureMission = natureMissionService.updateNatureMission(natureId, natureMissionDTO);
+        return ResponseEntity.ok(updatedNatureMission);
+    }
+
+    /**
+     * Delete a NatureMission by ID.
+     *
+     * @param natureId the ID of the NatureMission to delete.
+     */
+    @DeleteMapping("/{natureId}")
+    public ResponseEntity<Void> deleteNatureMission(@PathVariable Integer natureId) {
+        natureMissionService.deleteNatureMission(natureId);
+        return ResponseEntity.noContent().build();
     }
 }
