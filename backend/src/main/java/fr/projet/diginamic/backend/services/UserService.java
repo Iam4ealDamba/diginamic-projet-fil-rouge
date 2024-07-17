@@ -28,7 +28,7 @@ public class UserService implements ServiceInterface<UserEntity, UserDto> {
     }
 
     @Override
-    public UserEntity getOne(Integer id) {
+    public UserEntity getOne(Long id) {
         Optional<UserEntity> user = userRepository.findById(id);
 
         if (user.isEmpty()) {
@@ -38,7 +38,7 @@ public class UserService implements ServiceInterface<UserEntity, UserDto> {
     }
 
     @Override
-    public List<UserEntity> update(Integer id, UserDto userDto) {
+    public List<UserEntity> update(Long id, UserDto userDto) {
         Optional<UserEntity> user = userRepository.findById(id);
 
         if (user.isEmpty()) {
@@ -56,7 +56,7 @@ public class UserService implements ServiceInterface<UserEntity, UserDto> {
     }
 
     @Override
-    public List<UserEntity> delete(Integer id) {
+    public List<UserEntity> delete(Long id) {
         List<UserEntity> users = userRepository.findAll();
         Optional<UserEntity> user = userRepository.findById(id);
 

@@ -9,6 +9,6 @@ import fr.projet.diginamic.backend.dtos.UserDto;
 import fr.projet.diginamic.backend.entities.UserEntity;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Integer> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
     public Optional<UserEntity> findByEmail(String email);
 }

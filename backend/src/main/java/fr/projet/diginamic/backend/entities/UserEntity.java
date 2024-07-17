@@ -32,7 +32,7 @@ public class UserEntity {
     /** The id of the user */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     /** The firstname of the user */
     @Column(name = "first_name", nullable = true)

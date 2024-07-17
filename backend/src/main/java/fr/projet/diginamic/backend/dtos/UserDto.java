@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserDto {
     /** The id of the user */
-    private Integer id;
+    private Long id;
 
     /** The firstname of the user */
     private String firstName;

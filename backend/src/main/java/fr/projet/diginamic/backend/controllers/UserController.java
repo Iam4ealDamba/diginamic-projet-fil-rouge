@@ -44,8 +44,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<UserDto> one(@PathVariable String id) {
-        UserEntity user = userService.getOne(Integer.parseInt(id));
+    public ResponseEntity<UserDto> one(@PathVariable Long id) {
+        UserEntity user = userService.getOne(id);
 
         if (user == null) {
             return ResponseEntity.notFound().build();
@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> update(@PathVariable Integer id, @RequestBody UserDto userDto) {
+    public ResponseEntity<List<UserDto>> update(@PathVariable Long id, @RequestBody UserDto userDto) {
         List<UserEntity> users = userService.update(id, userDto);
         List<UserDto> usersDto = new ArrayList<>();
 
@@ -83,8 +83,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> delete(@PathVariable String id) {
-        List<UserEntity> users = userService.delete(Integer.parseInt(id));
+    public ResponseEntity<List<UserDto>> delete(@PathVariable Long id) {
+        List<UserEntity> users = userService.delete(id);
         List<UserDto> usersDto = new ArrayList<>();
 
         if (users == null) {
