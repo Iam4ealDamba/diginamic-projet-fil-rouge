@@ -30,11 +30,8 @@ public class ExpenseController {
      * @throws Exception if there is no result
      */
 	 @GetMapping
-	    public ArrayList<ExpenseDto> getExpenses() throws Exception {
+	    public ArrayList<ExpenseDto> getExpenses() {
 		 ArrayList<ExpenseDto> expenses= expenseService.getExpenses();
-	        if(expenses.isEmpty()) {
-	    		throw new Exception("No expense found");
-	    	}
 	    	return expenses;
 	    }
 	 

@@ -18,6 +18,7 @@ import fr.projet.diginamic.backend.dtos.ExpenseLineDto;
 import fr.projet.diginamic.backend.entities.ExpenseLine;
 import fr.projet.diginamic.backend.services.ExpenseLineService;
 
+/** Controller for all ExpenseLine*/
 @RestController
 @RequestMapping("/api/expenseLines")
 public class ExpenseLineController {
@@ -30,11 +31,8 @@ public class ExpenseLineController {
      * @throws Exception if there is no result
      */
 	 @GetMapping
-	    public ArrayList<ExpenseLineDto> getExpenseLines() throws Exception {
+	    public ArrayList<ExpenseLineDto> getExpenseLines() {
 		 ArrayList<ExpenseLineDto> expenseLines= expenseLineService.getExpenseLines();
-	        if(expenseLines.isEmpty()) {
-	    		throw new Exception("No expenseLines found");
-	    	}
 	    	return expenseLines;
 	    }
 	 
