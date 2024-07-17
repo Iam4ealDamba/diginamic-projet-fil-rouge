@@ -37,7 +37,7 @@ public class ExpenseService {
      * @return the expenseLine found
      */
 	public ExpenseWithLinesDto getExpense(Long id){
-		Expense expense= expenseRepo.findById(id);
+		Expense expense= expenseRepo.findById(id).orElse(null);
 		ExpenseWithLinesDto expenseDto= expenseMapper.BeanToDtoWithLines(expense);
 		return expenseDto;
 	}

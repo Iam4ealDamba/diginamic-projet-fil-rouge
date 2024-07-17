@@ -44,7 +44,7 @@ public class ExpenseController {
 	    public  ResponseEntity<String> saveExpense(@RequestBody ExpenseDto expense) throws Exception {
 		 Expense expenseSave= expenseService.saveExpense(expense);
 		 if(expenseSave== null) {
-	    		throw new Exception("The expense was not save");
+	    		throw new Exception("The expense was not saved");
 	    	}
 	        return new ResponseEntity<>("Success", HttpStatus.CREATED);
 	    }

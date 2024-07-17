@@ -10,6 +10,7 @@ import fr.projet.diginamic.backend.entities.ExpenseLine;
 import fr.projet.diginamic.backend.repositories.interfaces.ExpenseLineRepository;
 import fr.projet.diginamic.backend.utils.ExpenseLineMapper;
 
+/**Service for all ExpenseLine's related method*/
 @Service
 public class ExpenseLineService {
 	@Autowired
@@ -35,7 +36,7 @@ public class ExpenseLineService {
      * @return An expenseLineDto
      */
 	public ExpenseLineDto getExpenseLine(Long id){
-		ExpenseLine expenseLine= expenseLineRepo.findById(id);
+		ExpenseLine expenseLine= expenseLineRepo.findById(id).orElse(null);
 		ExpenseLineDto expenseLineDto= expenseLineMapper.BeanToDto(expenseLine);
 		return expenseLineDto;
 	}
@@ -55,18 +56,18 @@ public class ExpenseLineService {
      * @return the expenseLine deleted
      */
 	public ExpenseLine deleteExpenseLine(Long id){
-		ExpenseLine expenseLine= expenseLineRepo.findById(id);
+		ExpenseLine expenseLine= expenseLineRepo.findById(id).orElse(null);
 		expenseLineRepo.delete(expenseLine);
 		return expenseLine;
 	}
 	
 	/**Method to modify an expenseLine
-	 * * @param expenseLine, the new expenseLine
+	 * @param expenseLine, the new expenseLine
 	 * @param id, the id of the expenseLine to modify
      * @return the expenseLine after modification
      */
 	public ExpenseLine modifyExpenseLine(ExpenseLineDto expenseLine, Long id){
-		ExpenseLine expenseLineBdd= expenseLineRepo.findById(id);
+		ExpenseLine expenseLineBdd= expenseLineRepo.findById(id).orElse(null);
 		expenseLineBdd.setTva(expenseLine.getTva());
 		expenseLineBdd.setAmount(expenseLine.getAmount());
 		expenseLineBdd.setDate(expenseLine.getDate());
