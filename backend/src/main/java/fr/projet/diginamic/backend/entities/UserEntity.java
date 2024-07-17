@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -30,20 +31,21 @@ import lombok.ToString;
 @Table(name = "users")
 public class UserEntity {
     /** The id of the user */
+    @Setter(value = AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /** The firstname of the user */
-    @Column(name = "first_name", nullable = true)
+    @Column(name = "first_name")
     private String firstName;
 
     /** The lastname of the user */
-    @Column(name = "last_name", nullable = true)
+    @Column(name = "last_name")
     private String lastName;
 
     /** The birtgdate of the user */
-    @Column(name = "birth_date", nullable = true)
+    @Column(name = "birth_date")
     private Date birthDate;
 
     /** The email of the user */
@@ -58,7 +60,7 @@ public class UserEntity {
 
     /** The manager of the user */
     @ManyToOne
-    @JoinColumn(name = "manager_id", referencedColumnName = "id", nullable = true)
+    @JoinColumn(name = "manager_id", referencedColumnName = "id")
     private UserEntity manager;
 
     /** The collaborators of the user */
@@ -66,7 +68,7 @@ public class UserEntity {
     private List<UserEntity> collaborators;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = true)
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
 
 }

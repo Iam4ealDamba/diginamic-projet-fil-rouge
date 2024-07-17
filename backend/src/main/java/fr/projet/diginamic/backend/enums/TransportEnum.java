@@ -9,7 +9,7 @@ public enum TransportEnum {
     AVION("Avion"),
     COVOITURAGE("Covoiturage"),
     TRAIN("Train"),
-    VOITURESERVICE("Voiture de service");
+    VOITURE_SERVICE("Voiture de service");
 
     // Attibutes
     /** The type of transport */

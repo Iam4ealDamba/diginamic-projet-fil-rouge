@@ -20,10 +20,6 @@ public class UserService implements ServiceInterface<UserEntity, UserDto> {
     @Override
     public List<UserEntity> getAll() {
         List<UserEntity> users = userRepository.findAll();
-
-        if (users.isEmpty()) {
-            return null;
-        }
         return users;
     }
 

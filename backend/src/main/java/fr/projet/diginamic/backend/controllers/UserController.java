@@ -26,9 +26,6 @@ public class UserController {
         List<UserEntity> users = userService.getAll();
         List<UserDto> usersDto = new ArrayList<>();
 
-        if (users == null) {
-            return ResponseEntity.notFound().build();
-        }
         for (UserEntity user : users) {
             UserDto userDto = new UserDto();
             userDto.setId(user.getId());
@@ -64,11 +61,7 @@ public class UserController {
     public ResponseEntity<List<UserDto>> update(@PathVariable Long id, @RequestBody UserDto userDto) {
         List<UserEntity> users = userService.update(id, userDto);
         List<UserDto> usersDto = new ArrayList<>();
-
-        if (users == null) {
-            return ResponseEntity.notFound().build();
-        }
-
+        
         for (UserEntity user : users) {
             UserDto dto = new UserDto();
             dto.setId(user.getId());

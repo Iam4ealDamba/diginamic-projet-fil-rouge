@@ -21,6 +21,11 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    /**
+     * Route for login with email and password
+     * 
+     * @param loginDto - the dto to login
+     */
     @PostMapping("/login")
     public ResponseEntity<UserDto> login(@RequestBody LoginDto loginDto) {
         UserDto userDto = authService.login(loginDto);
@@ -31,6 +36,11 @@ public class AuthController {
         return ResponseEntity.ok(userDto);
     }
 
+    /**
+     * Route for registering a new user
+     * 
+     * @param registerDto - the dto to register a new user
+     */
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@RequestBody RegisterDto registerDto) {
         UserDto userDto = authService.register(registerDto);
