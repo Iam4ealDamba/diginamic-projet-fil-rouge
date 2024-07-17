@@ -9,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,16 +30,16 @@ public class Expense {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	/** The date of the expense */
-    @Column(name = "date")
+	@Column(name = "date")
 	private Date date;
-    /** The date of the status */
-    @Column(name = "status")
+	/** The date of the status */
+	@Column(name = "status")
 	private String status;
-	
-    /** The expenseLines of this expense */
+
+	/** The expenseLines of this expense */
 	@OneToMany(mappedBy = "expense")
 	public Set<ExpenseLine> expenseLines;
-	
+
 	/** The mission linked to the expense */
 	@OneToOne
 	private Mission mission; // référence vers la mission

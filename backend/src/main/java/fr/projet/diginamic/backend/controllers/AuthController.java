@@ -1,0 +1,43 @@
+package fr.projet.diginamic.backend.controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import fr.projet.diginamic.backend.dtos.LoginDto;
+import fr.projet.diginamic.backend.dtos.RegisterDto;
+import fr.projet.diginamic.backend.dtos.UserDto;
+import fr.projet.diginamic.backend.services.AuthService;
+
+/** Auth controller for users */
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+    @Autowired
+    private AuthService authService;
+
+    @PostMapping("/login")
+    public ResponseEntity<UserDto> login(@RequestBody LoginDto loginDto) {
+        UserDto userDto = authService.login(loginDto);
+
+        if (userDto == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(userDto);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> register(@RequestBody RegisterDto registerDto) {
+        UserDto userDto = authService.register(registerDto);
+
+        if (userDto == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(userDto);
+    }
+}

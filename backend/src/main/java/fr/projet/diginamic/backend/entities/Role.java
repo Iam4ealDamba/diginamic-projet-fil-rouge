@@ -28,13 +28,13 @@ public class Role {
     /** Id of the role */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    private Integer id;
     /** Type of the role */
     @Column(name = "type")
-    public String type;
+    private String type;
 
     /** List of user related to the role */
     @OneToMany(mappedBy = "role")
-    public List<UserEntity> users;
+    private List<UserEntity> users;
 
 }

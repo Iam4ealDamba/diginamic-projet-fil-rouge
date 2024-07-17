@@ -32,41 +32,41 @@ public class UserEntity {
     /** The id of the user */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    private Integer id;
 
     /** The firstname of the user */
-    @Column(name = "first_name")
-    public String firstName;
+    @Column(name = "first_name", nullable = true)
+    private String firstName;
 
     /** The lastname of the user */
-    @Column(name = "last_name")
-    public String lastName;
+    @Column(name = "last_name", nullable = true)
+    private String lastName;
 
     /** The birtgdate of the user */
-    @Column(name = "birth_date")
-    public Date birthDate;
+    @Column(name = "birth_date", nullable = true)
+    private Date birthDate;
 
     /** The email of the user */
     @Column(name = "email")
-    public String email;
+    private String email;
 
     /** The password of the user */
     @Column(name = "password")
-    public String password;
+    private String password;
 
     // Relationships
 
     /** The manager of the user */
     @ManyToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "id", nullable = true)
-    public UserEntity manager;
+    private UserEntity manager;
 
     /** The collaborators of the user */
     @OneToMany(mappedBy = "manager")
-    public List<UserEntity> collaborators;
+    private List<UserEntity> collaborators;
 
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = true)
-    public Role role;
+    private Role role;
 
 }
