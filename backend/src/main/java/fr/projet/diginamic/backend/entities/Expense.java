@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,6 +34,7 @@ public class Expense {
 	private Long id;
 	/** The date of the expense */
     @Column(name = "date")
+    @Temporal(TemporalType.DATE)
 	private Date date;
     /** The date of the status */
     @Column(name = "status")
@@ -42,7 +45,7 @@ public class Expense {
 	public Set<ExpenseLine> expenseLines;
 	
 	/** The mission linked to the expense */
-	@OneToOne
-	private Mission mission; // référence vers la mission
+	//@OneToOne
+	//private Mission mission;
 
 }
