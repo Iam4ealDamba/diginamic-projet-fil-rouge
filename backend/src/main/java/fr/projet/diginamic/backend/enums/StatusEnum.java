@@ -7,12 +7,12 @@ import lombok.Getter;
 @Getter
 public enum StatusEnum {
     INITIAL("Initial"),
-    EN_ATTENTE("En Attente"),
-    VALIDE("Validé"),
-    REJETE("Rejeté"),
-    REMBOURSE("Remboursé"),
-    EN_COURS("En cours"),
-    TERMINE("Termine");
+    WAITING("Waiting"),
+    VALIDATED("Validated"),
+    REJECTED("Rejected"),
+    REFOUNDED("Refounded"),
+    IN_PROGRESS("In Progress"),
+    FINISHED("Finished");
 
     // Attibutes
     /** The type of status */
