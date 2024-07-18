@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,6 +32,7 @@ public class Expense {
 	/** The Id of the expense */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Setter(AccessLevel.NONE)
 	private Long id;
 	/** The date of the expense */
 	@Column(name = "date")

@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,6 +29,7 @@ public class ExpenseLine {
 	/** The Id of the expenseLine */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Setter(AccessLevel.NONE)
 	private Long id;
 	
 	/** The date of the expenseLine */
