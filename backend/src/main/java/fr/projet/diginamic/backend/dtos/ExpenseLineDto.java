@@ -1,13 +1,7 @@
 package fr.projet.diginamic.backend.dtos;
 
-import java.util.Date;
-import java.util.Set;
+import java.util.Date; 
 
-import fr.projet.diginamic.backend.entities.Expense;
-import fr.projet.diginamic.backend.entities.ExpenseType;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

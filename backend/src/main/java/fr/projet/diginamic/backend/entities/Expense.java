@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AccessLevel;
@@ -34,19 +35,19 @@ public class Expense {
 	@Setter(AccessLevel.NONE)
 	private Long id;
 	/** The date of the expense */
-    @Column(name = "date")
-    @Temporal(TemporalType.DATE)
+	@Column(name = "date")
+	@Temporal(TemporalType.DATE)
 	private Date date;
-    /** The date of the status */
-    @Column(name = "status")
+	/** The date of the status */
+	@Column(name = "status")
 	private String status;
-	
-    /** The expenseLines of this expense */
+
+	/** The expenseLines of this expense */
 	@OneToMany(mappedBy = "expense")
 	public Set<ExpenseLine> expenseLines;
-	
+
 	/** The mission linked to the expense */
-	//@OneToOne
-	//private Mission mission;
+	@OneToOne
+	private Mission mission;
 
 }

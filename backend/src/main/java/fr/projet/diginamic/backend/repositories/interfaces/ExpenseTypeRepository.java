@@ -8,5 +8,5 @@ import fr.projet.diginamic.backend.entities.ExpenseType;
 /** Repository of all ExpenseType method to search from database*/
 @Repository
 public interface ExpenseTypeRepository  extends JpaRepository<ExpenseType, Long> {
-
+    public ExpenseType findByType(String type);
 }

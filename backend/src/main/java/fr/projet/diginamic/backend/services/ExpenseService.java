@@ -21,8 +21,6 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import fr.diginamic.hello.dto.VilleDto;
-import fr.diginamic.hello.entity.Ville;
 import fr.projet.diginamic.backend.dtos.ExpenseDto;
 import fr.projet.diginamic.backend.dtos.ExpenseWithLinesDto;
 import fr.projet.diginamic.backend.entities.Expense;

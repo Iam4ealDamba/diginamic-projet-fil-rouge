@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.itextpdf.text.DocumentException;
+// import com.itextpdf.text.DocumentException;
 
+// import fr.diginamic.hello.exception.RestException;
 import fr.projet.diginamic.backend.dtos.ExpenseDto;
 import fr.projet.diginamic.backend.dtos.ExpenseWithLinesDto;
 import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.services.ExpenseService;
 import jakarta.servlet.http.HttpServletResponse;
 
-
-/** Controller for all expense*/
+/** Controller for all expense */
 @RestController
 @RequestMapping("/api/expenses")
 public class ExpenseController {
