@@ -129,7 +129,7 @@ public class Mission {
 	 * Nature of the mission.
 	 */
 	@ManyToOne
-	@JoinColumn(name = "mission_nature_id", referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "nature_mission_id", referencedColumnName = "id", nullable = false)
 	private NatureMission natureMission;
 
 	/**
