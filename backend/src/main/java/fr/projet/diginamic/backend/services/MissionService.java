@@ -205,7 +205,7 @@ public class MissionService {
         return missionRepository.findById(id).map(mission -> {
             mission.setStatus(StatusEnum.INITIAL);
             mission.setLabel(updatedMission.getLabel());
-            mission.setDailyRate(updatedMission.getDailyRate());
+            mission.setTotalPrice(updatedMission.getTotalPrice());
             mission.setStartDate(updatedMission.getStartDate());
             mission.setEndDate(updatedMission.getEndDate());
             mission.setTransport(updatedMission.getTransport());
@@ -244,7 +244,7 @@ public class MissionService {
     public Object updateMissionStatus(Long id, StatusEnum status) {
         return missionRepository.findById(id)
                 .map(m -> {
-                    validateMission(m, false);   
+                    validateMission(m, false);
                     m.setStatus(status);
                     return missionRepository.save(m);
                 })

@@ -59,11 +59,11 @@ public class Mission {
 	private String label;
 
 	/**
-	 * Daily rate for the mission.
+	 * Total cost of the mission.
 	 */
 	@Min(value = 1)
-	@Column(name = "daily_rate", nullable = false)
-	private Double dailyRate;
+	@Column(name = "total_price", nullable = false)
+	private Double totalPrice;
 
 	/**
 	 * Current status of the mission (e.g., pending, approved).
