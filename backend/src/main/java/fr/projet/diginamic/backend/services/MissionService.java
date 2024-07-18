@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.entities.UserEntity;
+import fr.projet.diginamic.backend.enums.StatusEnum;
+import fr.projet.diginamic.backend.enums.TransportEnum;
 import fr.projet.diginamic.backend.repositories.MissionRepository;
 import fr.projet.diginamic.backend.specs.MissionSpecifications;
 import jakarta.persistence.EntityNotFoundException;
@@ -74,12 +76,13 @@ public class MissionService {
         }
         // Check valid status for managers and non-managers
         if (isManager) {
+
             // Check status is either INITIAL or REJECTED for new or modified missions :
-            if (mission.getStatus() != Status.PENDING) {
+            if (mission.getStatus() != StatusEnum.PENDING) {
                 throw new IllegalArgumentException("Invalid status for operation by manager.");
             }
         } else {
-            if (!(mission.getStatus() == Status.INITIAL || mission.getStatus() == Status.REJECTED)) {
+            if (!(mission.getStatus() == StatusEnum.INITIAL || mission.getStatus() == StatusEnum.REJECTED)) {
                 throw new IllegalArgumentException("Invalid status for operation by employees.");
             }
         }
@@ -200,7 +203,7 @@ public class MissionService {
     public Mission updateMission(Long id, Mission updatedMission) {
         validateMission(updatedMission, false);
         return missionRepository.findById(id).map(mission -> {
-            mission.setStatus(Status.INITIAL);
+            mission.setStatus(StatusEnum.INITIAL);
             mission.setLabel(updatedMission.getLabel());
             mission.setDailyRate(updatedMission.getDailyRate());
             mission.setStartDate(updatedMission.getStartDate());
@@ -242,10 +245,10 @@ public class MissionService {
         return missionRepository.findById(id)
                 .map(m -> {
                     validateMission(m, false);
-                    m.setStatus(status);
+                    StatusEnum statusEnum = StatusEnum.valueOf(status.toUpperCase());
+                    m.setStatus(statusEnum);
                     return missionRepository.save(m);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
-
     }
 }
