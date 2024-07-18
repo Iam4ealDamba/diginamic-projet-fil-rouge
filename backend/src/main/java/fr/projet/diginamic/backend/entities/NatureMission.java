@@ -34,28 +34,28 @@ public class NatureMission {
     private Integer id;
 
     /** The label of the nature of the mission */
-    @Column(name = "libelle")
-    private String libelle;
+    @Column(name = "label")
+    private String label;
 
-    /** The plafond TJM of the nature of the mission */
-    @Column(name = "plafond_tjm")
-    private Double plafondTjm;
+    /** The ceiling TJM of the nature of the mission */
+    @Column(name = "ceiling_tjm")
+    private Double ceilingTjm;
 
-    /** The facturation of the nature of the mission */
-    @Column(name = "facturation")
-    private Boolean facturation;
+    /** The billing status of the nature of the mission */
+    @Column(name = "billing")
+    private Boolean billing;
 
-    /** The debut prime of the nature of the mission */
-    @Column(name = "debut_prime")
-    private Date debutPrime;
+    /** The start date of the nature of the mission */
+    @Column(name = "start_date")
+    private Date startDate;
 
-    /** The fin prime of the nature of the mission */
-    @Column(name = "fin_prime")
-    private Date finPrime;
+    /** The end date of the nature of the mission */
+    @Column(name = "end_date")
+    private Date endDate;
 
-    /** The pourcentage prime of the nature of the mission */
-    @Column(name = "pourcentage_prime")
-    private Double pourcentagePrime;
+    /** The bonus percentage of the nature of the mission */
+    @Column(name = "bonus_percentage")
+    private Double bonusPercentage;
 
     /** The missions associated with this nature */
     @OneToMany(mappedBy = "natureMission")
