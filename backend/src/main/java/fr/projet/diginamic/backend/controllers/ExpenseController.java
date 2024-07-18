@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.itextpdf.text.DocumentException;
+
 // import com.itextpdf.text.DocumentException;
 
 // import fr.diginamic.hello.exception.RestException;
@@ -72,7 +74,7 @@ public class ExpenseController {
 	 @GetMapping("/pdf/{id}")
 	    public void exportExpenseById(@PathVariable Long id, HttpServletResponse response) throws Exception, IOException,
 	    DocumentException {
-	       ExpenseService.exportExpense(id, response);
+	       expenseService.exportExpense(id, response);
 	    }
 
 }

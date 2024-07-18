@@ -1,10 +1,13 @@
 package fr.projet.diginamic.backend.controllers;
 
-import fr.projet.diginamic.backend.entities.Mission;
-import fr.projet.diginamic.backend.enums.StatusEnum;
-import fr.projet.diginamic.backend.services.MissionService;
-import jakarta.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,24 +22,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 
+import fr.projet.diginamic.backend.entities.Mission;
+import fr.projet.diginamic.backend.enums.StatusEnum;
+import fr.projet.diginamic.backend.services.MissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag; 
-import io.swagger.v3.oas.annotations.Parameter;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 /**
  * Controller class for handling requests for the /missions endpoint. This class
@@ -211,8 +206,8 @@ public class MissionController {
 	 */
 	@PutMapping("/{id}/status")
 	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-	@Operation(summary = "Update the status of a mission", description = "Updates the status of a specific mission to either 'Validé' or 'Rejeté'. Access is restricted to users with manager or administrator roles.", security = @SecurityRequirement(name = "roleBasedAuth"), tags = {
-			"Mission Management" })
+//	@Operation(summary = "Update the status of a mission", description = "Updates the status of a specific mission to either 'Validé' or 'Rejeté'. Access is restricted to users with manager or administrator roles.", security = @SecurityRequirement(name = "roleBasedAuth"), tags = {
+//			"Mission Management" })
 	@ApiResponse(responseCode = "200", description = "Mission status updated successfully", content = @Content(mediaType = "application/json"))
 	@ApiResponse(responseCode = "400", description = "Validation errors", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class)))
 	@ApiResponse(responseCode = "403", description = "Access denied", content = @Content(mediaType = "application/json"))

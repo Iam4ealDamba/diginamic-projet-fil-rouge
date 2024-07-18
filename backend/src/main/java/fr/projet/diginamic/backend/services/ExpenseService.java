@@ -70,16 +70,20 @@ public class ExpenseService {
 	
 public void exportExpense(Long id, HttpServletResponse response) throws IOException, DocumentException{
 		Expense expense= expenseRepo.findById(id).orElse(null);
+        if (expense == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Expense not found");
+            return;
+        }
 		
 		response.setHeader("Content-Disposition", "attachment; filename=\"NoteDeFrais.pdf\"");
 		Document document = new Document(PageSize.A4);
 		PdfWriter.getInstance(document, response.getOutputStream());
 		document.open();
-		document.addTitle("Note de frais de " +expense.getMission().getUserEntity().getFirstName()+" "+expense.getMission().getUserEntity().getLastName());
+		document.addTitle("Note de frais de " +expense.getMission().getUser().getFirstName()+" "+expense.getMission().getUser().getLastName());
 		document.newPage();
 		BaseFont baseFont = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
-		Phrase p1 = new Phrase("Note de frais de " +expense.getMission().getUserEntity().getFirstName()+" "+expense.getMission().getUserEntity().getLastName() , new Font(baseFont, 32.0f, 1, new BaseColor(0, 51, 80)));
-		Phrase p2 = new Phrase("Libelle de mission: " +expense.getMission().getLibelle() , new Font(baseFont, 32.0f, 1, new BaseColor(0, 51, 80)));
+		Phrase p1 = new Phrase("Note de frais de " +expense.getMission().getUser().getFirstName()+" "+expense.getMission().getUser().getLastName() , new Font(baseFont, 32.0f, 1, new BaseColor(0, 51, 80)));
+		Phrase p2 = new Phrase("Libelle de mission: " +expense.getMission().getLabel() , new Font(baseFont, 32.0f, 1, new BaseColor(0, 51, 80)));
 		document.add(p1);
 		document.add(p2);
 		
@@ -104,13 +108,11 @@ private void addTableHeader(PdfPTable table) {
    
 }
 private void addRows(PdfPTable table, Expense expense) {
-	for(ExpenseLine expenseLine: expense.getExpenseLines())
-	{
-		table.addCell(expenseLine.getDate());
-		table.addCell(expenseLine.getExpenseType().getType);
-		table.addCell(expenseLine.getAmount());
-		table.addCell(expenseLine.getTva());
+	for (ExpenseLine expenseLine : expense.getExpenseLines()) {
+		table.addCell(expenseLine.getDate().toString());
+		table.addCell(expenseLine.getExpenseType().getType());
+		table.addCell(String.valueOf(expenseLine.getAmount()));
+		table.addCell(String.valueOf(expenseLine.getTva()));
 	}
-    
 }
 }
