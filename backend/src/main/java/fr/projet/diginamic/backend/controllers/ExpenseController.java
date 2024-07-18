@@ -1,5 +1,6 @@
 package fr.projet.diginamic.backend.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.itextpdf.text.DocumentException;
+
+import fr.diginamic.hello.exception.RestException;
 import fr.projet.diginamic.backend.dtos.ExpenseDto;
 import fr.projet.diginamic.backend.dtos.ExpenseWithLinesDto;
 import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.services.ExpenseService;
+import jakarta.servlet.http.HttpServletResponse;
 
 
 /** Controller for all expense*/
@@ -62,6 +67,12 @@ public class ExpenseController {
 	    		throw new Exception("No expense found");
 	    	}
 	    	return expense;
+	    }
+	 
+	 @GetMapping("/pdf/{id}")
+	    public void exportDepartementById(@PathVariable Long id, HttpServletResponse response) throws Exception, IOException,
+	    DocumentException {
+	       departementService.exportDepartement(codeDepartement, response);
 	    }
 
 }

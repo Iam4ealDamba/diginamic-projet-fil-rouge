@@ -17,5 +17,4 @@ public interface ExpenseLineRepository extends JpaRepository<ExpenseLine, Long> 
 	ArrayList<ExpenseLine> findAll();
 	
 
-
 }
