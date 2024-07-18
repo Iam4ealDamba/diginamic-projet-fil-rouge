@@ -91,7 +91,7 @@ public class MissionController {
 		Page<Mission> missions = missionService.findAllMissionsWithSpecs(status, natureMission, userNameOrLabel,
 				pageable);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(missions);
+		return ResponseEntity.ok(missions);
 	}
 
 	/**
