@@ -16,7 +16,7 @@ public class ExpenseLineMapper {
 	private ExpenseTypeRepository expenseTypeRepository;
 
 	/**Method to transform a ExpenseLineDto to an ExpenseLine
-	 * @param ExpenseLineDto, the dto to transform
+	 * @param exp, the dto to transform
      * @return the expenseLine object after the mapping
      */
 	public ExpenseLine dtoToBean( ExpenseLineDto exp){
@@ -37,7 +37,7 @@ public class ExpenseLineMapper {
 	}
 	
 	/**Method to transform a ExpenseLine to an ExpenseLineDto
-	 * @param ExpenseLine, the bean to transform
+	 * @param exp, the bean to transform
      * @return the expenseLineDto object after the mapping
      */
 	public ExpenseLineDto BeanToDto( ExpenseLine exp){

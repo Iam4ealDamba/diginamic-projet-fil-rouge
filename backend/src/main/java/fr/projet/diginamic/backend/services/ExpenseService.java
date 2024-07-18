@@ -1,15 +1,30 @@
 package fr.projet.diginamic.backend.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import fr.diginamic.hello.dto.DepartementGovDto;
+import fr.diginamic.hello.entity.Departement;
+import fr.diginamic.hello.entity.Ville;
 import fr.projet.diginamic.backend.dtos.ExpenseDto;
 import fr.projet.diginamic.backend.dtos.ExpenseWithLinesDto;
 import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.repositories.interfaces.ExpenseRepository;
 import fr.projet.diginamic.backend.utils.ExpenseMapper;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**Service for all expense's related method*/
 @Service
@@ -50,5 +65,26 @@ public class ExpenseService {
 		Expense expenseSave= expenseMapper.dtoToBean(expense);
 		expenseSave= expenseRepo.save(expenseSave);
 		return expenseSave;
+	}
+	
+	public void exportExpense(Long id, HttpServletResponse response) throws IOException, DocumentException{
+		Expense expense= expenseRepo.findById(id).orElse(null);
+		
+		response.setHeader("Content-Disposition", "attachment; filename=\"NoteDeFrais.pdf\"");
+		Document document = new Document(PageSize.A4);
+		PdfWriter.getInstance(document, response.getOutputStream());
+		document.open();
+		document.addTitle("Fiche");
+		document.newPage();
+		BaseFont baseFont = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
+		Phrase p1 = new Phrase("Nom departement: "+dGov.getNom()+", code departement:"+dGov.getCode() , new Font(baseFont, 32.0f, 1, new BaseColor(0, 51, 80)));
+		document.add(p1);
+		
+		for(Ville ville: villes) {
+			Phrase p = new Phrase("Nom ville: "+ville.getNom()+", nombre d'habitants:"+ville.getNbHabitant() , new Font(baseFont, 32.0f, 1, new BaseColor(0, 51, 80)));
+			document.add(p);
+		}
+		document.close();
+		response.flushBuffer();
 	}
 }
