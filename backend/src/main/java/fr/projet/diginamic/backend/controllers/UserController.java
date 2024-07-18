@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,7 +49,7 @@ public class UserController {
      * 
      * @param id - the id of the user
      */
-    @GetMapping
+    @GetMapping("/{id}")
     public ResponseEntity<UserDto> one(@PathVariable Long id) {
         UserEntity user = userService.getOne(id);
 
@@ -70,7 +72,7 @@ public class UserController {
      * @param id      - the id of the user
      * @param userDto - the dto of the user
      */
-    @GetMapping
+    @PutMapping("/{id}")
     public ResponseEntity<List<UserDto>> update(@PathVariable Long id, @RequestBody UserDto userDto) {
         List<UserEntity> users = userService.update(id, userDto);
         List<UserDto> usersDto = new ArrayList<>();
@@ -93,7 +95,7 @@ public class UserController {
      * 
      * @param id - the id of the user
      */
-    @GetMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<List<UserDto>> delete(@PathVariable Long id) {
         List<UserEntity> users = userService.delete(id);
         List<UserDto> usersDto = new ArrayList<>();
