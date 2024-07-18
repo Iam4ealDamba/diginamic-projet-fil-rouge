@@ -18,7 +18,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 
 public class CreateMissionDTO {
-    private Long userId;
     private String label;
     private StatusEnum status;
     private Date startDate;
@@ -26,5 +25,6 @@ public class CreateMissionDTO {
     private TransportEnum transport;
     private String departureCity;
     private String arrivalCity;
+    private Long userId;
     private Long natureMissionId;
 }

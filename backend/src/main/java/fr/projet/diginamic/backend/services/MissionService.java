@@ -3,6 +3,7 @@ package fr.projet.diginamic.backend.services;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,7 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
+import fr.projet.diginamic.backend.entities.NatureMission;
+import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.enums.TransportEnum;
@@ -30,6 +34,15 @@ public class MissionService {
 
     @Autowired
     private MissionRepository missionRepository;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    ExpenseService expenseService;
+
+    @Autowired
+    NatureMissionService natureMissionService;
 
     /**
      * Save a mission entity.
@@ -252,5 +265,51 @@ public class MissionService {
                     return missionRepository.save(m);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
+    }
+
+    public Mission displayedMissionDTOToBean(DisplayedMissionDTO dto) {
+        Mission mission = findOneMission(dto.getId());
+        mission.setLabel(dto.getLabel());
+        mission.setStatus(dto.getStatus());
+        mission.setStartDate(dto.getStartDate());
+        mission.setEndDate(dto.getEndDate());
+        mission.setTransport(dto.getTransport());
+        mission.setDepartureCity(dto.getDepartureCity());
+        mission.setArrivalCity(dto.getArrivalCity());
+
+        // Delegate the responsibility of fetching related entities to the respective
+        // services
+        UserEntity user = userService.getOne(dto.getUserId());
+        NatureMission natureMisison = natureMissionService.getNatureMissionById(dto.getNatureMissionId());
+        Expense expense = expenseService.getExpense(dto.getExpenseId());
+        mission.setUser(user);
+        mission.setNatureMission(natureMisison);
+        mission.setExpense(expense);
+
+        calculatePricing(mission);
+
+        return mission;
+    }
+
+    private void calculatePricing(Mission mission) {
+
+        if (mission.getNatureMission() != null) {
+            long duration = getDifferenceDays(mission.getStartDate(), mission.getEndDate()) + 1; // Include start day
+            double dailyRate = mission.getNatureMission().getTjm();
+            double totalPrice = duration * dailyRate;
+            mission.setTotalPrice(totalPrice);
+
+            if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().isEligibleToBonus()) {
+                double bonusPercentage = mission.getNatureMission().getBonusPercentage() / 100.0;
+                double bonusAmount = totalPrice * bonusPercentage;
+                mission.setBonusAmount(bonusAmount);
+                mission.setBonusDate(mission.getEndDate());
+            }
+        }
+    }
+
+    private static long getDifferenceDays(Date d1, Date d2) {
+        long diff = d2.getTime() - d1.getTime();
+        return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
 }
