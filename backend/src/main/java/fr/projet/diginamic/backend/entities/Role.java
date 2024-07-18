@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,15 +27,16 @@ import lombok.ToString;
 @Entity
 public class Role {
     /** Id of the role */
+    @Setter(value = AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    private Long id;
     /** Type of the role */
     @Column(name = "type")
-    public String type;
+    private String type;
 
     /** List of user related to the role */
     @OneToMany(mappedBy = "role")
-    public List<UserEntity> users;
+    private List<UserEntity> users;
 
 }
