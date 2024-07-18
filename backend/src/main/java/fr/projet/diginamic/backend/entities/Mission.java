@@ -27,7 +27,8 @@ import lombok.ToString;
 
 /**
  * The Mission entity class represents a mission assigned to an
- * employee{@link User}. It includes details about the mission such as start and
+ * employee{@link UserEntity}. It includes details about the mission such as
+ * start and
  * end dates, the nature of the mission, the starting and destination cities,
  * transport type, and the associated costs etc.
  */
@@ -85,7 +86,7 @@ public class Mission {
 	private Date endDate;
 
 	/**
-	 * Transport mode for the mission.
+	 * TransportEnum mode for the mission.
 	 */
 	@Size(min = 2, max = 150)
 	@Column(name = "transport", length = 150)

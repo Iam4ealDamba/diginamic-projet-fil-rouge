@@ -7,18 +7,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfWriter;
+// import com.itextpdf.text.BaseColor;
+// import com.itextpdf.text.Document;
+// import com.itextpdf.text.DocumentException;
+// import com.itextpdf.text.Font;
+// import com.itextpdf.text.PageSize;
+// import com.itextpdf.text.Phrase;
+// import com.itextpdf.text.pdf.BaseFont;
+// import com.itextpdf.text.pdf.PdfWriter;
 
-import fr.diginamic.hello.dto.DepartementGovDto;
-import fr.diginamic.hello.entity.Departement;
-import fr.diginamic.hello.entity.Ville;
 import fr.projet.diginamic.backend.dtos.ExpenseDto;
 import fr.projet.diginamic.backend.dtos.ExpenseWithLinesDto;
 import fr.projet.diginamic.backend.entities.Expense;

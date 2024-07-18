@@ -6,10 +6,10 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum TransportEnum {
-    AVION("Avion"),
-    COVOITURAGE("Covoiturage"),
+    AIRPLANE("Air Plane"),
+    CARPOOLING("Carpooling"),
     TRAIN("Train"),
-    VOITURE_SERVICE("Voiture de service");
+    SERVICE_CAR("Service Car");
 
     // Attibutes
     /** The type of transport */

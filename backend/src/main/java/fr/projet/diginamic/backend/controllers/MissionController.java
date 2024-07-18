@@ -1,6 +1,7 @@
 package fr.projet.diginamic.backend.controllers;
 
 import fr.projet.diginamic.backend.entities.Mission;
+import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.services.MissionService;
 import jakarta.validation.Valid;
 
@@ -29,7 +30,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.tags.Tag; 
 import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.HashMap;
@@ -217,7 +218,7 @@ public class MissionController {
 	@ApiResponse(responseCode = "403", description = "Access denied", content = @Content(mediaType = "application/json"))
 	@ApiResponse(responseCode = "404", description = "Mission not found", content = @Content(mediaType = "application/json"))
 
-	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @Valid @RequestParam String status,
+	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @Valid @RequestParam StatusEnum status,
 			BindingResult result) {
 		if (result.hasErrors()) {
 			Map<String, String> errors = new HashMap<>();

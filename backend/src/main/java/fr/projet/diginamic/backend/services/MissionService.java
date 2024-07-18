@@ -78,7 +78,7 @@ public class MissionService {
         if (isManager) {
 
             // Check status is either INITIAL or REJECTED for new or modified missions :
-            if (mission.getStatus() != StatusEnum.PENDING) {
+            if (mission.getStatus() != StatusEnum.IN_PROGRESS) {
                 throw new IllegalArgumentException("Invalid status for operation by manager.");
             }
         } else {
@@ -241,12 +241,11 @@ public class MissionService {
      * @throws EntityNotFoundException if the mission is not found.
      */
     @Transactional
-    public Object updateMissionStatus(Long id, String status) {
+    public Object updateMissionStatus(Long id, StatusEnum status) {
         return missionRepository.findById(id)
                 .map(m -> {
-                    validateMission(m, false);
-                    StatusEnum statusEnum = StatusEnum.valueOf(status.toUpperCase());
-                    m.setStatus(statusEnum);
+                    validateMission(m, false);   
+                    m.setStatus(status);
                     return missionRepository.save(m);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
