@@ -102,7 +102,6 @@ public class MissionService {
      * @return the found mission entity.
      * @throws EntityNotFoundException if the mission is not found.
      */
-    @Transactional(readOnly = true)
     public Mission findOneMission(Long id) {
         return missionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
@@ -113,7 +112,6 @@ public class MissionService {
      * 
      * @return a list of missions.
      */
-    @Transactional(readOnly = true)
     public Page<Mission> findAllMissions(Pageable pageable) {
         return missionRepository.findAll(pageable);
     }
@@ -160,8 +158,6 @@ public class MissionService {
      * @return A Specification object that can be used to perform the query with the
      *         specified criteria.
      */
-
-    @Transactional(readOnly = true)
     private Specification<Mission> createSpecificationForManager(String status, String nature, String labelOrUsername) {
         return MissionSpecifications.filterMissionsByCriteriaForManager(status, nature, labelOrUsername);
     }
@@ -188,7 +184,6 @@ public class MissionService {
      * @return A Specification object that can be used to perform the query with the
      *         specified criteria.
      */
-    @Transactional(readOnly = true)
     private Specification<Mission> createSpecificationForEmployee(String status, String nature, String label) {
         return MissionSpecifications.filterMissionsByCriteriaForEmployee(status, nature, label);
     }
@@ -253,5 +248,4 @@ public class MissionService {
                 .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
 
     }
-
 }
