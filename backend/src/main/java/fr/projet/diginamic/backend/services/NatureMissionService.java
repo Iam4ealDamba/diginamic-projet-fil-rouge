@@ -57,7 +57,7 @@ public class NatureMissionService {
     /**
      * Update an existing NatureMission.
      *
-     * @param id the ID of the NatureMission to update.
+     * @param id               the ID of the NatureMission to update.
      * @param natureMissionDTO the updated NatureMissionDTO.
      * @return the updated NatureMissionDTO.
      */
@@ -66,7 +66,7 @@ public class NatureMissionService {
                 .orElseThrow(() -> new RuntimeException("NatureMission not found"));
 
         natureMission.setLabel(natureMissionDTO.getLabel());
-        natureMission.setCeilingTjm(natureMissionDTO.getCeilingTjm());
+        natureMission.setTjm(natureMissionDTO.getCeilingTjm());
         natureMission.setBilling(natureMissionDTO.getBilling());
         natureMission.setStartDate(natureMissionDTO.getStartDate());
         natureMission.setEndDate(natureMissionDTO.getEndDate());
@@ -93,12 +93,11 @@ public class NatureMissionService {
         return new NatureMissionDTO(
                 entity.getId(),
                 entity.getLabel(),
-                entity.getCeilingTjm(),
+                entity.getTjm(),
                 entity.getBilling(),
                 entity.getStartDate(),
                 entity.getEndDate(),
-                entity.getBonusPercentage()
-        );
+                entity.getBonusPercentage());
     }
 
     private NatureMission convertToEntity(NatureMissionDTO dto) {
@@ -110,7 +109,7 @@ public class NatureMissionService {
                 dto.getStartDate(),
                 dto.getEndDate(),
                 dto.getBonusPercentage(),
-                null  // assuming missions is not part of the DTO
+                null // assuming missions is not part of the DTO
         );
     }
 }

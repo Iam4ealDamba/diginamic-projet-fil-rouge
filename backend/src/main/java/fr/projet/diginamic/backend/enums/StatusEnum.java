@@ -3,6 +3,7 @@ package fr.projet.diginamic.backend.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/** The type of status */
 @AllArgsConstructor
 @Getter
 public enum StatusEnum {
