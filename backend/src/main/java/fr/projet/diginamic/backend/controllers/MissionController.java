@@ -26,13 +26,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag; 
-import io.swagger.v3.oas.annotations.Parameter;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +36,7 @@ import java.util.stream.Collectors;
  * handles CRUD operations for missions within the system, permitting the
  * creation, retrieval, update, and deletion of mission entries.
  */
-@Tag(name = "MissionController", description = "Controller class for handling requests for the /missions endpoint. This class handles CRUD operations for missions within the system, permitting the creation, retrieval, update, and deletion of mission entries.")
+
 @RestController
 @RequestMapping("/api/missions")
 public class MissionController {
@@ -59,11 +52,6 @@ public class MissionController {
 	 * @return The created mission or validation errors.
 	 */
 	@PostMapping
-	@Operation(summary = "Create a new mission", description = "Create a new mission with detailed validation error response. Returns the created mission or validation errors if validation fails.")
-	@ApiResponse(responseCode = "201", description = "Mission created successfully", content = {
-			@Content(mediaType = "application/json", schema = @Schema(implementation = Mission.class)) })
-	@ApiResponse(responseCode = "400", description = "Validation error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class)))
-
 	public ResponseEntity<?> createMission(@Valid @RequestBody Mission mission, BindingResult result) {
 		if (result.hasErrors()) {
 			Map<String, String> errors = new HashMap<>();
@@ -135,8 +123,7 @@ public class MissionController {
 	 *         even if no missions match the filters.
 	 */
 	@GetMapping
-	@Operation(summary = "Retrieve missions with filters", description = "Retrieves a paginated list of missions based on various filtering and sorting criteria. This allows for flexible retrieval of mission data including the ability to filter by status, nature of mission, and a search term matching the mission label or username of the assigned user.")
-	@ApiResponse(responseCode = "200", description = "Successfully retrieved the filtered missions", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+
 	public ResponseEntity<Page<Mission>> getAllMissionsWithSpecs(
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
@@ -160,9 +147,6 @@ public class MissionController {
 	 * @return The requested mission.
 	 */
 	@GetMapping("/{id}")
-	@Operation(summary = "Retrieve a mission by ID", description = "Fetches a detailed view of a single mission by its unique identifier.")
-	@ApiResponse(responseCode = "200", description = "Mission found and returned successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Mission.class)))
-	@ApiResponse(responseCode = "404", description = "Mission not found", content = @Content(mediaType = "application/json"))
 	public ResponseEntity<Mission> getMissionById(@PathVariable Long id) {
 		return ResponseEntity.ok(missionService.findOneMission(id));
 	}
@@ -177,10 +161,6 @@ public class MissionController {
 	 * @return The updated mission or errors.
 	 */
 	@PutMapping("/{id}")
-	@Operation(summary = "Update an existing mission", description = "Updates the details of an existing mission. If validation fails, returns errors.")
-	@ApiResponse(responseCode = "200", description = "Mission updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Mission.class)))
-	@ApiResponse(responseCode = "400", description = "Validation error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class)))
-	@ApiResponse(responseCode = "404", description = "Mission not found", content = @Content)
 
 	public ResponseEntity<?> updateMission(@PathVariable Long id, @Valid @RequestBody Mission mission,
 			BindingResult result) {
@@ -210,14 +190,6 @@ public class MissionController {
 	 *                               mission status
 	 */
 	@PutMapping("/{id}/status")
-	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-	@Operation(summary = "Update the status of a mission", description = "Updates the status of a specific mission to either 'Validé' or 'Rejeté'. Access is restricted to users with manager or administrator roles.", security = @SecurityRequirement(name = "roleBasedAuth"), tags = {
-			"Mission Management" })
-	@ApiResponse(responseCode = "200", description = "Mission status updated successfully", content = @Content(mediaType = "application/json"))
-	@ApiResponse(responseCode = "400", description = "Validation errors", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class)))
-	@ApiResponse(responseCode = "403", description = "Access denied", content = @Content(mediaType = "application/json"))
-	@ApiResponse(responseCode = "404", description = "Mission not found", content = @Content(mediaType = "application/json"))
-
 	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @Valid @RequestParam StatusEnum status,
 			BindingResult result) {
 		if (result.hasErrors()) {
@@ -227,8 +199,8 @@ public class MissionController {
 				String errorMessage = error.getDefaultMessage();
 				errors.put(fieldName, errorMessage);
 			});
-			return ResponseEntity.badRequest().body(errors);
 		}
+
 		return ResponseEntity.ok(missionService.updateMissionStatus(id, status));
 	}
 
@@ -239,10 +211,6 @@ public class MissionController {
 	 * @return A status of 204 No Content on successful deletion.
 	 */
 	@DeleteMapping("/{id}")
-	@Operation(summary = "Delete a mission", description = "Deletes a mission from the system by its unique identifier. This operation is irreversible.")
-	@ApiResponse(responseCode = "204", description = "Mission deleted successfully, no content to return.", content = @Content)
-	@ApiResponse(responseCode = "404", description = "Mission not found, unable to delete.", content = @Content)
-
 	public ResponseEntity<Void> deleteMission(@PathVariable Long id) {
 		missionService.deleteMission(id);
 		return ResponseEntity.noContent().build();
