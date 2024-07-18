@@ -74,16 +74,14 @@ public class MissionService {
         }
         // Check valid status for managers and non-managers
         if (isManager) {
-            // Check status is either INITIAL or REJECTED for new or modified missions
-            if (!(mission.getStatus() == Status.INITIAL || mission.getStatus() == Status.PENDING)) {
+            // Check status is either INITIAL or REJECTED for new or modified missions :
+            if (mission.getStatus() != Status.PENDING) {
                 throw new IllegalArgumentException("Invalid status for operation by manager.");
             }
-
         } else {
             if (!(mission.getStatus() == Status.INITIAL || mission.getStatus() == Status.REJECTED)) {
                 throw new IllegalArgumentException("Invalid status for operation by employees.");
             }
-
         }
 
         // Check valid nature of mission
