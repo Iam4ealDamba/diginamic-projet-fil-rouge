@@ -5,8 +5,6 @@ import fr.projet.diginamic.backend.enums.Status;
 
 import java.util.Date;
 
-import org.springframework.boot.rsocket.server.RSocketServer.Transport;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
