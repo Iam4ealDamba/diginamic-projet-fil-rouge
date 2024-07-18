@@ -109,10 +109,10 @@ public class MissionController {
 	 * @throws AccessDeniedException if the user is not authorized to update the
 	 *                               mission status
 	 */
-	@PutMapping("/{missionId}/status")
+	@PutMapping("/{id}/status")
 	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-	public ResponseEntity<?> updateMissionStatus(@PathVariable Long missionId, @RequestParam String status) {
-		return ResponseEntity.ok(missionService.updateMissionStatus(missionId, status));
+	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @RequestParam String status) {
+		return ResponseEntity.ok(missionService.updateMissionStatus(id, status));
 	}
 
 	/**
