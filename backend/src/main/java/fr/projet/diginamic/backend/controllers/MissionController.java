@@ -2,9 +2,13 @@ package fr.projet.diginamic.backend.controllers;
 
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.services.MissionService;
+import jakarta.validation.Valid;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +25,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Controller class for handling requests for the /missions endpoint. This class
@@ -36,14 +43,25 @@ public class MissionController {
 	private MissionService missionService;
 
 	/**
-	 * Create a new mission.
-	 * 
+	 * Create a new mission with detailed validation error response.
+	 *
 	 * @param mission The mission details to create.
-	 * @return The created mission.
+	 * @param result  The binding result that holds the validation errors.
+	 * @return The created mission or validation errors.
 	 */
 	@PostMapping
-	public ResponseEntity<Mission> createMission(@RequestBody Mission mission) {
-		return ResponseEntity.ok(missionService.createMission(mission));
+	public ResponseEntity<?> createMission(@Valid @RequestBody Mission mission, BindingResult result) {
+		if (result.hasErrors()) {
+			Map<String, String> errors = new HashMap<>();
+			result.getAllErrors().forEach(error -> {
+				String fieldName = ((FieldError) error).getField();
+				String errorMessage = error.getDefaultMessage();
+				errors.put(fieldName, errorMessage);
+			});
+			return ResponseEntity.badRequest().body(errors);
+		}
+		Mission savedMission = missionService.createMission(mission);
+		return ResponseEntity.status(HttpStatus.CREATED).body(savedMission);
 	}
 
 	/**
@@ -72,7 +90,8 @@ public class MissionController {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortField));
 		Page<Mission> missions = missionService.findAllMissionsWithSpecs(status, natureMission, userNameOrLabel,
 				pageable);
-		return ResponseEntity.ok(missions);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(missions);
 	}
 
 	/**
@@ -91,10 +110,22 @@ public class MissionController {
 	 * 
 	 * @param id      The ID of the mission to update.
 	 * @param mission Updated details for the mission.
-	 * @return The updated mission.
+	 *                * @param result The binding result that holds the validation
+	 *                errors.
+	 * @return The updated mission or errors.
 	 */
 	@PutMapping("/{id}")
-	public ResponseEntity<Mission> updateMission(@PathVariable Long id, @RequestBody Mission mission) {
+	public ResponseEntity<?> updateMission(@PathVariable Long id, @Valid @RequestBody Mission mission,
+			BindingResult result) {
+		if (result.hasErrors()) {
+			Map<String, String> errors = new HashMap<>();
+			result.getAllErrors().forEach((error) -> {
+				String fieldName = ((FieldError) error).getField();
+				String errorMessage = error.getDefaultMessage();
+				errors.put(fieldName, errorMessage);
+			});
+			return ResponseEntity.badRequest().body(errors);
+		}
 		return ResponseEntity.ok(missionService.updateMission(id, mission));
 	}
 
@@ -105,13 +136,25 @@ public class MissionController {
 	 *
 	 * @param missionId the ID of the mission to update
 	 * @param status    the new status to be set for the mission
+	 *                  * @param result The binding result that holds the validation
+	 *                  errors.
 	 * @return a ResponseEntity with status OK if the update is successful
 	 * @throws AccessDeniedException if the user is not authorized to update the
 	 *                               mission status
 	 */
 	@PutMapping("/{id}/status")
 	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @RequestParam String status) {
+	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @Valid @RequestParam String status,
+			BindingResult result) {
+		if (result.hasErrors()) {
+			Map<String, String> errors = new HashMap<>();
+			result.getAllErrors().forEach((error) -> {
+				String fieldName = ((FieldError) error).getField();
+				String errorMessage = error.getDefaultMessage();
+				errors.put(fieldName, errorMessage);
+			});
+			return ResponseEntity.badRequest().body(errors);
+		}
 		return ResponseEntity.ok(missionService.updateMissionStatus(id, status));
 	}
 
