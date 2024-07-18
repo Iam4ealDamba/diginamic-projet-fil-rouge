@@ -20,11 +20,11 @@ import lombok.AllArgsConstructor;
 public class CreateMissionDTO {
     private Long userId;
     private String label;
-    private String labelNatureMission;
     private StatusEnum status;
     private Date startDate;
     private Date endDate;
     private TransportEnum transport;
     private String departureCity;
     private String arrivalCity;
+    private Long natureMissionId;
 }
