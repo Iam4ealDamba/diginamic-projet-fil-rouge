@@ -1,9 +1,9 @@
 package fr.projet.diginamic.backend.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.itextpdf.text.DocumentException;
 
-import fr.diginamic.hello.exception.RestException;
 import fr.projet.diginamic.backend.dtos.ExpenseDto;
 import fr.projet.diginamic.backend.dtos.ExpenseWithLinesDto;
 import fr.projet.diginamic.backend.entities.Expense;
@@ -35,8 +35,8 @@ public class ExpenseController {
      * @throws Exception if there is no result
      */
 	 @GetMapping
-	    public ArrayList<ExpenseDto> getExpenses() {
-		 ArrayList<ExpenseDto> expenses= expenseService.getExpenses();
+	    public Page<ExpenseDto> getExpenses(@RequestParam int page, @RequestParam int size) {
+		 Page<ExpenseDto> expenses= expenseService.getExpenses(page, size);
 	    	return expenses;
 	    }
 	 
@@ -70,9 +70,9 @@ public class ExpenseController {
 	    }
 	 
 	 @GetMapping("/pdf/{id}")
-	    public void exportDepartementById(@PathVariable Long id, HttpServletResponse response) throws Exception, IOException,
+	    public void exportExpenseById(@PathVariable Long id, HttpServletResponse response) throws Exception, IOException,
 	    DocumentException {
-	       departementService.exportDepartement(codeDepartement, response);
+	       ExpenseService.exportExpense(id, response);
 	    }
 
 }
