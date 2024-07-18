@@ -5,6 +5,8 @@ import fr.projet.diginamic.backend.enums.Status;
 
 import java.util.Date;
 
+import org.springframework.boot.rsocket.server.RSocketServer.Transport;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +20,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,6 +47,7 @@ public class Mission {
 	/**
 	 * Unique identifier for the mission.
 	 */
+	@Setter(AccessLevel.NONE)
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -128,7 +132,7 @@ public class Mission {
 	 */
 	@ManyToOne
 	@JoinColumn(name = "mission_nature_id", referencedColumnName = "id", nullable = false)
-	private MissionNature missionNature;
+	private NatureMission natureMission;
 
 	/**
 	 * Expense report associated with the mission.
@@ -136,5 +140,5 @@ public class Mission {
 	@OneToOne
 	@JoinColumn(name = "expense_id", referencedColumnName = "id")
 	private Expense expense;
-	
+
 }
