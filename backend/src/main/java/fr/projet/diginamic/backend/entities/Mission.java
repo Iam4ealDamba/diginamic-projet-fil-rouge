@@ -89,7 +89,7 @@ public class Mission {
 	 */
 	@Size(min = 2, max = 150)
 	@Column(name = "transport", length = 150)
-	private Transport transport;
+	private TransportEnum transport;
 
 	/**
 	 * Departure city for the mission.
