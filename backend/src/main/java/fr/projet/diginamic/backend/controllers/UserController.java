@@ -15,12 +15,14 @@ import fr.projet.diginamic.backend.dtos.UserDto;
 import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.services.UserService;
 
+/** User controller */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     @Autowired
     UserService userService;
 
+    /** Get all users */
     @GetMapping
     public ResponseEntity<List<UserDto>> all() {
         List<UserEntity> users = userService.getAll();
@@ -40,6 +42,11 @@ public class UserController {
         return ResponseEntity.ok(usersDto);
     }
 
+    /**
+     * Get one user
+     * 
+     * @param id - the id of the user
+     */
     @GetMapping
     public ResponseEntity<UserDto> one(@PathVariable Long id) {
         UserEntity user = userService.getOne(id);
@@ -57,11 +64,17 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
+    /**
+     * Update one user
+     * 
+     * @param id      - the id of the user
+     * @param userDto - the dto of the user
+     */
     @GetMapping
     public ResponseEntity<List<UserDto>> update(@PathVariable Long id, @RequestBody UserDto userDto) {
         List<UserEntity> users = userService.update(id, userDto);
         List<UserDto> usersDto = new ArrayList<>();
-        
+
         for (UserEntity user : users) {
             UserDto dto = new UserDto();
             dto.setId(user.getId());
@@ -75,6 +88,11 @@ public class UserController {
         return ResponseEntity.ok(usersDto);
     }
 
+    /**
+     * Delete one user
+     * 
+     * @param id - the id of the user
+     */
     @GetMapping
     public ResponseEntity<List<UserDto>> delete(@PathVariable Long id) {
         List<UserEntity> users = userService.delete(id);
