@@ -1,6 +1,7 @@
 package fr.projet.diginamic.backend.controllers;
 
 import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
+import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.services.MissionService;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 // import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -126,7 +128,7 @@ public class MissionController {
 	 */
 	@GetMapping
 
-	public ResponseEntity<Page<Mission>> getAllMissionsWithSpecs(
+	public ResponseEntity<Page<DisplayedMissionDTO>> getAllMissionsWithSpecs(
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
 			@RequestParam(value = "order", defaultValue = "asc") String order,
@@ -136,7 +138,7 @@ public class MissionController {
 			@RequestParam(value = "searchbar", required = false) String userNameOrLabel) {
 
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortField));
-		Page<Mission> missions = missionService.findAllMissionsWithSpecs(status, natureMission, userNameOrLabel,
+		Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecs(status, natureMission, userNameOrLabel,
 				pageable);
 
 		return ResponseEntity.ok(missions);
@@ -149,8 +151,8 @@ public class MissionController {
 	 * @return The requested mission.
 	 */
 	@GetMapping("/{id}")
-	public ResponseEntity<Mission> getMissionById(@PathVariable Long id) {
-		return ResponseEntity.ok(missionService.findOneMission(id));
+	public ResponseEntity<DisplayedMissionDTO> getMissionById(@PathVariable Long id) {
+		return ResponseEntity.ok(missionService.findOneMissionDto(id));
 	}
 
 	/**
@@ -164,7 +166,7 @@ public class MissionController {
 	 */
 	@PutMapping("/{id}")
 
-	public ResponseEntity<?> updateMission(@PathVariable Long id, @Valid @RequestBody Mission mission,
+	public ResponseEntity<?> updateMission(@PathVariable Long id, @Valid @RequestBody DisplayedMissionDTO mission,
 			BindingResult result) {
 		if (result.hasErrors()) {
 			Map<String, String> errors = new HashMap<>();
@@ -192,17 +194,8 @@ public class MissionController {
 	 *                               mission status
 	 */
 	@PutMapping("/{id}/status")
-	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @Valid @RequestParam StatusEnum status,
-			BindingResult result) {
-		if (result.hasErrors()) {
-			Map<String, String> errors = new HashMap<>();
-			result.getAllErrors().forEach((error) -> {
-				String fieldName = ((FieldError) error).getField();
-				String errorMessage = error.getDefaultMessage();
-				errors.put(fieldName, errorMessage);
-			});
-		}
-
+	// TODO: double check if can receive enum in body or if need to be converted in backend
+	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @RequestBody String status) {
 		return ResponseEntity.ok(missionService.updateMissionStatus(id, status));
 	}
 

@@ -302,11 +302,18 @@ public class MissionService {
      * @throws EntityNotFoundException if the mission is not found.
      */
     @Transactional
-    public DisplayedMissionDTO updateMissionStatus(Long id, StatusEnum status) {
+    public DisplayedMissionDTO updateMissionStatus(Long id, String status) {
+
+        StatusEnum statusEnum;
+        try {
+            statusEnum = StatusEnum.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid status value: " + status);
+        }
         return missionRepository.findById(id)
                 .map(m -> {
                     validateMission(m, false);
-                    m.setStatus(status);
+                    m.setStatus(statusEnum);
                     Mission bean = missionRepository.save(m);
                     return missionMapper.fromBeantoDisplayedMissionDTO(bean);
                 })
