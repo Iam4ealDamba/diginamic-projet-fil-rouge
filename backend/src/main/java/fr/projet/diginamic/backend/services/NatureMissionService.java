@@ -37,7 +37,7 @@ public class NatureMissionService {
      * @param id the ID of the NatureMission.
      * @return an Optional of NatureMissionDTO.
      */
-    public Optional<NatureMissionDTO> getNatureMissionById(Long id) {
+    public Optional<NatureMissionDTO> getNatureMissionById(Integer id) {
         Optional<NatureMission> natureMission = natureMissionRepository.findById(id);
         return natureMission.map(this::convertToDTO);
     }
@@ -57,17 +57,17 @@ public class NatureMissionService {
     /**
      * Update an existing NatureMission.
      *
-     * @param id the ID of the NatureMission to update.
+     * @param id               the ID of the NatureMission to update.
      * @param natureMissionDTO the updated NatureMissionDTO.
      * @return the updated NatureMissionDTO.
      */
-    public NatureMissionDTO updateNatureMission(Long id, NatureMissionDTO natureMissionDTO) {
+    public NatureMissionDTO updateNatureMission(Integer id, NatureMissionDTO natureMissionDTO) {
         NatureMission natureMission = natureMissionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("NatureMission not found"));
 
         natureMission.setLabel(natureMissionDTO.getLabel());
         natureMission.setTjm(natureMissionDTO.getCeilingTjm());
-        natureMission.setIsBuild(natureMissionDTO.getBilling());
+        natureMission.setBilling(natureMissionDTO.getBilling());
         natureMission.setStartDate(natureMissionDTO.getStartDate());
         natureMission.setEndDate(natureMissionDTO.getEndDate());
         natureMission.setBonusPercentage(natureMissionDTO.getBonusPercentage());
@@ -94,11 +94,10 @@ public class NatureMissionService {
                 entity.getId(),
                 entity.getLabel(),
                 entity.getTjm(),
-                entity.getIsBuild(),
+                entity.getBilling(),
                 entity.getStartDate(),
                 entity.getEndDate(),
-                entity.getBonusPercentage()
-        );
+                entity.getBonusPercentage());
     }
 
     private NatureMission convertToEntity(NatureMissionDTO dto) {
@@ -110,7 +109,7 @@ public class NatureMissionService {
                 dto.getStartDate(),
                 dto.getEndDate(),
                 dto.getBonusPercentage(),
-                null  // assuming missions is not part of the DTO
+                null // assuming missions is not part of the DTO
         );
     }
 }
