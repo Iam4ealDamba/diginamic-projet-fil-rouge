@@ -37,7 +37,7 @@ public class NatureMissionService {
      * @param id the ID of the NatureMission.
      * @return an Optional of NatureMissionDTO.
      */
-    public Optional<NatureMissionDTO> getNatureMissionById(Integer id) {
+    public Optional<NatureMissionDTO> getNatureMissionById(Long id) {
         Optional<NatureMission> natureMission = natureMissionRepository.findById(id);
         return natureMission.map(this::convertToDTO);
     }
@@ -61,13 +61,13 @@ public class NatureMissionService {
      * @param natureMissionDTO the updated NatureMissionDTO.
      * @return the updated NatureMissionDTO.
      */
-    public NatureMissionDTO updateNatureMission(Integer id, NatureMissionDTO natureMissionDTO) {
+    public NatureMissionDTO updateNatureMission(Long id, NatureMissionDTO natureMissionDTO) {
         NatureMission natureMission = natureMissionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("NatureMission not found"));
 
         natureMission.setLabel(natureMissionDTO.getLabel());
-        natureMission.setCeilingTjm(natureMissionDTO.getCeilingTjm());
-        natureMission.setBilling(natureMissionDTO.getBilling());
+        natureMission.setTjm(natureMissionDTO.getCeilingTjm());
+        natureMission.setIsBuild(natureMissionDTO.getBilling());
         natureMission.setStartDate(natureMissionDTO.getStartDate());
         natureMission.setEndDate(natureMissionDTO.getEndDate());
         natureMission.setBonusPercentage(natureMissionDTO.getBonusPercentage());
@@ -93,8 +93,8 @@ public class NatureMissionService {
         return new NatureMissionDTO(
                 entity.getId(),
                 entity.getLabel(),
-                entity.getCeilingTjm(),
-                entity.getBilling(),
+                entity.getTjm(),
+                entity.getIsBuild(),
                 entity.getStartDate(),
                 entity.getEndDate(),
                 entity.getBonusPercentage()

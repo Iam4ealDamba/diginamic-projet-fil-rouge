@@ -42,8 +42,8 @@ public class NatureMission {
     private Double Tjm;
 
     /** The billing status of the nature of the mission */
-    @Column(name = "billing")
-    private Boolean billing;
+    @Column(name = "isBuild")
+    private Boolean isBuild;
 
     /** The start date of the nature of the mission */
     @Column(name = "start_date")
@@ -56,6 +56,8 @@ public class NatureMission {
     /** The bonus percentage of the nature of the mission */
     @Column(name = "bonus_percentage")
     private Double bonusPercentage;
+
+
 
     /** The missions associated with this nature */
     @OneToMany(mappedBy = "natureMission")

@@ -36,7 +36,7 @@ public class NatureMissionController {
      * @return a NatureMissionDTO.
      */
     @GetMapping("/{natureId}")
-    public ResponseEntity<NatureMissionDTO> getNatureMission(@PathVariable Integer natureId) {
+    public ResponseEntity<NatureMissionDTO> getNatureMission(@PathVariable Long natureId) {
         return natureMissionService.getNatureMissionById(natureId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -62,7 +62,7 @@ public class NatureMissionController {
      * @return the updated NatureMissionDTO.
      */
     @PutMapping("/{natureId}")
-    public ResponseEntity<NatureMissionDTO> putNatureMission(@PathVariable Integer natureId, @RequestBody NatureMissionDTO natureMissionDTO) {
+    public ResponseEntity<NatureMissionDTO> putNatureMission(@PathVariable Long natureId, @RequestBody NatureMissionDTO natureMissionDTO) {
         NatureMissionDTO updatedNatureMission = natureMissionService.updateNatureMission(natureId, natureMissionDTO);
         return ResponseEntity.ok(updatedNatureMission);
     }
