@@ -94,7 +94,7 @@ public class NatureMissionService {
                 entity.getId(),
                 entity.getLabel(),
                 entity.getTjm(),
-                entity.getIsBuild(),
+                entity.getIsBilled(),
                 entity.getStartDate(),
                 entity.getEndDate(),
                 entity.getBonusPercentage()
