@@ -67,6 +67,7 @@ public class UserEntity {
     @OneToMany(mappedBy = "manager")
     private List<UserEntity> collaborators;
 
+    /** The role of the user */
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;

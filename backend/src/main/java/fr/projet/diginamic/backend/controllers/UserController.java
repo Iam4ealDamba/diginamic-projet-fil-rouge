@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,12 +17,14 @@ import fr.projet.diginamic.backend.dtos.UserDto;
 import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.services.UserService;
 
+/** User controller */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     @Autowired
     UserService userService;
 
+    /** Get all users */
     @GetMapping
     public ResponseEntity<List<UserDto>> all() {
         List<UserEntity> users = userService.getAll();
@@ -40,7 +44,12 @@ public class UserController {
         return ResponseEntity.ok(usersDto);
     }
 
-    @GetMapping
+    /**
+     * Get one user
+     * 
+     * @param id - the id of the user
+     */
+    @GetMapping("/{id}")
     public ResponseEntity<UserDto> one(@PathVariable Long id) {
         UserEntity user = userService.getOne(id);
 
@@ -57,11 +66,17 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
-    @GetMapping
+    /**
+     * Update one user
+     * 
+     * @param id      - the id of the user
+     * @param userDto - the dto of the user
+     */
+    @PutMapping("/{id}")
     public ResponseEntity<List<UserDto>> update(@PathVariable Long id, @RequestBody UserDto userDto) {
         List<UserEntity> users = userService.update(id, userDto);
         List<UserDto> usersDto = new ArrayList<>();
-        
+
         for (UserEntity user : users) {
             UserDto dto = new UserDto();
             dto.setId(user.getId());
@@ -75,7 +90,12 @@ public class UserController {
         return ResponseEntity.ok(usersDto);
     }
 
-    @GetMapping
+    /**
+     * Delete one user
+     * 
+     * @param id - the id of the user
+     */
+    @DeleteMapping("/{id}")
     public ResponseEntity<List<UserDto>> delete(@PathVariable Long id) {
         List<UserEntity> users = userService.delete(id);
         List<UserDto> usersDto = new ArrayList<>();

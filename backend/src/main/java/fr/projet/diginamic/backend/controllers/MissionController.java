@@ -31,7 +31,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Parameter;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Controller class for handling requests for the /missions endpoint. This class
@@ -206,8 +211,10 @@ public class MissionController {
 	 */
 	@PutMapping("/{id}/status")
 	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-//	@Operation(summary = "Update the status of a mission", description = "Updates the status of a specific mission to either 'Validé' or 'Rejeté'. Access is restricted to users with manager or administrator roles.", security = @SecurityRequirement(name = "roleBasedAuth"), tags = {
-//			"Mission Management" })
+	@Operation(summary = "Update the status of a mission", description = "Updates the status of a specific mission to either 'Validé' or 'Rejeté'. Access is restricted to users with manager or administrator roles.",
+			// security = @SecurityRequirement(name = "roleBasedAuth"),
+			tags = {
+					"Mission Management" })
 	@ApiResponse(responseCode = "200", description = "Mission status updated successfully", content = @Content(mediaType = "application/json"))
 	@ApiResponse(responseCode = "400", description = "Validation errors", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class)))
 	@ApiResponse(responseCode = "403", description = "Access denied", content = @Content(mediaType = "application/json"))

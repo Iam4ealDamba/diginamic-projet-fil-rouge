@@ -31,7 +31,7 @@ public class NatureMission {
     /** The id of the nature of the mission */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     /** The label of the nature of the mission */
     @Column(name = "label")
@@ -39,7 +39,7 @@ public class NatureMission {
 
     /** The ceiling TJM of the nature of the mission */
     @Column(name = "ceiling_tjm")
-    private Double ceilingTjm;
+    private Double Tjm;
 
     /** The billing status of the nature of the mission */
     @Column(name = "billing")

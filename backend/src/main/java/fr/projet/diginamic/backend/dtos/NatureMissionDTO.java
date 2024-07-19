@@ -16,7 +16,7 @@ import java.util.Date;
 @EqualsAndHashCode
 public class NatureMissionDTO {
 
-    private Integer id;
+    private Long id;
     private String label;
     private Double ceilingTjm;
     private Boolean billing;
