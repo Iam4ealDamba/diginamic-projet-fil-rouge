@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
@@ -18,6 +19,7 @@ import fr.projet.diginamic.backend.services.MissionService;
 import fr.projet.diginamic.backend.services.NatureMissionService;
 import fr.projet.diginamic.backend.services.UserService;
 
+@Service
 public class MissionMapper {
     @Autowired
     MissionService missionService;
@@ -28,7 +30,7 @@ public class MissionMapper {
     @Autowired
     UserService userService;
 
-    public static DisplayedMissionDTO fromBeantoDisplayedMissionDTO(Mission mission) {
+    public DisplayedMissionDTO fromBeantoDisplayedMissionDTO(Mission mission) {
         DisplayedMissionDTO dto = new DisplayedMissionDTO();
         dto.setId(mission.getId());
         dto.setLabel(mission.getLabel());
@@ -76,19 +78,20 @@ public class MissionMapper {
         mission.setBonusAmount(0.0);
         mission.setBonusDate(null);
 
+        NatureMission natureMisison = natureMissionService.getNatureMissionById(dto.getNatureMissionId());
+        mission.setNatureMission(natureMisison);
         // Calculate the total price based on the daily rate and duration
         long duration = getDifferenceDays(dto.getStartDate(), dto.getEndDate()) + 1; // +1 to include start day
-        if (dto.getNatureMission().isBilled()) {
-            double dailyRate = dto.getNatureMission().getTjm();
+        if (natureMisison.isBilled()) {
+            double dailyRate = natureMisison.getTjm();
             mission.setTotalPrice(duration * dailyRate);
         } else {
             mission.setTotalPrice(0.0);
         }
 
         UserEntity user = userService.getOne(dto.getUserId());
-        NatureMission natureMisison = natureMissionService.getNatureMissionById(dto.getNatureMissionId());
         mission.setUser(user);
-        mission.setNatureMission(natureMisison);
+
         Expense expense = new Expense();
         mission.setExpense(expense);
 
@@ -99,5 +102,4 @@ public class MissionMapper {
         long diff = d2.getTime() - d1.getTime();
         return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
-
 }
