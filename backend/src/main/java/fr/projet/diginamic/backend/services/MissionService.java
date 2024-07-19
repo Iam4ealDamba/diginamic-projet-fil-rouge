@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.entities.NatureMission;
@@ -21,10 +22,12 @@ import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.enums.TransportEnum;
+import fr.projet.diginamic.backend.mappers.MissionMapper;
 import fr.projet.diginamic.backend.repositories.MissionRepository;
 import fr.projet.diginamic.backend.specs.MissionSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 
+//TODO: reimplement logic of isManager boolean
 /**
  * Service class for managing mission entities.
  * Provides methods to perform CRUD operations on mission entities.
@@ -44,6 +47,9 @@ public class MissionService {
     @Autowired
     NatureMissionService natureMissionService;
 
+    @Autowired
+    MissionMapper missionMapper;
+
     /**
      * Save a mission entity.
      * 
@@ -51,6 +57,12 @@ public class MissionService {
      * @return the saved mission entity.
      */
     public Mission createMission(Mission mission) {
+        validateMission(mission, true);
+        return missionRepository.save(mission);
+    }
+
+    public Mission createMission(CreateMissionDTO dto) {
+        Mission mission = missionMapper.fromMissionFormToBean(dto);
         validateMission(mission, true);
         return missionRepository.save(mission);
     }
@@ -124,12 +136,27 @@ public class MissionService {
     }
 
     /**
+     * Retrieve a single mission by its ID.
+     * 
+     * @param id the ID of the mission to retrieve.
+     * @return the found mission entity.
+     * @throws EntityNotFoundException if the mission is not found.
+     */
+    public DisplayedMissionDTO findOneMissionDto(Long id) {
+        return missionRepository.findById(id)
+                .map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m))
+                .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
+    }
+
+    /**
      * Retrieve all missions.
      * 
      * @return a list of missions.
      */
-    public Page<Mission> findAllMissions(Pageable pageable) {
-        return missionRepository.findAll(pageable);
+    public Page<DisplayedMissionDTO> findAllMissions(Pageable pageable) {
+        // TODO: clean
+        // return missionRepository.findAll(pageable);
+        return missionRepository.findAll(pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
     }
 
     /**
