@@ -25,8 +25,8 @@ public class DisplayedMissionDTO {
     private TransportEnum transport;
     private String departureCity;
     private String arrivalCity;
-    private Date bonusDate;
-    private Double bonusAmount;
+    private Date bountyDate;
+    private Double bountyAmount;
     private String labelNatureMission;
     private Long userId;
     private Long natureMissionId;

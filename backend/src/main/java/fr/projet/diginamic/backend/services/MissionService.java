@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+// import org.springframework.security.core.authority.SimpleGrantedAuthority;
+// import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,10 +61,12 @@ public class MissionService {
         return missionRepository.save(mission);
     }
 
-    public Mission createMission(CreateMissionDTO dto) {
-        Mission mission = missionMapper.fromMissionFormToBean(dto);
-        validateMission(mission, true);
-        return missionRepository.save(mission);
+    public CreateMissionDTO createMission(CreateMissionDTO dto) {
+        Mission bean = missionMapper.fromMissionFormToBean(dto);
+        validateMission(bean, true);
+        Mission newMissionBean = missionRepository.save(bean);
+        CreateMissionDTO newMissionDto = missionMapper.fromBeanToMissionForm(newMissionBean);
+        return newMissionDto;
     }
 
     /**
@@ -167,7 +169,7 @@ public class MissionService {
      * @return a page of missions that match the specification.
      */
     @Transactional(readOnly = true)
-    public Page<Mission> findAllMissionsWithSpecs(String status, String nature, String labelOrUsername,
+    public Page<DisplayedMissionDTO> findAllMissionsWithSpecs(String status, String nature, String labelOrUsername,
             Pageable pageable) {
 
         // boolean isManager =
@@ -178,7 +180,7 @@ public class MissionService {
 
         Specification<Mission> spec = isManager ? createSpecificationForManager(status, nature, labelOrUsername)
                 : createSpecificationForEmployee(status, nature, labelOrUsername);
-        return missionRepository.findAll(spec, pageable);
+        return missionRepository.findAll(spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
     }
 
     /**
@@ -270,8 +272,8 @@ public class MissionService {
     //         mission.setTransport(updatedMission.getTransport());
     //         mission.setDepartureCity(updatedMission.getDepartureCity());
     //         mission.setArrivalCity(updatedMission.getArrivalCity());
-    //         mission.setBonusDate(updatedMission.getBonusDate());
-    //         mission.setBonusAmount(updatedMission.getBonusAmount());
+    //         mission.setBountyDate(updatedMission.getBountyDate());
+    //         mission.setBountyAmount(updatedMission.getBountyAmount());
     //         mission.setUser(updatedMission.getUser());
     //         mission.setNatureMission(updatedMission.getNatureMission());
     //         mission.setExpense(updatedMission.getExpense());
@@ -300,12 +302,13 @@ public class MissionService {
      * @throws EntityNotFoundException if the mission is not found.
      */
     @Transactional
-    public Object updateMissionStatus(Long id, StatusEnum status) {
+    public DisplayedMissionDTO updateMissionStatus(Long id, StatusEnum status) {
         return missionRepository.findById(id)
                 .map(m -> {
                     validateMission(m, false);
                     m.setStatus(status);
-                    return missionRepository.save(m);
+                    Mission bean = missionRepository.save(m);
+                    return missionMapper.fromBeantoDisplayedMissionDTO(bean);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
     }
@@ -340,11 +343,11 @@ public class MissionService {
             double totalPrice = duration * dailyRate;
             mission.setTotalPrice(totalPrice);
 
-            if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().isEligibleToBonus()) {
-                double bonusPercentage = mission.getNatureMission().getBonusPercentage() / 100.0;
-                double bonusAmount = totalPrice * bonusPercentage;
-                mission.setBonusAmount(bonusAmount);
-                mission.setBonusDate(mission.getEndDate());
+            if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().isEligibleToBounty()) {
+                double bountyPercentage = mission.getNatureMission().getBountyPercentage() / 100.0;
+                double bountyAmount = totalPrice * bountyPercentage;
+                mission.setBountyAmount(bountyAmount);
+                mission.setBountyDate(mission.getEndDate());
             }
         }
     }

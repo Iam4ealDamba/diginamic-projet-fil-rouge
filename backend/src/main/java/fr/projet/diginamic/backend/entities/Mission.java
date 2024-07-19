@@ -107,17 +107,17 @@ public class Mission {
 	private String arrivalCity;
 
 	/**
-	 * Date when the bonus is given.
+	 * Date when the bounty is given.
 	 */
-	@Column(name = "bonus_date")
-	private Date bonusDate;
+	@Column(name = "bounty_date")
+	private Date bountyDate;
 
 	/**
-	 * Bonus amount for the mission.
+	 * Bounty amount for the mission.
 	 */
 	@Min(value = 0)
-	@Column(name = "bonus_amount")
-	private Double bonusAmount;
+	@Column(name = "bounty_amount")
+	private Double bountyAmount;
 
 	/**
 	 * The employee assigned to the mission.

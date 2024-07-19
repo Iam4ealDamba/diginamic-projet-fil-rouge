@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 
 /**
  * Data Transfer Object for displaying mission information in the frontend.
- * Excludes sensitive bonus details and simplifies user information to user ID.
+ * Excludes sensitive bounty details and simplifies user information to user ID.
  * Utilizes Lombok annotations to reduce boilerplate code for getters and
  * setters.
  */

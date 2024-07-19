@@ -53,16 +53,30 @@ public class MissionMapper {
             dto.setTotalPrice(0.0);
         }
 
-        // Set bonus amount if the mission is completed and eligible for a bonus
-        // TODO: handle bonus date : ask the group if can remove it
-        if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().isEligibleToBonus()) {
-            double bonusPercentage = mission.getNatureMission().getBonusPercentage() / 100.0;
-            dto.setBonusAmount(dto.getTotalPrice() * bonusPercentage);
-            dto.setBonusDate(mission.getEndDate()); // Bonus date set to the end date of the mission?
+        // Set bounty amount if the mission is completed and eligible for a bounty
+        // TODO: handle bounty date : ask the group if can remove it
+        if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().isEligibleToBounty()) {
+            double bountyPercentage = mission.getNatureMission().getBountyPercentage() / 100.0;
+            dto.setBountyAmount(dto.getTotalPrice() * bountyPercentage);
+            dto.setBountyDate(mission.getEndDate()); // Bounty date set to the end date of the mission?
         } else {
-            dto.setBonusAmount(0.0);
+            dto.setBountyAmount(0.0);
         }
         dto.setLabelNatureMission(mission.getNatureMission().getLabel());
+        return dto;
+    }
+
+    public CreateMissionDTO fromBeanToMissionForm(Mission bean) {
+        CreateMissionDTO dto = new CreateMissionDTO();
+        dto.setLabel(bean.getLabel());
+        dto.setStatus(bean.getStatus());
+        dto.setStartDate(bean.getStartDate());
+        dto.setEndDate(bean.getEndDate());
+        dto.setTransport(bean.getTransport());
+        dto.setDepartureCity(bean.getDepartureCity());
+        dto.setArrivalCity(bean.getArrivalCity());
+        dto.setUserId(bean.getUser().getId());
+        dto.setNatureMissionId(bean.getNatureMission().getId());
         return dto;
     }
 
@@ -75,8 +89,8 @@ public class MissionMapper {
         mission.setTransport(dto.getTransport()); // TODO: double check that it is a TransportEnum ?
         mission.setDepartureCity(dto.getDepartureCity());
         mission.setArrivalCity(dto.getArrivalCity());
-        mission.setBonusAmount(0.0);
-        mission.setBonusDate(null);
+        mission.setBountyAmount(0.0);
+        mission.setBountyDate(null);
 
         NatureMission natureMisison = natureMissionService.getNatureMissionById(dto.getNatureMissionId());
         mission.setNatureMission(natureMisison);

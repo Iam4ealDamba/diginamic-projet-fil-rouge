@@ -1,5 +1,6 @@
 package fr.projet.diginamic.backend.controllers;
 
+import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.services.MissionService;
@@ -53,7 +54,7 @@ public class MissionController {
 	 * @return The created mission or validation errors.
 	 */
 	@PostMapping
-	public ResponseEntity<?> createMission(@Valid @RequestBody Mission mission, BindingResult result) {
+	public ResponseEntity<?> createMission(@Valid @RequestBody CreateMissionDTO mission, BindingResult result) {
 		if (result.hasErrors()) {
 			Map<String, String> errors = new HashMap<>();
 			result.getAllErrors().forEach(error -> {
@@ -63,7 +64,7 @@ public class MissionController {
 			});
 			return ResponseEntity.badRequest().body(errors);
 		}
-		Mission savedMission = missionService.createMission(mission);
+		CreateMissionDTO savedMission = missionService.createMission(mission);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedMission);
 	}
 
