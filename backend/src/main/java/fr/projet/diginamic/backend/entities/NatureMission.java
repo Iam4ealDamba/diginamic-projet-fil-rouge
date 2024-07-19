@@ -43,7 +43,7 @@ public class NatureMission {
 
     /** The billing status of the nature of the mission */
     @Column(name = "isBuild")
-    private Boolean isBuild;
+    private Boolean isBilled;
 
     /** The start date of the nature of the mission */
     @Column(name = "start_date")
