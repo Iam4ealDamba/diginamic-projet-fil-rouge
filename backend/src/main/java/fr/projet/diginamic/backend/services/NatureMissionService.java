@@ -67,7 +67,7 @@ public class NatureMissionService {
 
         natureMission.setLabel(natureMissionDTO.getLabel());
         natureMission.setTjm(natureMissionDTO.getCeilingTjm());
-        natureMission.setIsBuild(natureMissionDTO.getBilling());
+        natureMission.setIsBilled(natureMissionDTO.getIsBilled());
         natureMission.setStartDate(natureMissionDTO.getStartDate());
         natureMission.setEndDate(natureMissionDTO.getEndDate());
         natureMission.setBonusPercentage(natureMissionDTO.getBonusPercentage());
