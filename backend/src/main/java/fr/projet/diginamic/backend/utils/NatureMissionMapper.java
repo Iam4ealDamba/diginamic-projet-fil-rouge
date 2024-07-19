@@ -11,25 +11,26 @@ public class NatureMissionMapper {
 
     /**
      * Method to transform a NatureMissionDto to a NatureMission
-     * 
-     * @param natureMissionDTO, the dto to transform
+     *
+     * @param dto the dto to transform
      * @return the natureMission object after the mapping
      */
     public NatureMission dtoToBean(NatureMissionDTO dto) {
         NatureMission entity = new NatureMission();
         entity.setId(dto.getId());
         entity.setLabel(dto.getLabel());
-        entity.setTjm(dto.getCeilingTjm());
-        entity.setBilling(dto.getBilling());
+        entity.setAdr(dto.getAdr()); // Correct method name
+        entity.setIsBilled(dto.getIsBilled()); // Correct method name
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
         entity.setBonusPercentage(dto.getBonusPercentage());
+        entity.setIsEligibleToBounty(dto.getIsEligibleToBounty()); // Add missing field
         return entity;
     }
 
     /**
      * Method to transform a NatureMission to a NatureMissionDto
-     * 
+     *
      * @param entity, the bean to transform
      * @return the natureMissionDto object after the mapping
      */
@@ -37,11 +38,12 @@ public class NatureMissionMapper {
         NatureMissionDTO dto = new NatureMissionDTO();
         dto.setId(entity.getId());
         dto.setLabel(entity.getLabel());
-        dto.setCeilingTjm(entity.getTjm());
-        dto.setBilling(entity.getBilling());
+        dto.setAdr(entity.getAdr()); // Correct method name
+        dto.setIsBilled(entity.getIsBilled()); // Correct method name
         dto.setStartDate(entity.getStartDate());
         dto.setEndDate(entity.getEndDate());
         dto.setBonusPercentage(entity.getBonusPercentage());
+        dto.setIsEligibleToBounty(entity.getIsEligibleToBounty()); // Add missing field
         return dto;
     }
 }

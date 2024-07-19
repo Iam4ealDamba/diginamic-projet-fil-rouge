@@ -16,4 +16,8 @@ public interface NatureMissionRepository extends JpaRepository<NatureMission, In
     List<NatureMission> findByLabel(String label);
 
     Optional<NatureMission> findById(Long id);
+
+    void deleteById(Long id);
+
+    boolean existsById(Long id);
 }

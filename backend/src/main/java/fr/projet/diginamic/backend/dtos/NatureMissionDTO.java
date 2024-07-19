@@ -18,9 +18,11 @@ public class NatureMissionDTO {
 
     private Long id;
     private String label;
-    private Double ceilingTjm;
-    private Boolean billing;
+    private Double adr;
+    private Boolean isBilled;
     private Date startDate;
     private Date endDate;
     private Double bonusPercentage;
+    private Boolean isEligibleToBounty;
+
 }

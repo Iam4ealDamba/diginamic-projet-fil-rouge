@@ -11,6 +11,7 @@
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/entities/NatureMission.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/entities/NatureMission.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/repositories/NatureMissionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/repositories/NatureMissionRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/NatureMissionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/NatureMissionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/utils/NatureMissionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/utils/NatureMissionMapper.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +30,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="back" />
+        <entry key="$PROJECT_DIR$" value="back-features-fouad-create_nature_mission_entity" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -50,7 +51,7 @@
     "Application.MainApplication.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "back-features-fouad-create__nature__mission__entity",
+    "git-widget-placeholder": "back",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/fouad/OneDrive/Documents/Java2024/projet-fil-rouge",
@@ -63,6 +64,26 @@
     <key name="ExtractSuperBase.RECENT_KEYS">
       <recent name="fr.projet.diginamic.backend.repositories" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="MainApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="fr.projet.diginamic.backend.MainApplication" />
+      <module name="backend" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="fr.projet.diginamic.backend.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.MainApplication" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

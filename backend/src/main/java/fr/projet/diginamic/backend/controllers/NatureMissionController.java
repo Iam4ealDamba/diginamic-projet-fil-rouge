@@ -73,7 +73,7 @@ public class NatureMissionController {
      * @param natureId the ID of the NatureMission to delete.
      */
     @DeleteMapping("/{natureId}")
-    public ResponseEntity<Void> deleteNatureMission(@PathVariable Integer natureId) {
+    public ResponseEntity<Void> deleteNatureMission(@PathVariable Long natureId) {
         natureMissionService.deleteNatureMission(natureId);
         return ResponseEntity.noContent().build();
     }
