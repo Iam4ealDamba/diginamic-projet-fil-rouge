@@ -108,11 +108,21 @@ private void addTableHeader(PdfPTable table) {
    
 }
 private void addRows(PdfPTable table, Expense expense) {
-	for (ExpenseLine expenseLine : expense.getExpenseLines()) {
-		table.addCell(expenseLine.getDate().toString());
-		table.addCell(expenseLine.getExpenseType().getType());
-		table.addCell(String.valueOf(expenseLine.getAmount()));
-		table.addCell(String.valueOf(expenseLine.getTva()));
+	ArrayList<ExpenseLine> expenseLines= expense.getExpenseLines();
+	for (ExpenseLine expenseLine : expenseLines) {
+		System.out.println("boucle");
+		PdfPCell date = new PdfPCell();
+		date.setPhrase(new Phrase(expenseLine.getDate().toString()));
+		table.addCell(date);
+		PdfPCell type = new PdfPCell();
+		type.setPhrase(new Phrase(expenseLine.getExpenseType().getType()));
+		table.addCell(type);
+		PdfPCell amount = new PdfPCell();
+		amount.setPhrase(new Phrase(String.valueOf(expenseLine.getAmount())));
+		table.addCell(amount);
+		PdfPCell tva = new PdfPCell();
+		tva.setPhrase(new Phrase(String.valueOf(expenseLine.getTva())));
+		table.addCell(tva);
 	}
 }
 }
