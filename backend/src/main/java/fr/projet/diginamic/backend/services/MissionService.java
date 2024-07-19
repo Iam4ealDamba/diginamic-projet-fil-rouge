@@ -237,31 +237,47 @@ public class MissionService {
     /**
      * Retrieve a single mission by its ID and update it.
      * 
+     * @param id the ID of the mission to retrieve and update.
+     * @param updatedMissionDTO the updated mission data.
+     * @return the updated mission DTO.
+     * @throws EntityNotFoundException if the mission is not found.
+     */
+    @Transactional
+    public DisplayedMissionDTO updateMission(Long id, DisplayedMissionDTO updatedMission){
+        Mission mission = displayedMissionDTOToBean(updatedMission);
+        validateMission(mission, false);
+        missionRepository.save(mission);
+        return missionMapper.fromBeantoDisplayedMissionDTO(mission);
+    }
+
+    // TODO: clean
+    /**
+     * Retrieve a single mission by its ID and update it.
+     * 
      * @param id             the ID of the mission to retrieve and update.
      * @param updatedMission the updated mission data.
      * @return the updated mission entity.
      * @throws EntityNotFoundException if the mission is not found.
      */
-    @Transactional
-    public Mission updateMission(Long id, Mission updatedMission) {
-        validateMission(updatedMission, false);
-        return missionRepository.findById(id).map(mission -> {
-            mission.setStatus(StatusEnum.INITIAL);
-            mission.setLabel(updatedMission.getLabel());
-            mission.setTotalPrice(updatedMission.getTotalPrice());
-            mission.setStartDate(updatedMission.getStartDate());
-            mission.setEndDate(updatedMission.getEndDate());
-            mission.setTransport(updatedMission.getTransport());
-            mission.setDepartureCity(updatedMission.getDepartureCity());
-            mission.setArrivalCity(updatedMission.getArrivalCity());
-            mission.setBonusDate(updatedMission.getBonusDate());
-            mission.setBonusAmount(updatedMission.getBonusAmount());
-            mission.setUser(updatedMission.getUser());
-            mission.setNatureMission(updatedMission.getNatureMission());
-            mission.setExpense(updatedMission.getExpense());
-            return missionRepository.save(mission);
-        }).orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
-    }
+    // public Mission updateMission(Long id, Mission updatedMission) {
+    //     validateMission(updatedMission, false);
+    //     return missionRepository.findById(id).map(mission -> {
+    //         mission.setStatus(StatusEnum.INITIAL);
+    //         mission.setLabel(updatedMission.getLabel());
+    //         mission.setTotalPrice(updatedMission.getTotalPrice());
+    //         mission.setStartDate(updatedMission.getStartDate());
+    //         mission.setEndDate(updatedMission.getEndDate());
+    //         mission.setTransport(updatedMission.getTransport());
+    //         mission.setDepartureCity(updatedMission.getDepartureCity());
+    //         mission.setArrivalCity(updatedMission.getArrivalCity());
+    //         mission.setBonusDate(updatedMission.getBonusDate());
+    //         mission.setBonusAmount(updatedMission.getBonusAmount());
+    //         mission.setUser(updatedMission.getUser());
+    //         mission.setNatureMission(updatedMission.getNatureMission());
+    //         mission.setExpense(updatedMission.getExpense());
+    //         return missionRepository.save(mission);
+    //     }).orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
+    // }
 
     /**
      * Delete a mission by its ID.
@@ -304,11 +320,9 @@ public class MissionService {
         mission.setDepartureCity(dto.getDepartureCity());
         mission.setArrivalCity(dto.getArrivalCity());
 
-        // Delegate the responsibility of fetching related entities to the respective
-        // services
         UserEntity user = userService.getOne(dto.getUserId());
         NatureMission natureMisison = natureMissionService.getNatureMissionById(dto.getNatureMissionId());
-        Expense expense = expenseService.getExpense(dto.getExpenseId());
+        Expense expense = expenseService.getExpenseBean(dto.getExpenseId());
         mission.setUser(user);
         mission.setNatureMission(natureMisison);
         mission.setExpense(expense);
