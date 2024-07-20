@@ -2,7 +2,6 @@ package fr.projet.diginamic.backend.services;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -239,13 +238,13 @@ public class MissionService {
     /**
      * Retrieve a single mission by its ID and update it.
      * 
-     * @param id the ID of the mission to retrieve and update.
+     * @param id                the ID of the mission to retrieve and update.
      * @param updatedMissionDTO the updated mission data.
      * @return the updated mission DTO.
      * @throws EntityNotFoundException if the mission is not found.
      */
     @Transactional
-    public DisplayedMissionDTO updateMission(Long id, DisplayedMissionDTO updatedMission){
+    public DisplayedMissionDTO updateMission(Long id, DisplayedMissionDTO updatedMission) {
         Mission mission = displayedMissionDTOToBean(updatedMission);
         validateMission(mission, false);
         missionRepository.save(mission);
@@ -262,23 +261,24 @@ public class MissionService {
      * @throws EntityNotFoundException if the mission is not found.
      */
     // public Mission updateMission(Long id, Mission updatedMission) {
-    //     validateMission(updatedMission, false);
-    //     return missionRepository.findById(id).map(mission -> {
-    //         mission.setStatus(StatusEnum.INITIAL);
-    //         mission.setLabel(updatedMission.getLabel());
-    //         mission.setTotalPrice(updatedMission.getTotalPrice());
-    //         mission.setStartDate(updatedMission.getStartDate());
-    //         mission.setEndDate(updatedMission.getEndDate());
-    //         mission.setTransport(updatedMission.getTransport());
-    //         mission.setDepartureCity(updatedMission.getDepartureCity());
-    //         mission.setArrivalCity(updatedMission.getArrivalCity());
-    //         mission.setBountyDate(updatedMission.getBountyDate());
-    //         mission.setBountyAmount(updatedMission.getBountyAmount());
-    //         mission.setUser(updatedMission.getUser());
-    //         mission.setNatureMission(updatedMission.getNatureMission());
-    //         mission.setExpense(updatedMission.getExpense());
-    //         return missionRepository.save(mission);
-    //     }).orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
+    // validateMission(updatedMission, false);
+    // return missionRepository.findById(id).map(mission -> {
+    // mission.setStatus(StatusEnum.INITIAL);
+    // mission.setLabel(updatedMission.getLabel());
+    // mission.setTotalPrice(updatedMission.getTotalPrice());
+    // mission.setStartDate(updatedMission.getStartDate());
+    // mission.setEndDate(updatedMission.getEndDate());
+    // mission.setTransport(updatedMission.getTransport());
+    // mission.setDepartureCity(updatedMission.getDepartureCity());
+    // mission.setArrivalCity(updatedMission.getArrivalCity());
+    // mission.setBountyDate(updatedMission.getBountyDate());
+    // mission.setBountyAmount(updatedMission.getBountyAmount());
+    // mission.setUser(updatedMission.getUser());
+    // mission.setNatureMission(updatedMission.getNatureMission());
+    // mission.setExpense(updatedMission.getExpense());
+    // return missionRepository.save(mission);
+    // }).orElseThrow(() -> new EntityNotFoundException("Mission not found with ID:
+    // " + id));
     // }
 
     /**
@@ -331,7 +331,7 @@ public class MissionService {
         mission.setArrivalCity(dto.getArrivalCity());
 
         UserEntity user = userService.getOne(dto.getUserId());
-        NatureMission natureMisison = natureMissionService.getNatureMissionById(dto.getNatureMissionId());
+        NatureMission natureMisison = natureMissionService.getNatureMissionBeanById(dto.getNatureMissionId());
         Expense expense = expenseService.getExpenseBean(dto.getExpenseId());
         mission.setUser(user);
         mission.setNatureMission(natureMisison);
@@ -346,11 +346,11 @@ public class MissionService {
 
         if (mission.getNatureMission() != null) {
             long duration = getDifferenceDays(mission.getStartDate(), mission.getEndDate()) + 1; // Include start day
-            double dailyRate = mission.getNatureMission().getTjm();
+            double dailyRate = mission.getNatureMission().getAdr();
             double totalPrice = duration * dailyRate;
             mission.setTotalPrice(totalPrice);
 
-            if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().isEligibleToBounty()) {
+            if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().getIsEligibleToBounty()) {
                 double bountyPercentage = mission.getNatureMission().getBountyPercentage() / 100.0;
                 double bountyAmount = totalPrice * bountyPercentage;
                 mission.setBountyAmount(bountyAmount);

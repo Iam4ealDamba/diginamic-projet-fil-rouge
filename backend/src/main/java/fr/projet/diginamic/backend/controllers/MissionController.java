@@ -29,7 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +137,8 @@ public class MissionController {
 			@RequestParam(value = "searchbar", required = false) String userNameOrLabel) {
 
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortField));
-		Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecs(status, natureMission, userNameOrLabel,
+		Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecs(status, natureMission,
+				userNameOrLabel,
 				pageable);
 
 		return ResponseEntity.ok(missions);
@@ -194,7 +194,8 @@ public class MissionController {
 	 *                               mission status
 	 */
 	@PutMapping("/{id}/status")
-	// TODO: double check if can receive enum in body or if need to be converted in backend
+	// TODO: double check if can receive enum in body or if need to be converted in
+	// backend
 	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @RequestBody String status) {
 		return ResponseEntity.ok(missionService.updateMissionStatus(id, status));
 	}

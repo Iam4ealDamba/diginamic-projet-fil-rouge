@@ -2,7 +2,6 @@ package fr.projet.diginamic.backend.mappers;
 
 import java.util.Date;
 import java.util.Optional;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +14,11 @@ import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.entities.NatureMission;
 import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.enums.StatusEnum;
-import fr.projet.diginamic.backend.services.MissionService;
 import fr.projet.diginamic.backend.services.NatureMissionService;
 import fr.projet.diginamic.backend.services.UserService;
 
 @Service
 public class MissionMapper {
-    @Autowired
-    MissionService missionService;
 
     @Autowired
     NatureMissionService natureMissionService;
@@ -46,8 +42,8 @@ public class MissionMapper {
 
         // Calculate the total price based on the daily rate and duration
         long duration = getDifferenceDays(mission.getStartDate(), mission.getEndDate()) + 1; // +1 to include start day
-        if (mission.getNatureMission().isBilled()) {
-            double dailyRate = mission.getNatureMission().getTjm();
+        if (mission.getNatureMission().getIsBilled()) {
+            double dailyRate = mission.getNatureMission().getAdr();
             dto.setTotalPrice(duration * dailyRate);
         } else {
             dto.setTotalPrice(0.0);
@@ -55,7 +51,7 @@ public class MissionMapper {
 
         // Set bounty amount if the mission is completed and eligible for a bounty
         // TODO: handle bounty date : ask the group if can remove it
-        if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().isEligibleToBounty()) {
+        if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().getIsEligibleToBounty()) {
             double bountyPercentage = mission.getNatureMission().getBountyPercentage() / 100.0;
             dto.setBountyAmount(dto.getTotalPrice() * bountyPercentage);
             dto.setBountyDate(mission.getEndDate()); // Bounty date set to the end date of the mission?
@@ -92,12 +88,13 @@ public class MissionMapper {
         mission.setBountyAmount(0.0);
         mission.setBountyDate(null);
 
-        NatureMission natureMisison = natureMissionService.getNatureMissionById(dto.getNatureMissionId());
+      
+        NatureMission natureMisison = natureMissionService.getNatureMissionBeanById(dto.getNatureMissionId());
         mission.setNatureMission(natureMisison);
         // Calculate the total price based on the daily rate and duration
         long duration = getDifferenceDays(dto.getStartDate(), dto.getEndDate()) + 1; // +1 to include start day
-        if (natureMisison.isBilled()) {
-            double dailyRate = natureMisison.getTjm();
+        if (natureMisison.getIsBilled()) {
+            double dailyRate = natureMisison.getAdr();
             mission.setTotalPrice(duration * dailyRate);
         } else {
             mission.setTotalPrice(0.0);
