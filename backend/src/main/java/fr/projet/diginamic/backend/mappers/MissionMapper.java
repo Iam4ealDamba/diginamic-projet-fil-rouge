@@ -57,8 +57,8 @@ public class MissionMapper {
         // Set bounty amount if the mission is completed and eligible for a bounty
         // TODO: handle bounty date : ask the group if can remove it
         if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().getIsEligibleToBounty()) {
-            double bountyPercentage = mission.getNatureMission().getBountyPercentage() / 100.0;
-            dto.setBountyAmount(dto.getTotalPrice() * bountyPercentage);
+            double bountyRate = mission.getNatureMission().getBountyRate() / 100.0;
+            dto.setBountyAmount(dto.getTotalPrice() * bountyRate);
             dto.setBountyDate(mission.getEndDate()); // Bounty date set to the end date of the mission?
         } else {
             dto.setBountyAmount(0.0);

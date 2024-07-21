@@ -20,8 +20,8 @@ public class CalculateMissionPricing {
             mission.setTotalPrice(totalPrice);
 
             if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().getIsEligibleToBounty()) {
-                double bountyPercentage = mission.getNatureMission().getBountyPercentage() / 100.0;
-                double bountyAmount = totalPrice * bountyPercentage;
+                double bountyRate = mission.getNatureMission().getBountyRate() / 100.0;
+                double bountyAmount = totalPrice * bountyRate;
                 mission.setBountyAmount(bountyAmount);
                 mission.setBountyDate(mission.getEndDate());
             }

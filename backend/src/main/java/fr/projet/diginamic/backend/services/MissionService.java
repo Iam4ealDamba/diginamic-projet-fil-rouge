@@ -160,8 +160,6 @@ public class MissionService {
      * @return a list of missions.
      */
     public Page<DisplayedMissionDTO> findAllMissions(Pageable pageable) {
-        // TODO: clean
-        // return missionRepository.findAll(pageable);
         return missionRepository.findAll(pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
     }
 
