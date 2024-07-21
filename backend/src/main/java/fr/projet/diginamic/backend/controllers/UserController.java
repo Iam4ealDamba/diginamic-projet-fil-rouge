@@ -37,6 +37,7 @@ public class UserController {
             userDto.setLastName(user.getLastName());
             userDto.setBirthDate(user.getBirthDate());
             userDto.setEmail(user.getEmail());
+            userDto.setRole(user.getRole().getType());
 
             usersDto.add(userDto);
         }
