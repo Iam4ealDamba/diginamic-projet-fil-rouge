@@ -1,7 +1,6 @@
 package fr.projet.diginamic.backend.mappers;
 
 import java.util.Date;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
-import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.entities.NatureMission;
 import fr.projet.diginamic.backend.entities.UserEntity;
@@ -102,10 +100,6 @@ public class MissionMapper {
 
         UserEntity user = userService.getOne(dto.getUserId());
         mission.setUser(user);
-
-        Expense expense = new Expense();
-        mission.setExpense(expense);
-
         return mission;
     }
 

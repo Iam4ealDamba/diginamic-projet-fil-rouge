@@ -88,7 +88,6 @@ public class Mission {
 	/**
 	 * TransportEnum mode for the mission.
 	 */
-	@Size(min = 2, max = 150)
 	@Column(name = "transport", length = 150)
 	private TransportEnum transport;
 
