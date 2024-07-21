@@ -6,12 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="455828a1-068c-40e2-89f5-6c1b0513bb9f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/configs/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/configs/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/NatureMissionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/NatureMissionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/dtos/NatureMissionDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/dtos/NatureMissionDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/entities/NatureMission.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/entities/NatureMission.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/entities/Mission.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/entities/Mission.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/repositories/NatureMissionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/repositories/NatureMissionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/MissionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/MissionService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/NatureMissionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/NatureMissionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/utils/NatureMissionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/utils/NatureMissionMapper.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +30,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="back-features-fouad-create_nature_mission_entity" />
+        <entry key="$PROJECT_DIR$" value="back" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -51,7 +51,7 @@
     "Application.MainApplication.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "back",
+    "git-widget-placeholder": "back-features-fouad-create__nature__mission__entity",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/fouad/OneDrive/Documents/Java2024/projet-fil-rouge",
@@ -81,6 +81,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.MainApplication" />
+        <item itemvalue="Application.MainApplication" />
         <item itemvalue="Application.MainApplication" />
       </list>
     </recent_temporary>

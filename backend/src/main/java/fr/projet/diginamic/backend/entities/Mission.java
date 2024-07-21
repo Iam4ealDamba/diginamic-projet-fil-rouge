@@ -3,6 +3,7 @@ package fr.projet.diginamic.backend.entities;
 import fr.projet.diginamic.backend.enums.TransportEnum;
 import fr.projet.diginamic.backend.enums.StatusEnum;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import jakarta.persistence.Column;

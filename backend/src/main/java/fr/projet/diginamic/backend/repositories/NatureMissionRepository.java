@@ -1,6 +1,7 @@
 package fr.projet.diginamic.backend.repositories;
 
 import fr.projet.diginamic.backend.entities.NatureMission;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -16,8 +17,11 @@ public interface NatureMissionRepository extends JpaRepository<NatureMission, In
     List<NatureMission> findByLabel(String label);
 
     Optional<NatureMission> findById(Long id);
-
+    @Transactional
     void deleteById(Long id);
 
     boolean existsById(Long id);
+
+    boolean existsByLabelAndEndDateIsNull(String label);
+
 }
