@@ -27,7 +27,6 @@ import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.services.MissionService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -75,38 +74,11 @@ public class MissionController {
 			});
 			return ResponseEntity.badRequest().body(errors);
 		}
-		CreateMissionDTO savedMission = missionService.createMission(mission);
+		DisplayedMissionDTO savedMission = missionService.createMission(mission);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedMission);
 	}
 
-	/**
-	 * Retrieves a paginated list of all missions. This endpoint provides a simple
-	 * way to access
-	 * a slice of the mission database using pagination parameters. If no pagination
-	 * parameters are
-	 * provided, default values are used.
-	 *
-	 * @param page The zero-based page index of the page to retrieve. Defaults to 0
-	 *             if not specified,
-	 *             which means the first page.
-	 * @param size The size of the page to retrieve. Defaults to 10 if not
-	 *             specified, which controls
-	 *             the number of missions returned in a single response.
-	 * @return A {@link ResponseEntity} object containing a {@link Page} of
-	 *         {@link Mission} objects.
-	 *         The response encapsulates the paginated result set along with HTTP
-	 *         status code 200 (OK),
-	 *         indicating successful retrieval of the data.
-	 */
-	// @GetMapping
-	// public ResponseEntity<Page<Mission>> getAllMissions(@RequestParam(value =
-	// "page", defaultValue = "0") int page,
-	// @RequestParam(value = "size", defaultValue = "10") int size) {
-	// Pageable pageable = PageRequest.of(page, size);
-	// Page<Mission> pageResult = missionService.findAllMissions(pageable);
-	// return ResponseEntity.ok(pageResult);
-	// }
-
+	
 	/**
 	 * Retrieves a paginated list of missions based on various filtering and sorting
 	 * criteria.

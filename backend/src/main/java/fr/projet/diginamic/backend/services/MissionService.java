@@ -8,16 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-// import org.springframework.security.core.authority.SimpleGrantedAuthority;
-// import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
+import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.entities.NatureMission;
-import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.enums.TransportEnum;
@@ -60,12 +60,11 @@ public class MissionService {
         return missionRepository.save(mission);
     }
 
-    public CreateMissionDTO createMission(CreateMissionDTO dto) {
+    public DisplayedMissionDTO createMission(CreateMissionDTO dto) {
         Mission bean = missionMapper.fromMissionFormToBean(dto);
         validateMission(bean, true);
         Mission newMissionBean = missionRepository.save(bean);
-        CreateMissionDTO newMissionDto = missionMapper.fromBeanToMissionForm(newMissionBean);
-        return newMissionDto;
+        return missionMapper.fromBeantoDisplayedMissionDTO(newMissionBean);
     }
 
     /**
@@ -102,7 +101,7 @@ public class MissionService {
         }
         // Check valid status for managers and non-managers
         if (isManager) {
-
+            // TODO: /!\ fix logic: check old status and compare it with new one /!\
             // Check status is either INITIAL or REJECTED for new or modified missions :
             if (mission.getStatus() != StatusEnum.IN_PROGRESS) {
                 throw new IllegalArgumentException("Invalid status for operation by manager.");
@@ -250,37 +249,6 @@ public class MissionService {
         missionRepository.save(mission);
         return missionMapper.fromBeantoDisplayedMissionDTO(mission);
     }
-
-    // TODO: clean
-    /**
-     * Retrieve a single mission by its ID and update it.
-     * 
-     * @param id             the ID of the mission to retrieve and update.
-     * @param updatedMission the updated mission data.
-     * @return the updated mission entity.
-     * @throws EntityNotFoundException if the mission is not found.
-     */
-    // public Mission updateMission(Long id, Mission updatedMission) {
-    // validateMission(updatedMission, false);
-    // return missionRepository.findById(id).map(mission -> {
-    // mission.setStatus(StatusEnum.INITIAL);
-    // mission.setLabel(updatedMission.getLabel());
-    // mission.setTotalPrice(updatedMission.getTotalPrice());
-    // mission.setStartDate(updatedMission.getStartDate());
-    // mission.setEndDate(updatedMission.getEndDate());
-    // mission.setTransport(updatedMission.getTransport());
-    // mission.setDepartureCity(updatedMission.getDepartureCity());
-    // mission.setArrivalCity(updatedMission.getArrivalCity());
-    // mission.setBountyDate(updatedMission.getBountyDate());
-    // mission.setBountyAmount(updatedMission.getBountyAmount());
-    // mission.setUser(updatedMission.getUser());
-    // mission.setNatureMission(updatedMission.getNatureMission());
-    // mission.setExpense(updatedMission.getExpense());
-    // return missionRepository.save(mission);
-    // }).orElseThrow(() -> new EntityNotFoundException("Mission not found with ID:
-    // " + id));
-    // }
-
     /**
      * Delete a mission by its ID.
      * 
@@ -312,6 +280,7 @@ public class MissionService {
         }
         return missionRepository.findById(id)
                 .map(m -> {
+                    // TODO: logic problem : need validation after update too: to check if status valid.
                     validateMission(m, false);
                     m.setStatus(statusEnum);
                     Mission bean = missionRepository.save(m);
@@ -332,7 +301,8 @@ public class MissionService {
 
         UserEntity user = userService.getOne(dto.getUserId());
         NatureMission natureMisison = natureMissionService.getNatureMissionBeanById(dto.getNatureMissionId());
-        Expense expense = expenseService.getExpenseBean(dto.getExpenseId());
+
+        Expense expense = dto.getExpenseId() != null ? expenseService.getExpenseBean(dto.getExpenseId()) : null;
         mission.setUser(user);
         mission.setNatureMission(natureMisison);
         mission.setExpense(expense);
