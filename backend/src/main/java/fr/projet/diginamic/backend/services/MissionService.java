@@ -2,14 +2,13 @@ package fr.projet.diginamic.backend.services;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,6 +101,7 @@ public class MissionService {
         // Check valid status for managers and non-managers
         if (isManager) {
             // TODO: /!\ fix logic: check old status and compare it with new one /!\
+            // + convert string into enum if necessary (create util for it)
             // Check status is either INITIAL or REJECTED for new or modified missions :
             if (mission.getStatus() != StatusEnum.IN_PROGRESS) {
                 throw new IllegalArgumentException("Invalid status for operation by manager.");
@@ -157,6 +157,10 @@ public class MissionService {
         // TODO: clean
         // return missionRepository.findAll(pageable);
         return missionRepository.findAll(pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
+    }
+
+    public List<DisplayedMissionDTO> findAllMissions() {
+        return missionRepository.findAll().stream().map(missionMapper::fromBeantoDisplayedMissionDTO).toList();
     }
 
     /**

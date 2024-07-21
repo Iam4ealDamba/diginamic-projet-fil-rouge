@@ -69,6 +69,8 @@ public interface MissionRepository extends JpaRepository<Mission, Long>, JpaSpec
 	 */
 	Page<Mission> findAll(Pageable pageable);
 
+	// List<Mission> findAll();
+
 	
 
 }

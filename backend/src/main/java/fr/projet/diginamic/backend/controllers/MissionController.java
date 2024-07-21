@@ -1,5 +1,6 @@
 package fr.projet.diginamic.backend.controllers;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,12 +28,19 @@ import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.services.MissionService;
+import fr.projet.diginamic.backend.utils.CSVGenerationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -47,6 +55,9 @@ public class MissionController {
 
 	@Autowired
 	private MissionService missionService;
+
+	  @Autowired
+    private CSVGenerationService csvGenerationService;
 
 	/**
 	 * Create a new mission with detailed validation error response.
@@ -236,4 +247,14 @@ public class MissionController {
 		missionService.deleteMission(id);
 		return ResponseEntity.noContent().build();
 	}
+
+	@GetMapping("/csv-export-bounties")
+    public void exportMissionBountiesToCSV(HttpServletResponse response) throws IOException {
+        response.setHeader("Content-Disposition", "attachment; filename=\"mission_bounties.csv\"");
+
+        List<DisplayedMissionDTO> missions = missionService.findAllMissions();
+        String titleCSV = "Récapitulatif des primes de l'année: " + new SimpleDateFormat("YYYY", Locale.FRENCH).format(new Date());
+        csvGenerationService.generateBountiesCsvReport(titleCSV, missions, response.getOutputStream());
+        response.flushBuffer();
+    }
 }

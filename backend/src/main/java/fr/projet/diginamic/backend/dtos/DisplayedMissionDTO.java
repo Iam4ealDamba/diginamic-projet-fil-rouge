@@ -4,11 +4,10 @@ import java.util.Date;
 
 import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.enums.TransportEnum;
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +17,7 @@ import lombok.AllArgsConstructor;
 public class DisplayedMissionDTO {
     private Long id;
     private String label;
-    private Double totalPrice;
+    private Double totalPrice = 0.0;
     private StatusEnum status;
     private Date startDate;
     private Date endDate;
@@ -26,7 +25,7 @@ public class DisplayedMissionDTO {
     private String departureCity;
     private String arrivalCity;
     private Date bountyDate;
-    private Double bountyAmount;
+    private Double bountyAmount = 0.0;
     private String labelNatureMission;
     private Long userId;
     private Long natureMissionId;
