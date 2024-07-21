@@ -3,7 +3,6 @@ package fr.projet.diginamic.backend.services;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,15 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
-import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.Mission;
-import fr.projet.diginamic.backend.entities.NatureMission;
-import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.enums.TransportEnum;
 import fr.projet.diginamic.backend.mappers.MissionMapper;
 import fr.projet.diginamic.backend.repositories.MissionRepository;
 import fr.projet.diginamic.backend.specs.MissionSpecifications;
+import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
 import jakarta.persistence.EntityNotFoundException;
 
 //TODO: reimplement logic of isManager boolean
@@ -48,6 +45,9 @@ public class MissionService {
     @Autowired
     MissionMapper missionMapper;
 
+    @Autowired
+    CalculateMissionPricing calculateMissionPricing;
+
     /**
      * Save a mission entity.
      * 
@@ -55,12 +55,14 @@ public class MissionService {
      * @return the saved mission entity.
      */
     public Mission createMission(Mission mission) {
+        mission.setStatus(StatusEnum.INITIAL);
         validateMission(mission, true);
         return missionRepository.save(mission);
     }
 
     public DisplayedMissionDTO createMission(CreateMissionDTO dto) {
         Mission bean = missionMapper.fromMissionFormToBean(dto);
+        bean.setStatus(StatusEnum.INITIAL);
         validateMission(bean, true);
         Mission newMissionBean = missionRepository.save(bean);
         return missionMapper.fromBeantoDisplayedMissionDTO(newMissionBean);
@@ -75,7 +77,8 @@ public class MissionService {
      */
     private void validateMission(Mission mission, boolean isNew) {
         Date today = new Date();
-        boolean isManager = true;
+        boolean isManager = false;
+        Mission oldMission = findOneMission(mission.getId());
         // boolean isManager =
         // SecurityContextHolder.getContext().getAuthentication().getAuthorities()
         // .contains(new SimpleGrantedAuthority("ROLE_MANAGER"));
@@ -98,17 +101,20 @@ public class MissionService {
                 throw new IllegalArgumentException("Flights must be booked at least 7 days in advance.");
             }
         }
-        // Check valid status for managers and non-managers
-        if (isManager) {
-            // TODO: /!\ fix logic: check old status and compare it with new one /!\
-            // + convert string into enum if necessary (create util for it)
-            // Check status is either INITIAL or REJECTED for new or modified missions :
-            if (mission.getStatus() != StatusEnum.IN_PROGRESS) {
-                throw new IllegalArgumentException("Invalid status for operation by manager.");
-            }
-        } else {
-            if (!(mission.getStatus() == StatusEnum.INITIAL || mission.getStatus() == StatusEnum.REJECTED)) {
-                throw new IllegalArgumentException("Invalid status for operation by employees.");
+
+        if(!isNew){
+            // Check valid status for managers and non-managers
+            if (isManager) {
+                // TODO: /!\ fix logic: check old status and compare it with new one /!\
+                // + convert string into enum if necessary (create util for it)
+                // Check status is either INITIAL or REJECTED for new or modified missions :
+                if (oldMission.getStatus() != StatusEnum.WAITING) {
+                    throw new IllegalArgumentException("Current status of mission doesn't allow updates by manager.");
+                }
+            } else {
+                if (!(oldMission.getStatus() == StatusEnum.INITIAL || oldMission.getStatus() == StatusEnum.REJECTED)) {
+                    throw new IllegalArgumentException("Current status of mission doesn't allow updates by employee.");
+                }
             }
         }
 
@@ -248,7 +254,7 @@ public class MissionService {
      */
     @Transactional
     public DisplayedMissionDTO updateMission(Long id, DisplayedMissionDTO updatedMission) {
-        Mission mission = displayedMissionDTOToBean(updatedMission);
+        Mission mission = missionMapper.displayedMissionDTOToBean(updatedMission);
         validateMission(mission, false);
         missionRepository.save(mission);
         return missionMapper.fromBeantoDisplayedMissionDTO(mission);
@@ -275,12 +281,14 @@ public class MissionService {
      */
     @Transactional
     public DisplayedMissionDTO updateMissionStatus(Long id, String status) {
-
+        if(status == null || status.isEmpty()){
+            throw new IllegalArgumentException("Status value cannot be null"); 
+        }
         StatusEnum statusEnum;
         try {
             statusEnum = StatusEnum.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid status value: " + status);
+            throw new IllegalArgumentException("Invalid status value " + status);
         }
         return missionRepository.findById(id)
                 .map(m -> {
@@ -293,48 +301,6 @@ public class MissionService {
                 .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
     }
 
-    public Mission displayedMissionDTOToBean(DisplayedMissionDTO dto) {
-        Mission mission = findOneMission(dto.getId());
-        mission.setLabel(dto.getLabel());
-        mission.setStatus(dto.getStatus());
-        mission.setStartDate(dto.getStartDate());
-        mission.setEndDate(dto.getEndDate());
-        mission.setTransport(dto.getTransport());
-        mission.setDepartureCity(dto.getDepartureCity());
-        mission.setArrivalCity(dto.getArrivalCity());
+  
 
-        UserEntity user = userService.getOne(dto.getUserId());
-        NatureMission natureMisison = natureMissionService.getNatureMissionBeanById(dto.getNatureMissionId());
-
-        Expense expense = dto.getExpenseId() != null ? expenseService.getExpenseBean(dto.getExpenseId()) : null;
-        mission.setUser(user);
-        mission.setNatureMission(natureMisison);
-        mission.setExpense(expense);
-
-        calculatePricing(mission);
-
-        return mission;
-    }
-
-    private void calculatePricing(Mission mission) {
-
-        if (mission.getNatureMission() != null) {
-            long duration = getDifferenceDays(mission.getStartDate(), mission.getEndDate()) + 1; // Include start day
-            double dailyRate = mission.getNatureMission().getAdr();
-            double totalPrice = duration * dailyRate;
-            mission.setTotalPrice(totalPrice);
-
-            if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().getIsEligibleToBounty()) {
-                double bountyPercentage = mission.getNatureMission().getBountyPercentage() / 100.0;
-                double bountyAmount = totalPrice * bountyPercentage;
-                mission.setBountyAmount(bountyAmount);
-                mission.setBountyDate(mission.getEndDate());
-            }
-        }
-    }
-
-    private static long getDifferenceDays(Date d1, Date d2) {
-        long diff = d2.getTime() - d1.getTime();
-        return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-    }
 }

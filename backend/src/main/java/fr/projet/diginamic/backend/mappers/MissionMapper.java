@@ -1,19 +1,20 @@
 package fr.projet.diginamic.backend.mappers;
 
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
+import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.entities.NatureMission;
 import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.enums.StatusEnum;
+import fr.projet.diginamic.backend.services.ExpenseService;
+import fr.projet.diginamic.backend.services.MissionService;
 import fr.projet.diginamic.backend.services.NatureMissionService;
 import fr.projet.diginamic.backend.services.UserService;
+import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
 
 @Service
 public class MissionMapper {
@@ -23,6 +24,12 @@ public class MissionMapper {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    CalculateMissionPricing calculateMissionPricing;
+    
+    @Autowired
+    ExpenseService expenseService;
 
     public DisplayedMissionDTO fromBeantoDisplayedMissionDTO(Mission mission) {
         DisplayedMissionDTO dto = new DisplayedMissionDTO();
@@ -39,7 +46,7 @@ public class MissionMapper {
         dto.setExpenseId(mission.getExpense() != null ? mission.getExpense().getId() : null);
 
         // Calculate the total price based on the daily rate and duration
-        long duration = getDifferenceDays(mission.getStartDate(), mission.getEndDate()) + 1; // +1 to include start day
+        long duration = calculateMissionPricing.getDifferenceDays(mission.getStartDate(), mission.getEndDate()) ; 
         if (mission.getNatureMission().getIsBilled()) {
             double dailyRate = mission.getNatureMission().getAdr();
             dto.setTotalPrice(duration * dailyRate);
@@ -90,7 +97,7 @@ public class MissionMapper {
         NatureMission natureMisison = natureMissionService.getNatureMissionBeanById(dto.getNatureMissionId());
         mission.setNatureMission(natureMisison);
         // Calculate the total price based on the daily rate and duration
-        long duration = getDifferenceDays(dto.getStartDate(), dto.getEndDate()) + 1; // +1 to include start day
+        long duration = calculateMissionPricing.getDifferenceDays(dto.getStartDate(), dto.getEndDate()); 
         if (natureMisison.getIsBilled()) {
             double dailyRate = natureMisison.getAdr();
             mission.setTotalPrice(duration * dailyRate);
@@ -103,8 +110,29 @@ public class MissionMapper {
         return mission;
     }
 
-    private static long getDifferenceDays(Date d1, Date d2) {
-        long diff = d2.getTime() - d1.getTime();
-        return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+      public Mission displayedMissionDTOToBean(DisplayedMissionDTO dto) {
+        MissionService missionService = new MissionService();
+
+        Mission mission = missionService.findOneMission(dto.getId());
+        mission.setLabel(dto.getLabel());
+        mission.setStatus(dto.getStatus());
+        mission.setStartDate(dto.getStartDate());
+        mission.setEndDate(dto.getEndDate());
+        mission.setTransport(dto.getTransport());
+        mission.setDepartureCity(dto.getDepartureCity());
+        mission.setArrivalCity(dto.getArrivalCity());
+
+        UserEntity user = userService.getOne(dto.getUserId());
+        NatureMission natureMisison = natureMissionService.getNatureMissionBeanById(dto.getNatureMissionId());
+
+        Expense expense = dto.getExpenseId() != null ? expenseService.getExpenseBean(dto.getExpenseId()) : null;
+        mission.setUser(user);
+        mission.setNatureMission(natureMisison);
+        mission.setExpense(expense);
+
+        calculateMissionPricing.calculatePricing(mission);
+
+        return mission;
     }
+
 }

@@ -1,7 +1,11 @@
 package fr.projet.diginamic.backend.controllers;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,20 +31,16 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
+import fr.projet.diginamic.backend.services.CSVGenerationService;
 import fr.projet.diginamic.backend.services.MissionService;
-import fr.projet.diginamic.backend.utils.CSVGenerationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
-
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Locale;
+import jakarta.validation.Valid;
 
 
 /**
@@ -222,11 +222,19 @@ public class MissionController {
 		@ApiResponse(responseCode = "403", description = "Access denied",
 			content = @Content)
 	})
+
 	@PutMapping("/{id}/status")
 	// TODO: double check if can receive enum in body or if need to be converted in
 	// backend
-	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @RequestBody String status) {
-		return ResponseEntity.ok(missionService.updateMissionStatus(id, status));
+	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @RequestBody Map<String, String> res) {
+		try {
+        	DisplayedMissionDTO updatedMission = missionService.updateMissionStatus(id, res.get("status"));
+        	return ResponseEntity.ok(updatedMission);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (EntityNotFoundException e) {
+			return ResponseEntity.notFound().build();
+		}
 	}
 
 	/**
