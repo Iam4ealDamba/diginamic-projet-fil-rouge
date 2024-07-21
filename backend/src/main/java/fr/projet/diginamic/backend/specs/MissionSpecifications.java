@@ -62,13 +62,32 @@ public class MissionSpecifications {
                 return criteriaBuilder.disjunction();
             } else {
                 Join<Mission, UserEntity> userJoin = root.join("user", JoinType.LEFT);
-                Predicate firstNamePredicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(userJoin.get("firstName")), "%" + userName.toLowerCase() + "%");
-
-                Predicate lastNamePredicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(userJoin.get("lastName")), "%" + userName.toLowerCase() + "%");
-
-                return criteriaBuilder.or(firstNamePredicate, lastNamePredicate);
+                String[] nameParts = userName.trim().toLowerCase().split("\\s+");
+                
+                Predicate namePredicate;
+    
+                if (nameParts.length == 1) {
+                    Predicate firstNamePredicate = criteriaBuilder.like(
+                            criteriaBuilder.lower(userJoin.get("firstName")), "%" + nameParts[0] + "%");
+    
+                    Predicate lastNamePredicate = criteriaBuilder.like(
+                            criteriaBuilder.lower(userJoin.get("lastName")), "%" + nameParts[0] + "%");
+    
+                    namePredicate = criteriaBuilder.or(firstNamePredicate, lastNamePredicate);
+                } else {
+                    Predicate combinedPredicate = criteriaBuilder.and(
+                            criteriaBuilder.like(criteriaBuilder.lower(userJoin.get("firstName")), "%" + nameParts[0] + "%"),
+                            criteriaBuilder.like(criteriaBuilder.lower(userJoin.get("lastName")), "%" + nameParts[1] + "%")
+                    );
+    
+                    Predicate swappedCombinedPredicate = criteriaBuilder.and(
+                            criteriaBuilder.like(criteriaBuilder.lower(userJoin.get("firstName")), "%" + nameParts[1] + "%"),
+                            criteriaBuilder.like(criteriaBuilder.lower(userJoin.get("lastName")), "%" + nameParts[0] + "%")
+                    );
+    
+                    namePredicate = criteriaBuilder.or(combinedPredicate, swappedCombinedPredicate);
+                }
+                return namePredicate;
             }
         };
     }
