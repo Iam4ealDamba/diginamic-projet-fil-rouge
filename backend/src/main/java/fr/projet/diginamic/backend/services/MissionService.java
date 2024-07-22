@@ -1,13 +1,22 @@
 package fr.projet.diginamic.backend.services;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +30,6 @@ import fr.projet.diginamic.backend.repositories.MissionRepository;
 import fr.projet.diginamic.backend.specs.MissionSpecifications;
 import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
 import jakarta.persistence.EntityNotFoundException;
-
 //TODO: reimplement logic of isManager boolean
 /**
  * Service class for managing mission entities.
@@ -175,19 +183,65 @@ public class MissionService {
      * @return a page of missions that match the specification.
      */
     @Transactional(readOnly = true)
-    public Page<DisplayedMissionDTO> findAllMissionsWithSpecs(String status, String nature, String labelOrUsername,
+    public Page<DisplayedMissionDTO> findAllMissionsWithSpecsForAdmin(String status, String nature, String labelOrUsername,
             Pageable pageable) {
 
-        // boolean isManager =
-        // SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-        // .contains(new SimpleGrantedAuthority("ROLE_MANAGER"));
-
-        boolean isManager = true;
-
-        Specification<Mission> spec = isManager ? createSpecificationForManager(status, nature, labelOrUsername)
-                : createSpecificationForEmployee(status, nature, labelOrUsername);
+        Specification<Mission> spec = MissionSpecifications.createSpecificationForAdmin(status, nature, labelOrUsername);
+               
         return missionRepository.findAll(spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
     }
+
+    /**
+     * Retrieve all missions for the connected user that match a given specification.
+     * 
+     * @param spec     the specification for filtering missions.
+     * @param pageable the pagination information.
+     * @return a page of missions that match the specification.
+     */
+    @Transactional(readOnly = true)
+    public Page<DisplayedMissionDTO> findAllMissionsWithSpecsForCurrentUser(String status, String nature, String label,
+            Pageable pageable){
+               long id = 1;
+                Specification<Mission> spec = createSpecificationForEmployee(status, nature, label);
+
+                try{
+                    return missionRepository.findByUserId(id, spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
+                    
+                } catch(EntityNotFoundException e){
+                    throw new EntityNotFoundException("User not found with id " + id);
+                }
+    }
+
+    /**
+     * Retrieve all missions of collaborators under supervision of a given manager and that match a given specification.
+     * 
+     * @param managerId     the manager's id for filtering employees missions who are under his/her supervision.
+     * @param spec     the specification for filtering missions.
+     * @param pageable the pagination information.
+     * @return a page of missions that match the specification.
+     */
+    @Transactional(readOnly = true)
+    public Page<DisplayedMissionDTO> findAllMissionsWithSpecsByManagerId(Long managerId, String status, String nature, String label,
+            Pageable pageable){
+              
+                Specification<Mission> spec = createSpecificationForManager(managerId, status, nature, label);
+
+                try{
+                    return missionRepository.findAll(spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
+                    
+                } catch(EntityNotFoundException e){
+                    throw new EntityNotFoundException("Manager not found with id " + managerId);
+                }
+    }
+
+    public UserDetails getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            return (UserDetails) authentication.getPrincipal();
+        }
+        return null;
+    }
+
 
     /**
      * Creates a Specification object for filtering missions based on criteria
@@ -212,8 +266,8 @@ public class MissionService {
      * @return A Specification object that can be used to perform the query with the
      *         specified criteria.
      */
-    private Specification<Mission> createSpecificationForManager(String status, String nature, String labelOrUsername) {
-        return MissionSpecifications.filterMissionsByCriteriaForManager(status, nature, labelOrUsername);
+    private Specification<Mission> createSpecificationForManager(Long managerId, String status, String nature, String labelOrUsername) {
+        return MissionSpecifications.filterMissionsByCriteriaForManager(managerId, status, nature, labelOrUsername);
     }
 
     /**
@@ -299,6 +353,59 @@ public class MissionService {
                 .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
     }
 
-  
+    
+    @Transactional(readOnly = true)
+    public Map<String, Map<String, Double>> calculateMissionBountiesForUser(Long userId){
 
+        if (userId == null) {
+            throw new IllegalArgumentException("Invalid userId");
+        }
+
+        Map<String, Map<String, Double>> data = new HashMap<>();
+        Map<String, Double> bountiesReport = new HashMap<>();
+        List<Mission> userMissions = missionRepository.findByUserId(userId);
+
+         List<DisplayedMissionDTO> currentYearMissions = userMissions.stream()
+            .filter(this::isBountyDateInCurrentYear)
+            .map(bean -> missionMapper.fromBeantoDisplayedMissionDTO(bean))
+            .collect(Collectors.toList());
+        
+        long totalNumberOfBounties = currentYearMissions.stream().filter(m -> m.getBountyAmount() > 0.0).count();
+
+        double totalAmountOfBounties = currentYearMissions.stream().mapToDouble(DisplayedMissionDTO::getBountyAmount).sum();
+
+        double highestBountyAmount = currentYearMissions.stream()
+            .mapToDouble(DisplayedMissionDTO::getBountyAmount)
+            .max()
+            .orElse(0.0);
+
+        bountiesReport.put("totalNumberOfBounties",(double) totalNumberOfBounties);
+        bountiesReport.put("totalAmountOfBounties", totalAmountOfBounties);
+        bountiesReport.put("highestBountyAmount", highestBountyAmount);
+
+        Map<String, Double> totalBountiesPerMonth = calculateMissionPricing.summarizeBountiesByMonth(currentYearMissions);
+
+        List<String> listMonths = Arrays.asList(
+                "JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN",
+                "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE"
+            );
+            for (String month : listMonths) {
+                double totalBounty = totalBountiesPerMonth.getOrDefault(month, 0.0);
+                totalBountiesPerMonth.put(month, totalBounty);
+            }
+
+        data.put("totalBountiesPerMonth", totalBountiesPerMonth);
+        data.put("bountiesReport", bountiesReport);
+        return data;
+    }
+
+    public boolean isBountyDateInCurrentYear (Mission mission){
+        
+        if (mission.getBountyDate() == null) {
+            return false;
+        }
+        String currentYear = new SimpleDateFormat("YYYY", Locale.FRENCH).format(new Date());
+        String bountyYearDate = new SimpleDateFormat("YYYY", Locale.FRENCH).format(mission.getBountyDate());
+        return currentYear.equals(bountyYearDate);
+    }
 }
