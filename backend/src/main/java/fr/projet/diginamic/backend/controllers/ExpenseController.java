@@ -41,8 +41,32 @@ public class ExpenseController {
 		 Page<ExpenseDto> expenses= expenseService.getExpenses(page, size);
 	    	return expenses;
 	    }
+
+	/** Endpoint to obtain the list of all my Expenses
+	 * @return A list of ExpenseDto
+	 * @throws Exception if there is no result
+	 */
+	@GetMapping("/user")
+	public Page<ExpenseDto> getMyExpenses(@RequestParam int page, @RequestParam int size) {
+		// method to obtain user id
+		Long id= 1L;
+		Page<ExpenseDto> expenses= expenseService.getMyExpenses(page, size, id);
+		return expenses;
+	}
+
+	/** Endpoint to obtain the list of all Expenses of a manager and they associates
+	 * @return A list of ExpenseDto
+	 * @throws Exception if there is no result
+	 */
+	@GetMapping("/manager")
+	public Page<ExpenseDto> getExpensesForManager(@RequestParam int page, @RequestParam int size) {
+		// method to obtain user id
+		Long id=1L;
+		Page<ExpenseDto> expenses= expenseService.getExpensesForManager(page, size, id);
+		return expenses;
+	}
 	 
-	 /** Endpoint to obtain the list of all Expenses
+	 /** Endpoint to save an Expense
 	     * @param expense, the expense to save
 	     * @return a responseEntity with a success message
 	     * @throws Exception if there is no result
