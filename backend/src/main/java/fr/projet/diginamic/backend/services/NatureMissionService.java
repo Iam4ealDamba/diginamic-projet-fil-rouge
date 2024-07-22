@@ -77,24 +77,7 @@ public class NatureMissionService {
                 .orElseThrow(() -> new RuntimeException("NatureMission not found"));
 
         // Check if the nature is used in missions
-        if (!natureMission.getMissions().isEmpty()) {
-            // Set end date for current nature
-            natureMission.setEndDate(new Date());
-
-            // Create new nature with updated values and start date tomorrow
-            NatureMissionDTO newNatureMissionDTO = new NatureMissionDTO();
-            newNatureMissionDTO.setLabel(natureMissionDTO.getLabel());
-            newNatureMissionDTO.setAdr(natureMissionDTO.getAdr());
-            newNatureMissionDTO.setIsBilled(natureMissionDTO.getIsBilled());
-
-            Date tomorrow = new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
-            newNatureMissionDTO.setStartDate(tomorrow);
-            newNatureMissionDTO.setEndDate(natureMissionDTO.getEndDate());
-            newNatureMissionDTO.setBonusPercentage(natureMissionDTO.getBonusPercentage());
-            newNatureMissionDTO.setIsEligibleToBounty(natureMissionDTO.getIsEligibleToBounty());
-
-            return createNatureMission(newNatureMissionDTO);
-        } else {
+        if (natureMission.getMissions().isEmpty()) {
             // Update current nature directly
             natureMission.setLabel(natureMissionDTO.getLabel());
             natureMission.setAdr(natureMissionDTO.getAdr());
@@ -107,6 +90,22 @@ public class NatureMissionService {
             NatureMission updatedNatureMission = natureMissionRepository.save(natureMission);
             return convertToDTO(updatedNatureMission);
         }
+        // Set end date for current nature
+        natureMission.setEndDate(new Date());
+
+        // Create new nature with updated values and start date tomorrow
+        NatureMissionDTO newNatureMissionDTO = new NatureMissionDTO();
+        newNatureMissionDTO.setLabel(natureMissionDTO.getLabel());
+        newNatureMissionDTO.setAdr(natureMissionDTO.getAdr());
+        newNatureMissionDTO.setIsBilled(natureMissionDTO.getIsBilled());
+
+        Date tomorrow = new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
+        newNatureMissionDTO.setStartDate(tomorrow);
+        newNatureMissionDTO.setEndDate(natureMissionDTO.getEndDate());
+        newNatureMissionDTO.setBonusPercentage(natureMissionDTO.getBonusPercentage());
+        newNatureMissionDTO.setIsEligibleToBounty(natureMissionDTO.getIsEligibleToBounty());
+
+        return createNatureMission(newNatureMissionDTO);
     }
 
     /**

@@ -54,7 +54,7 @@ public class NatureMission {
     @Column(name = "bonus_percentage")
     private Double bonusPercentage;
 
-@Column(name = "is_eligible_to_bounty")
+    @Column(name = "is_eligible_to_bounty")
     private Boolean isEligibleToBounty;
 
     /** The missions associated with this nature */
