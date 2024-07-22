@@ -14,6 +14,17 @@ import fr.projet.diginamic.backend.entities.UserEntity;
 
 public class MissionSpecifications {
 
+    public static Specification<Mission> hasManagerId (Long id){
+
+        return (root, query, criteriaBuilder) -> {
+            if(id == null){
+                return criteriaBuilder.conjunction();
+            }
+            Join<Mission, UserEntity> userJoin = root.join("user", JoinType.LEFT);          
+            return criteriaBuilder.equal(userJoin.get("manager").get("id"), id);
+        };
+    }
+
     /**
      * Specification to filter missions by status using the 'type' field of the
      * StatusEnum.
@@ -119,6 +130,7 @@ public class MissionSpecifications {
      * This specification allows filtering by status, nature, user name, and mission
      * label.
      *
+     * @param managerId       The manager's id of the employees to filter by.
      * @param status          The status of the mission to filter by.
      * @param nature          The nature of the mission to filter by.
      * @param labelOrUsername Either a username or a mission's label to filter by.
@@ -126,9 +138,45 @@ public class MissionSpecifications {
      * @return A combined specification based on the provided filters.
      */
 
-    public static Specification<Mission> filterMissionsByCriteriaForManager(String status, String nature,
+    public static Specification<Mission> createSpecificationForAdmin(String status, String nature,
             String labelOrUsername) {
         Specification<Mission> spec = Specification.where(null);
+
+        if (status != null && !status.isEmpty()) {
+            spec = spec.and(hasStatus(status));
+        }
+
+        if (nature != null && !nature.isEmpty()) {
+            spec = spec.and(hasNature(nature));
+        }
+
+        if (labelOrUsername != null && !labelOrUsername.isEmpty()) {
+            spec = spec.and(Specification.where(hasUserName(labelOrUsername)).or(hasLabel(labelOrUsername)));
+        }
+        return spec;
+    }
+
+    /**
+     * Combines multiple search and filter specifications into one based on various
+     * mission attributes.
+     * This specification allows filtering by status, nature, user name, and mission
+     * label.
+     *
+     * @param managerId       The manager's id of the employees to filter by.
+     * @param status          The status of the mission to filter by.
+     * @param nature          The nature of the mission to filter by.
+     * @param labelOrUsername Either a username or a mission's label to filter by.
+     * 
+     * @return A combined specification based on the provided filters.
+     */
+
+    public static Specification<Mission> filterMissionsByCriteriaForManager(Long managerId, String status, String nature,
+            String labelOrUsername) {
+        Specification<Mission> spec = Specification.where(null);
+
+        if(managerId != null){
+            spec = spec.and(hasManagerId(managerId));
+        }
 
         if (status != null && !status.isEmpty()) {
             spec = spec.and(hasStatus(status));

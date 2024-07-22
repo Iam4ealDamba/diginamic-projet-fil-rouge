@@ -1,4 +1,4 @@
-package fr.projet.diginamic.backend.controllers;
+package fr.projet.diginamic.backend.controllers.admins;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -21,14 +21,12 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.services.CSVGenerationService;
@@ -44,63 +42,21 @@ import jakarta.validation.Valid;
 
 
 /**
- * Controller class for handling requests for the /missions endpoint. This class
- * handles CRUD operations for missions within the system, permitting the
+ * Controller class for handling requests for admins' missions endpoint /api/admins/missions. This class handles CRUD operations for missions within the system, permitting the
  * creation, retrieval, update, and deletion of mission entries.
  */
-
 @RestController
-@RequestMapping("/api/missions")
-public class MissionController {
+@RequestMapping("/api/admins/missions")
+public class AdminMissionController {
 
 	@Autowired
 	private MissionService missionService;
 
-	  @Autowired
+	@Autowired
     private CSVGenerationService csvGenerationService;
 
-	/**
-	 * Create a new mission with detailed validation error response.
-	 *
-	 * @param mission The mission details to create.
-	 * @param result  The binding result that holds the validation errors.
-	 * @return The created mission or validation errors.
-	 */
-	@Operation(
-        summary = "Create a new mission",
-        description = "Create a new mission with detailed validation error response. The mission details must be provided in the request body."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Mission created successfully",
-            content = { @Content(mediaType = "application/json",
-            schema = @Schema(implementation = CreateMissionDTO.class)) }),
-        @ApiResponse(responseCode = "400", description = "Invalid input",
-            content = @Content),
-        @ApiResponse(responseCode = "500", description = "Internal server error",
-            content = @Content)
-    })
-	@PostMapping
-	public ResponseEntity<?> createMission(@Valid @RequestBody CreateMissionDTO mission, BindingResult result) {
-		if (result.hasErrors()) {
-			Map<String, String> errors = new HashMap<>();
-			result.getAllErrors().forEach(error -> {
-				String fieldName = ((FieldError) error).getField();
-				String errorMessage = error.getDefaultMessage();
-				errors.put(fieldName, errorMessage);
-			});
-			return ResponseEntity.badRequest().body(errors);
-		}
-	
-		try {
-			DisplayedMissionDTO savedMission = missionService.createMission(mission);
-			return ResponseEntity.status(HttpStatus.CREATED).body(savedMission);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
-        }
-	}
 
+	// -------------------- GET ALL MISSIONS FOR CONNECTED ADMIN --------------------
 	
 	/**
 	 * Retrieves a paginated list of missions based on various filtering and sorting
@@ -145,7 +101,7 @@ public class MissionController {
             content = @Content)
     })
 	@GetMapping
-	public ResponseEntity<?> getAllMissionsWithSpecs(
+	public ResponseEntity<?> getAllMissionsWithSpecsForAdmin(
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
 			@RequestParam(value = "order", defaultValue = "asc") String order,
@@ -156,7 +112,7 @@ public class MissionController {
 
         try {
 			Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortField));
-			Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecs(status, natureMission,
+			Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecsForAdmin(status, natureMission,
 					userNameOrLabel,
 					pageable);
             return ResponseEntity.ok(missions);
@@ -335,3 +291,4 @@ public class MissionController {
         }
     }
 }
+
