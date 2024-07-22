@@ -66,14 +66,19 @@ public class MissionController {
 	 * @param result  The binding result that holds the validation errors.
 	 * @return The created mission or validation errors.
 	 */
-	@Operation(summary = "Create a new mission")
-	@ApiResponses(value = {
-		@ApiResponse(responseCode = "201", description = "Mission created successfully",
-			content = { @Content(mediaType = "application/json",
-			schema = @Schema(implementation = CreateMissionDTO.class)) }),
-		@ApiResponse(responseCode = "400", description = "Invalid input",
-			content = @Content)
-	})
+	@Operation(
+        summary = "Create a new mission",
+        description = "Create a new mission with detailed validation error response. The mission details must be provided in the request body."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Mission created successfully",
+            content = { @Content(mediaType = "application/json",
+            schema = @Schema(implementation = CreateMissionDTO.class)) }),
+        @ApiResponse(responseCode = "400", description = "Invalid input",
+            content = @Content),
+        @ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content)
+    })
 	@PostMapping
 	public ResponseEntity<?> createMission(@Valid @RequestBody CreateMissionDTO mission, BindingResult result) {
 		if (result.hasErrors()) {
@@ -85,8 +90,15 @@ public class MissionController {
 			});
 			return ResponseEntity.badRequest().body(errors);
 		}
-		DisplayedMissionDTO savedMission = missionService.createMission(mission);
-		return ResponseEntity.status(HttpStatus.CREATED).body(savedMission);
+	
+		try {
+			DisplayedMissionDTO savedMission = missionService.createMission(mission);
+			return ResponseEntity.status(HttpStatus.CREATED).body(savedMission);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
 	}
 
 	
@@ -119,14 +131,21 @@ public class MissionController {
 	 *         even if no missions match the filters.
 	 */
 
-	 @Operation(summary = "Get a paginated list of all missions")
-	 @ApiResponses(value = {
-		 @ApiResponse(responseCode = "200", description = "List of missions",
-			 content = { @Content(mediaType = "application/json",
-			 schema = @Schema(implementation = Page.class)) })
-	 })
+	 @Operation(
+        summary = "Get a paginated list of all missions",
+        description = "Retrieve a paginated list of missions based on various filtering and sorting criteria. Supports pagination, sorting, and dynamic filtering."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "List of missions",
+            content = { @Content(mediaType = "application/json",
+            schema = @Schema(implementation = Page.class)) }),
+        @ApiResponse(responseCode = "400", description = "Invalid input",
+            content = @Content),
+        @ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content)
+    })
 	@GetMapping
-	public ResponseEntity<Page<DisplayedMissionDTO>> getAllMissionsWithSpecs(
+	public ResponseEntity<?> getAllMissionsWithSpecs(
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
 			@RequestParam(value = "order", defaultValue = "asc") String order,
@@ -135,12 +154,17 @@ public class MissionController {
 			@RequestParam(value = "nature", required = false) String natureMission,
 			@RequestParam(value = "searchbar", required = false) String userNameOrLabel) {
 
-		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortField));
-		Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecs(status, natureMission,
-				userNameOrLabel,
-				pageable);
-
-		return ResponseEntity.ok(missions);
+        try {
+			Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortField));
+			Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecs(status, natureMission,
+					userNameOrLabel,
+					pageable);
+            return ResponseEntity.ok(missions);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
 	}
 
 	/**
@@ -150,16 +174,25 @@ public class MissionController {
 	 * @return The requested mission.
 	 */
 	@Operation(summary = "Retrieve a single mission by its ID")
-	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Mission retrieved successfully",
-			content = { @Content(mediaType = "application/json",
-			schema = @Schema(implementation = DisplayedMissionDTO.class)) }),
-		@ApiResponse(responseCode = "404", description = "Mission not found",
-			content = @Content)
-	})
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Mission retrieved successfully",
+            content = { @Content(mediaType = "application/json",
+            schema = @Schema(implementation = DisplayedMissionDTO.class)) }),
+        @ApiResponse(responseCode = "404", description = "Mission not found",
+            content = @Content),
+        @ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content)
+    })
 	@GetMapping("/{id}")
-	public ResponseEntity<DisplayedMissionDTO> getMissionById(@PathVariable Long id) {
-		return ResponseEntity.ok(missionService.findOneMissionDto(id));
+	public ResponseEntity<?> getMissionById(@PathVariable Long id) {
+		try {
+            DisplayedMissionDTO mission = missionService.findOneMissionDto(id);
+            return ResponseEntity.ok(mission);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
 	}
 
 	/**
@@ -179,10 +212,11 @@ public class MissionController {
 		@ApiResponse(responseCode = "400", description = "Invalid input",
 			content = @Content),
 		@ApiResponse(responseCode = "404", description = "Mission not found",
-			content = @Content)
+			content = @Content),
+			@ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content)
 	})
 	@PutMapping("/{id}")
-
 	public ResponseEntity<?> updateMission(@PathVariable Long id, @Valid @RequestBody DisplayedMissionDTO mission,
 			BindingResult result) {
 		if (result.hasErrors()) {
@@ -194,7 +228,18 @@ public class MissionController {
 			});
 			return ResponseEntity.badRequest().body(errors);
 		}
-		return ResponseEntity.ok(missionService.updateMission(id, mission));
+		try {
+            DisplayedMissionDTO updatedMission = missionService.updateMission(id, mission);
+            return ResponseEntity.ok(updatedMission);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
+
+		
 	}
 
 	/**
@@ -248,21 +293,45 @@ public class MissionController {
 		@ApiResponse(responseCode = "204", description = "Mission deleted successfully",
 			content = @Content),
 		@ApiResponse(responseCode = "404", description = "Mission not found",
-			content = @Content)
+			content = @Content),
+			@ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content)
 	})
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteMission(@PathVariable Long id) {
-		missionService.deleteMission(id);
-		return ResponseEntity.noContent().build();
+		try {
+            missionService.deleteMission(id);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 	}
 
+	@Operation(summary = "Export mission bounties to CSV")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "CSV generated successfully"),
+        @ApiResponse(responseCode = "500", description = "Failed to generate CSV")
+    })
 	@GetMapping("/csv-export-bounties")
-    public void exportMissionBountiesToCSV(HttpServletResponse response) throws IOException {
-        response.setHeader("Content-Disposition", "attachment; filename=\"mission_bounties.csv\"");
+    public ResponseEntity<Void> exportMissionBountiesToCSV(HttpServletResponse response) throws IOException {
+		try {
+            response.setHeader("Content-Disposition", "attachment; filename=\"mission_bounties.csv\"");
 
-        List<DisplayedMissionDTO> missions = missionService.findAllMissions();
-        String titleCSV = "Récapitulatif des primes de l'année: " + new SimpleDateFormat("YYYY", Locale.FRENCH).format(new Date());
-        csvGenerationService.generateBountiesCsvReport(titleCSV, missions, response.getOutputStream());
-        response.flushBuffer();
+            List<DisplayedMissionDTO> missions = missionService.findAllMissions();
+            String titleCSV = "Récapitulatif des primes de l'année " + new SimpleDateFormat("YYYY", Locale.FRENCH).format(new Date());
+            csvGenerationService.generateBountiesCsvReport(titleCSV, missions, response.getOutputStream());
+            response.flushBuffer();
+			return ResponseEntity.ok().build();
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            try {
+                response.getWriter().write("Failed to generate CSV report: " + e.getMessage());
+            } catch (IOException ex) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
