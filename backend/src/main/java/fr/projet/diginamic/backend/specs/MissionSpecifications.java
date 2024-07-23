@@ -35,6 +35,17 @@ public class MissionSpecifications {
         };
     }
 
+    public static Specification<Mission> hasUserId (Long id){
+
+        return (root, query, criteriaBuilder) -> {
+            if(id == null){
+                return criteriaBuilder.conjunction();
+            }
+            Join<Mission, UserEntity> userJoin = root.join("user", JoinType.LEFT);          
+            return criteriaBuilder.equal(userJoin.get("id"), id);
+        };
+    }
+
     /**
      * Specification to filter missions by status using the 'type' field of the
      * StatusEnum.
@@ -219,9 +230,14 @@ public class MissionSpecifications {
      * @return A Specification<Mission> that can be used to filter missions based on
      *         the provided criteria.
      */
-    public static Specification<Mission> filterMissionsByCriteriaForEmployee(String status, String nature,
+    public static Specification<Mission> filterMissionsByCriteriaForEmployee(Long userId, String status, String nature,
             String label) {
         Specification<Mission> spec = Specification.where(null);
+
+        if(userId != null){
+            spec = spec.and(hasUserId(userId));
+        }
+
         if (status != null && !status.isEmpty()) {
             spec = spec.and(hasStatus(status));
         }

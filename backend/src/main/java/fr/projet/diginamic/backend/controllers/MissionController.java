@@ -35,6 +35,7 @@ import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.services.CSVGenerationService;
 import fr.projet.diginamic.backend.services.MissionService;
+import fr.projet.diginamic.backend.repositories.MissionRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -60,6 +61,9 @@ public class MissionController {
 
 	@Autowired
     private CSVGenerationService csvGenerationService;
+
+	@Autowired
+    private MissionRepository missionRepository;
 
 // ---------------------------------- CREATE MISSIONS ----------------------------------
 
@@ -146,11 +150,16 @@ public class MissionController {
             schema = @Schema(implementation = Page.class)) }),
         @ApiResponse(responseCode = "400", description = "Invalid input",
             content = @Content),
+			@ApiResponse(responseCode = "403", description = "Access denied",
+            content = @Content),
+        @ApiResponse(responseCode = "404", description = "User or missions not found",
+            content = @Content),
         @ApiResponse(responseCode = "500", description = "Internal server error",
             content = @Content)
     })
-	@GetMapping
+	@GetMapping("/users/{userId}")
 	public ResponseEntity<?> getAllMissionsWithSpecsForConnectedUser(
+			@PathVariable Long userId,
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
 			@RequestParam(value = "order", defaultValue = "asc") String order,
@@ -161,7 +170,7 @@ public class MissionController {
 
         try {
 			Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortField));
-			Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecsForCurrentUser(status, natureMission,
+			Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecsForCurrentUser(userId,status, natureMission,
 					userNameOrLabel,
 					pageable);
             return ResponseEntity.ok(missions);
@@ -398,12 +407,12 @@ public class MissionController {
         @ApiResponse(responseCode = "200", description = "CSV generated successfully"),
         @ApiResponse(responseCode = "500", description = "Failed to generate CSV")
     })
-	@GetMapping("/csv-export-bounties")
-    public ResponseEntity<Void> exportMissionBountiesToCSV(HttpServletResponse response) throws IOException {
+	@GetMapping("/users/{userId}/csv-export-bounties")
+    public ResponseEntity<Void> exportMissionBountiesToCSV(@PathVariable Long userId, HttpServletResponse response) throws IOException {
 		try {
             response.setHeader("Content-Disposition", "attachment; filename=\"mission_bounties.csv\"");
 
-            List<DisplayedMissionDTO> missions = missionService.findAllMissions();
+            List<DisplayedMissionDTO> missions = missionService.findMissionsByUserId(userId);
             String titleCSV = "Récapitulatif des primes de l'année " + new SimpleDateFormat("YYYY", Locale.FRENCH).format(new Date());
             csvGenerationService.generateBountiesCsvReport(titleCSV, missions, response.getOutputStream());
             response.flushBuffer();
@@ -440,7 +449,7 @@ public class MissionController {
         @ApiResponse(responseCode = "500", description = "Internal server error", 
             content = @Content)
     })
-	@GetMapping("/bounties")
+	@GetMapping("/users/{userId}/bounties")
 	public ResponseEntity<?> getMissionBountiesOfTheYear(@PathVariable Long userId){
 		try{			
 			return ResponseEntity.ok(missionService.getBountiesReportForUser(userId));

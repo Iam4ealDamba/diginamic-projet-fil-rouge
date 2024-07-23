@@ -71,23 +71,13 @@ public interface MissionRepository extends JpaRepository<Mission, Long>, JpaSpec
 	 */
 	Page<Mission> findAll(Pageable pageable);
 
-	 /**
-     * Retrieves a paginated list of missions for a specific user, filtered by a given specification.
-     * 
-     * @param userId    The ID of the user whose missions are to be retrieved.
-     * @param spec      The specification containing the filters to be applied to the query.
-     * @param pageable  The pagination information.
-     * @return A page of missions that match the given user ID and specification.
-     */
-	Page<Mission> findByUserId(Long userId, Specification<Mission> spec, Pageable pageable);
-
-	   /**
+	/**
      * Retrieves a list of missions for a specific user.
      * 
      * @param userId The ID of the user whose missions are to be retrieved.
      * @return A list of missions associated with the given user ID.
      */
-	List<Mission> findByUserId(Long userId);
+	List<Mission> findByUser_Id(Long userId);
 	
 	 /**
      * Retrieves a paginated list of missions for users managed by a specific manager.

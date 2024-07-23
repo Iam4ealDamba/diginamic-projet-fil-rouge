@@ -25,10 +25,11 @@ import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.enums.TransportEnum;
 import fr.projet.diginamic.backend.mappers.MissionMapper;
 import fr.projet.diginamic.backend.repositories.MissionRepository;
+import fr.projet.diginamic.backend.repositories.interfaces.UserRepository;
 import fr.projet.diginamic.backend.specs.MissionSpecifications;
 import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
 import jakarta.persistence.EntityNotFoundException;
-//TODO: reimplement logic of isManager boolean
+
 /**
  * Service class for managing mission entities.
  * Provides methods to perform CRUD operations on mission entities.
@@ -53,6 +54,9 @@ public class MissionService {
 
     @Autowired
     CalculateMissionPricing calculateMissionPricing;
+
+    @Autowired
+    UserRepository userRepository;
 
     //---------------------------------- CREATE MISSION  ------------------------------------ 
     /**
@@ -124,6 +128,13 @@ public class MissionService {
         return missionRepository.findAll().stream().map(missionMapper::fromBeantoDisplayedMissionDTO).toList();
     }
 
+    public List<DisplayedMissionDTO> findMissionsByUserId(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("User not found with ID: " + userId);
+        }
+        return missionRepository.findByUser_Id(userId).stream().map(missionMapper::fromBeantoDisplayedMissionDTO).toList();
+    }
+
     //------------------------------ FIND ALL MISSIONS FOR ADMIN BY SPECS ------------------------------ 
     /**
      * Retrieve all missions that match a given specification.
@@ -150,16 +161,16 @@ public class MissionService {
      * @return a page of missions that match the specification.
      */
     @Transactional(readOnly = true)
-    public Page<DisplayedMissionDTO> findAllMissionsWithSpecsForCurrentUser(String status, String nature, String label,
+    public Page<DisplayedMissionDTO> findAllMissionsWithSpecsForCurrentUser(Long userId, String status, String nature, String label,
             Pageable pageable){
-               long id = 1;
-                Specification<Mission> spec = createSpecificationForEmployee(status, nature, label);
+            
+                Specification<Mission> spec = createSpecificationForEmployee(userId, status, nature, label);
 
                 try{
-                    return missionRepository.findByUserId(id, spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
+                    return missionRepository.findAll(spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
                     
                 } catch(EntityNotFoundException e){
-                    throw new EntityNotFoundException("User not found with id " + id);
+                    throw new EntityNotFoundException("User not found with id " + userId);
                 }
     }
 
@@ -229,17 +240,21 @@ public class MissionService {
     @Transactional
     public DisplayedMissionDTO updateMissionStatus(Long id, String status) {
         if(status == null || status.isEmpty()){
-            throw new IllegalArgumentException("Status value cannot be null"); 
+            throw new IllegalArgumentException("Status value cannot be null or empty."); 
         }
         StatusEnum statusEnum;
         try {
-            statusEnum = StatusEnum.valueOf(status.toUpperCase());
+            statusEnum = StatusEnum.valueOf(status.toUpperCase());   
         } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid status value " + status + " " + e);
+        }
+
+        if(statusEnum != StatusEnum.VALIDATED && statusEnum != StatusEnum.REJECTED){
             throw new IllegalArgumentException("Invalid status value " + status);
         }
+
         return missionRepository.findById(id)
                 .map(m -> {
-                    // TODO: logic problem : need validation after update too: to check if status valid.
                     validateMission(m, false);
                     m.setStatus(statusEnum);
                     Mission bean = missionRepository.save(m);
@@ -402,8 +417,8 @@ public class MissionService {
      * @return A Specification object that can be used to perform the query with the
      *         specified criteria.
      */
-    private Specification<Mission> createSpecificationForEmployee(String status, String nature, String label) {
-        return MissionSpecifications.filterMissionsByCriteriaForEmployee(status, nature, label);
+    private Specification<Mission> createSpecificationForEmployee(Long userId, String status, String nature, String label) {
+        return MissionSpecifications.filterMissionsByCriteriaForEmployee(userId, status, nature, label);
     }
 
     //-------------------------------- BOUNTY REPORT --------------------------------
@@ -424,7 +439,7 @@ public class MissionService {
             throw new IllegalArgumentException("Invalid userId");
         }
 
-        List<Mission> userMissions = missionRepository.findByUserId(userId);
+        List<Mission> userMissions = missionRepository.findByUser_Id(userId);
 
          List<DisplayedMissionDTO> currentYearMissionsWithBounties = userMissions.stream()
             .filter(this::isBountyDateInCurrentYear)
