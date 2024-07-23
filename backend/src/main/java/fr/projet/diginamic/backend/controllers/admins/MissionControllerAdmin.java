@@ -254,12 +254,14 @@ public class MissionControllerAdmin {
             content = @Content)
 	})
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteMission(@PathVariable Long id) {
+	public ResponseEntity<?> deleteMission(@PathVariable Long id) {
 		try {
             missionService.deleteMission(id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

@@ -325,7 +325,6 @@ public class MissionService {
         if(mission.getStatus() == StatusEnum.FINISHED){
             throw new IllegalArgumentException("Cannot delete a mission that is already finished."); 
         }
-
         missionRepository.deleteById(id);
     }
 
