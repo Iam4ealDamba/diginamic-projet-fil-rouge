@@ -53,7 +53,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users/{userId}/missions")
-public class UserMissionController {
+public class MissionControllerUser {
 
 	@Autowired
 	private MissionService missionService;

@@ -29,7 +29,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
  */
 @RestController
 @RequestMapping("/api/managers/{id}/missions")
-public class ManagerMissionController {
+public class MissionControllerManager {
 
     @Autowired
 	private MissionService missionService;
