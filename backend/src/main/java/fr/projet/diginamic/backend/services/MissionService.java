@@ -320,9 +320,12 @@ public class MissionService {
      */
     @Transactional
     public void deleteMission(Long id) {
-        if (!missionRepository.existsById(id)) {
-            throw new EntityNotFoundException("Mission not found with ID: " + id);
+        Mission mission = missionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
+   
+        if(mission.getStatus() == StatusEnum.FINISHED){
+            throw new IllegalArgumentException("Cannot delete a mission that is already finished."); 
         }
+
         missionRepository.deleteById(id);
     }
 

@@ -47,7 +47,7 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/admins/missions")
-public class AdminMissionController {
+public class MissionControllerAdmin {
 
 	@Autowired
 	private MissionService missionService;
