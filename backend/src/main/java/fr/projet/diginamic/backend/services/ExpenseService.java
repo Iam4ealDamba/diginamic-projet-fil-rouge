@@ -58,8 +58,7 @@ public class ExpenseService {
 		UserEntity user= userRepo.findByEmail(email).orElseThrow(Exception::new);
 		Pageable pagination = PageRequest.of(page, size);
 		Page<Expense>expenses=expenseRepo.findByMission_User_Id(user.getId(), pagination);
-		Page<ExpenseDto> expensesDto = expenses.map(expenseMapper::BeanToDto);
-		return expensesDto;
+        return expenses.map(expenseMapper::BeanToDto);
 	}
 
 	/**Method get all expenses of a manager, their associates and transform them into ExpenseDto
@@ -74,8 +73,7 @@ public class ExpenseService {
 		Page<Expense>expenses=expenseRepo.findByMission_User_Id(user.getId(), pagination);
 		Page<Expense>expensesUsers=expenseRepo.findByMission_User_Manager(user, pagination);
 		Page<Expense> allExpenses= PageUtils.mergePages(expenses, expensesUsers, page, size);
-		Page<ExpenseDto> expensesDto = allExpenses.map(expenseMapper::BeanToDto);
-		return expensesDto;
+        return allExpenses.map(expenseMapper::BeanToDto);
 	}
 	
 	/**Method to get an expense by its id and transform it into an ExpenseDto
@@ -85,9 +83,8 @@ public class ExpenseService {
      */
 	public ExpenseWithLinesDto getExpense(Long id, String token) throws Exception{
 		CheckMyOrMyCollabExpense(token, id);
-		Expense expense= expenseRepo.findById(id).orElse(null);
-		ExpenseWithLinesDto expenseDto= expenseMapper.BeanToDtoWithLines(expense);
-		return expenseDto;
+		Expense expense= expenseRepo.findById(id).orElseThrow(Exception::new);;
+        return expenseMapper.BeanToDtoWithLines(expense);
 	}
 	
 	/**Method to save an expense
@@ -181,13 +178,13 @@ private void addTableHeader(PdfPTable table) {
 	 */
 private void addRows(PdfPTable table, Expense expense) {
 	List<ExpenseLine> expenseLines= expense.getExpenseLines();
-	for (int i =0; i<expenseLines.size(); i++) {
+    for (ExpenseLine expenseLine : expenseLines) {
 
-		createCell(table,expenseLines.get(i).getDate().toString());
-		createCell(table,expenseLines.get(i).getExpenseType().getType());
-		createCell(table,String.valueOf(expenseLines.get(i).getAmount()));
-		createCell(table,String.valueOf(expenseLines.get(i).getTva()));
-	}
+        createCell(table, expenseLine.getDate().toString());
+        createCell(table, expenseLine.getExpenseType().getType());
+        createCell(table, String.valueOf(expenseLine.getAmount()));
+        createCell(table, String.valueOf(expenseLine.getTva()));
+    }
 
 
 }
@@ -205,9 +202,9 @@ private void addRows(PdfPTable table, Expense expense) {
 		table.addCell(cell);
 	}
 
-	/**Method to create the cell with specific display
-	 * @param table, the pdfTable in construction
-	 * @param phrase, the string contain in this specific cell
+	/**Method check if the user has right to access this expense Data
+	 * @param token, the token of the user connected
+	 * @param idExpense, the id of the specific expense
 	 */
 	private void CheckMyOrMyCollabExpense(String token, Long idExpense) throws Exception {
 		String email =jwtService.extractUsername(token.substring(7));

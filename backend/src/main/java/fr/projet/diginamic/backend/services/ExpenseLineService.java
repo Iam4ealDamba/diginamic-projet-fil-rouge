@@ -45,8 +45,8 @@ public class ExpenseLineService {
 	 * @param id, the id of the expenseLine
 	 * @return An expenseLineDto
 	 */
-	public ExpenseLineDto getExpenseLine(Long id) {
-		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElse(null);
+	public ExpenseLineDto getExpenseLine(Long id) throws Exception {
+		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElseThrow(Exception::new);
 		ExpenseLineDto expenseLineDto = expenseLineMapper.BeanToDto(expenseLine);
 		return expenseLineDto;
 	}
@@ -69,8 +69,8 @@ public class ExpenseLineService {
 	 * @param id, the id of the expenseLine to delete
 	 * @return the expenseLine deleted
 	 */
-	public ExpenseLine deleteExpenseLine(Long id) {
-		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElse(null);
+	public ExpenseLine deleteExpenseLine(Long id) throws Exception {
+		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElseThrow(Exception::new);
 		expenseLineRepo.delete(expenseLine);
 		return expenseLine;
 	}
@@ -82,8 +82,8 @@ public class ExpenseLineService {
 	 * @param id,          the id of the expenseLine to modify
 	 * @return the expenseLine after modification
 	 */
-	public ExpenseLine modifyExpenseLine(ExpenseLineDto expenseLine, Long id) {
-		ExpenseLine expenseLineBdd = expenseLineRepo.findById(id).orElse(null);
+	public ExpenseLine modifyExpenseLine(ExpenseLineDto expenseLine, Long id) throws Exception {
+		ExpenseLine expenseLineBdd = expenseLineRepo.findById(id).orElseThrow(Exception::new);
 		expenseLineBdd.setTva(expenseLine.getTva());
 		expenseLineBdd.setAmount(expenseLine.getAmount());
 		expenseLineBdd.setDate(expenseLine.getDate());
