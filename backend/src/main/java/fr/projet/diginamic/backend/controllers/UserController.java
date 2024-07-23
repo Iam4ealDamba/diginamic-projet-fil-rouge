@@ -37,6 +37,7 @@ public class UserController {
             userDto.setLastName(user.getLastName());
             userDto.setBirthDate(user.getBirthDate());
             userDto.setEmail(user.getEmail());
+            userDto.setRole(user.getRole().getType());
 
             usersDto.add(userDto);
         }
@@ -52,6 +53,28 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> one(@PathVariable Long id) {
         UserEntity user = userService.getOne(id);
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setBirthDate(user.getBirthDate());
+        userDto.setEmail(user.getEmail());
+        return ResponseEntity.ok(userDto);
+    }
+
+    /**
+     * Get one user by email
+     * 
+     * @param email - the email of the user
+     */
+    @GetMapping("/one")
+    public ResponseEntity<UserDto> oneByEmail(@PathVariable String email) {
+        UserEntity user = userService.getOneByEmail(email);
 
         if (user == null) {
             return ResponseEntity.notFound().build();

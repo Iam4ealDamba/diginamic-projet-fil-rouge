@@ -26,11 +26,9 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Entity
 public class Role {
-    /** Id of the role */
-    @Setter(value = AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     /** Type of the role */
     @Column(name = "type")
     private String type;
