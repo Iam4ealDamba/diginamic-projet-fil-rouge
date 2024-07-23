@@ -45,7 +45,7 @@ public class CalculateMissionPricing {
      * @param missions List of DisplayedMissionDTO
      * @return A map with month as key and sum of bounties as value.
      */
-    public Map<String, Double> summarizeBountiesByMonth(List<DisplayedMissionDTO> missions) {
+    public Map<String, Double> summarizeBountiesPerMonth(List<DisplayedMissionDTO> missions) {
         Map<String, Double> monthSum = new HashMap<>();
         for (DisplayedMissionDTO mission : missions) {
             String monthKey = new SimpleDateFormat("MMMM", Locale.FRENCH).format(mission.getStartDate()).toUpperCase();

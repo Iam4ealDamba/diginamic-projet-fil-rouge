@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.projet.diginamic.backend.dtos.BountyReportDTO;
 import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
@@ -355,48 +356,42 @@ public class MissionService {
 
     
     @Transactional(readOnly = true)
-    public Map<String, Map<String, Double>> calculateMissionBountiesForUser(Long userId){
+    public BountyReportDTO getBountiesReportForUser(Long userId){
 
         if (userId == null) {
             throw new IllegalArgumentException("Invalid userId");
         }
 
-        Map<String, Map<String, Double>> data = new HashMap<>();
-        Map<String, Double> bountiesReport = new HashMap<>();
         List<Mission> userMissions = missionRepository.findByUserId(userId);
 
-         List<DisplayedMissionDTO> currentYearMissions = userMissions.stream()
+         List<DisplayedMissionDTO> currentYearMissionsWithBounties = userMissions.stream()
             .filter(this::isBountyDateInCurrentYear)
+            .filter(m -> m.getBountyAmount() > 0.0)
             .map(bean -> missionMapper.fromBeantoDisplayedMissionDTO(bean))
             .collect(Collectors.toList());
         
-        long totalNumberOfBounties = currentYearMissions.stream().filter(m -> m.getBountyAmount() > 0.0).count();
+        long totalNumberOfBounties = currentYearMissionsWithBounties.stream().filter(m -> m.getBountyAmount() > 0.0).count();
 
-        double totalAmountOfBounties = currentYearMissions.stream().mapToDouble(DisplayedMissionDTO::getBountyAmount).sum();
+        double totalAmountOfBounties = currentYearMissionsWithBounties.stream().mapToDouble(DisplayedMissionDTO::getBountyAmount).sum();
 
-        double highestBountyAmount = currentYearMissions.stream()
+        double highestBountyAmount = currentYearMissionsWithBounties.stream()
             .mapToDouble(DisplayedMissionDTO::getBountyAmount)
             .max()
             .orElse(0.0);
 
-        bountiesReport.put("totalNumberOfBounties",(double) totalNumberOfBounties);
-        bountiesReport.put("totalAmountOfBounties", totalAmountOfBounties);
-        bountiesReport.put("highestBountyAmount", highestBountyAmount);
-
-        Map<String, Double> totalBountiesPerMonth = calculateMissionPricing.summarizeBountiesByMonth(currentYearMissions);
+        // Get a map of <month, totalBounty> for months with bounties only: 
+        Map<String, Double> totalBountiesPerMonth = calculateMissionPricing.summarizeBountiesPerMonth(currentYearMissionsWithBounties);
 
         List<String> listMonths = Arrays.asList(
                 "JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN",
                 "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE"
-            );
-            for (String month : listMonths) {
-                double totalBounty = totalBountiesPerMonth.getOrDefault(month, 0.0);
-                totalBountiesPerMonth.put(month, totalBounty);
-            }
+        );
 
-        data.put("totalBountiesPerMonth", totalBountiesPerMonth);
-        data.put("bountiesReport", bountiesReport);
-        return data;
+        for (String month : listMonths) {
+            totalBountiesPerMonth.putIfAbsent(month, 0.0);
+        }
+
+        return new BountyReportDTO(totalNumberOfBounties,highestBountyAmount, totalAmountOfBounties, totalBountiesPerMonth,currentYearMissionsWithBounties);   
     }
 
     public boolean isBountyDateInCurrentYear (Mission mission){

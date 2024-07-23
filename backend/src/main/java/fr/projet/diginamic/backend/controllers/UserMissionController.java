@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.projet.diginamic.backend.dtos.BountyReportDTO;
 import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
@@ -353,7 +354,7 @@ public ResponseEntity<?> test() {
 	@GetMapping("/bounties")
 	public ResponseEntity<?> getMissionBountiesOfTheYear(@PathVariable Long userId){
 		try{			
-			return ResponseEntity.ok(missionService.calculateMissionBountiesForUser(userId));
+			return ResponseEntity.ok(missionService.getBountiesReportForUser(userId));
 
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());

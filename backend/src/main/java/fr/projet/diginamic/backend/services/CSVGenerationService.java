@@ -46,7 +46,7 @@ public class CSVGenerationService {
             // streamWriter.write(titleCSV);
             // streamWriter.write(System.lineSeparator()); 
 
-            Map<String, Double> monthSum = calculateMissionPricing.summarizeBountiesByMonth(missions);
+            Map<String, Double> monthSum = calculateMissionPricing.summarizeBountiesPerMonth(missions);
 
             List<String> listMonths = Arrays.asList(
                 "JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN",
@@ -69,7 +69,7 @@ public class CSVGenerationService {
     //  * @param missions List of DisplayedMissionDTO
     //  * @return A map with month as key and sum of bounties as value.
     //  */
-    // private Map<String, Double> summarizeBountiesByMonth(List<DisplayedMissionDTO> missions) {
+    // private Map<String, Double> summarizeBountiesPerMonth(List<DisplayedMissionDTO> missions) {
     //     Map<String, Double> monthSum = new HashMap<>();
     //     for (DisplayedMissionDTO mission : missions) {
     //         String monthKey = new SimpleDateFormat("MMMM", Locale.FRENCH).format(mission.getStartDate()).toUpperCase();
