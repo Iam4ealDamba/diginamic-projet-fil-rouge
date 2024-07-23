@@ -14,9 +14,17 @@ import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.enums.StatusEnum;
 
+/**
+ * Service class responsible for calculating the pricing and bounties for missions.
+ */
 @Service
 public class CalculateMissionPricing {
 
+    /**
+     * Calculates the total price and bounty amount for a given mission.
+     * 
+     * @param mission the mission for which the pricing and bounty are to be calculated.
+     */
         public void calculatePricing(Mission mission) {
 
         if (mission.getNatureMission() != null) {

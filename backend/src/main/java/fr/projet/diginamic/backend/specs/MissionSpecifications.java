@@ -12,8 +12,18 @@ import jakarta.persistence.criteria.Root;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.entities.UserEntity;
 
+/**
+ * Class containing various specifications for querying Mission entities.
+ * Specifications are used to create dynamic and complex queries using the Criteria API.
+ */
 public class MissionSpecifications {
 
+    /**
+     * Specification to filter missions based on the manager's ID.
+     * 
+     * @param id the ID of the manager to filter by.
+     * @return a Specification that filters missions where the manager's ID matches the given ID.
+     */
     public static Specification<Mission> hasManagerId (Long id){
 
         return (root, query, criteriaBuilder) -> {
