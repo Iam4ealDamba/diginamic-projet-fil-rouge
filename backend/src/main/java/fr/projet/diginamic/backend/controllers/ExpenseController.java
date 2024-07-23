@@ -2,17 +2,13 @@ package fr.projet.diginamic.backend.controllers;
 
 import java.io.IOException;
 
+import fr.projet.diginamic.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.itextpdf.text.DocumentException;
 
@@ -31,38 +27,44 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ExpenseController {
 	@Autowired
 	ExpenseService expenseService;
+
 	
-	/** Endpoint to obtain the list of all Expenses
-     * @return A list of ExpenseDto
-     * @throws Exception if there is no result
-     */
-	 @GetMapping
-	    public Page<ExpenseDto> getExpenses(@RequestParam int page, @RequestParam int size) {
-		 Page<ExpenseDto> expenses= expenseService.getExpenses(page, size);
-	    	return expenses;
-	    }
+//	/** Endpoint to obtain the list of all Expenses
+//     * @return A list of ExpenseDto
+//     */
+//	 @GetMapping
+//	    public Page<ExpenseDto> getExpenses(@RequestParam int page, @RequestParam int size) {
+//		 Page<ExpenseDto> expenses= expenseService.getExpenses(page, size);
+//	    	return expenses;
+//	    }
 
 	/** Endpoint to obtain the list of all my Expenses
+	 * @param page            The page number to retrieve, with a default value of 0 if not specified.
+	 * @param size            The size of the page to retrieve, with a default value of 10 if not specified.
+	 * @param token           The JWTtoken of the connected user
 	 * @return A list of ExpenseDto
 	 * @throws Exception if there is no result
 	 */
 	@GetMapping("/user")
-	public Page<ExpenseDto> getMyExpenses(@RequestParam int page, @RequestParam int size) {
-		// method to obtain user id
-		Long id= 1L;
-		Page<ExpenseDto> expenses= expenseService.getMyExpenses(page, size, id);
+	public Page<ExpenseDto> getMyExpenses(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+										  @RequestParam(value = "page", defaultValue = "0") int page,
+										  @RequestParam(value = "size", defaultValue = "10") int size) throws Exception {
+		Page<ExpenseDto> expenses= expenseService.getMyExpenses(page, size, token);
 		return expenses;
 	}
 
 	/** Endpoint to obtain the list of all Expenses of a manager and they associates
+	 * @param page            The page number to retrieve, with a default value of 0 if not specified.
+	 * @param size            The size of the page to retrieve, with a default value of 10 if not specified.
+	 * @param token           The JWTtoken of the connected user
 	 * @return A list of ExpenseDto
 	 * @throws Exception if there is no result
 	 */
 	@GetMapping("/manager")
-	public Page<ExpenseDto> getExpensesForManager(@RequestParam int page, @RequestParam int size) {
-		// method to obtain user id
-		Long id=1L;
-		Page<ExpenseDto> expenses= expenseService.getExpensesForManager(page, size, id);
+	public Page<ExpenseDto> getExpensesForManager(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+												  @RequestParam(value = "page", defaultValue = "0") int page,
+												  @RequestParam(value = "size", defaultValue = "10") int size) throws Exception {
+		Page<ExpenseDto> expenses= expenseService.getExpensesForManager(page, size, token);
 		return expenses;
 	}
 	 
@@ -87,8 +89,8 @@ public class ExpenseController {
 	     * @throws Exception if there is no result
 	     */
 	 @GetMapping("/{id}")
-	    public ExpenseWithLinesDto getExpense(@PathVariable Long id) throws Exception {
-		 ExpenseWithLinesDto expense= expenseService.getExpense(id);
+	    public ExpenseWithLinesDto getExpense(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,@PathVariable Long id) throws Exception {
+		 ExpenseWithLinesDto expense= expenseService.getExpense(id, token);
 	        if(expense== null) {
 	    		throw new Exception("No expense found");
 	    	}
@@ -96,9 +98,9 @@ public class ExpenseController {
 	    }
 	 
 	 @GetMapping("/pdf/{id}")
-	    public void exportExpenseById(@PathVariable Long id, HttpServletResponse response) throws Exception, IOException,
+	    public void exportExpenseById(@PathVariable Long id, HttpServletResponse response, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws Exception, IOException,
 	    DocumentException {
-	       expenseService.exportExpense(id, response);
+	       expenseService.exportExpense(id, response, token);
 	    }
 
 }

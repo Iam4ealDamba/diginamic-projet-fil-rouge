@@ -25,16 +25,16 @@ public class ExpenseLineController {
 	
 	@Autowired
 	ExpenseLineService expenseLineService;
-	
-	/** Endpoint to obtain a list of all ExpenseLines
-     * @return the expense found
-     * @throws Exception if there is no result
-     */
-	 @GetMapping
-	    public Page<ExpenseLineDto> getExpenseLines(@RequestParam int page, @RequestParam int size) {
-		 Page<ExpenseLineDto> expenseLines= expenseLineService.getExpenseLines(page, size);
-	    	return expenseLines;
-	    }
+
+//	/** Endpoint to obtain a list of all ExpenseLines
+//     * @return the expense found
+//     * @throws Exception if there is no result
+//     */
+//	 @GetMapping
+//	    public Page<ExpenseLineDto> getExpenseLines(@RequestParam int page, @RequestParam int size) {
+//		 Page<ExpenseLineDto> expenseLines= expenseLineService.getExpenseLines(page, size);
+//	    	return expenseLines;
+//	    }
 	 
 	 /** Endpoint to save one ExpenseLine 
 	     * @param expenseLine, the ExpenseLine to save

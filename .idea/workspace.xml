@@ -6,7 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="455828a1-068c-40e2-89f5-6c1b0513bb9f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conception/paradigm/diagram.vpp" beforeDir="false" afterPath="$PROJECT_DIR$/conception/paradigm/diagram.vpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/ExpenseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/ExpenseController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/ExpenseLineController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/ExpenseLineController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/repositories/interfaces/ExpenseRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/repositories/interfaces/ExpenseRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/ExpenseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/ExpenseService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,9 +33,6 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="JpbToolWindowState">
-    <option name="isToolWindowVisible" value="false" />
-  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -44,21 +44,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.MainApplication.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;back-features-thibault-EntitiesExpense&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Data/Info/CDA/Workplace/projet-fil-rouge&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Global Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.MainApplication.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "back-features-thibault-EntitiesExpense",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Data/Info/CDA/Workplace/projet-fil-rouge",
+    "project.structure.last.edited": "Global Libraries",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "editor.preferences.import"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="ExtractSuperBase.RECENT_KEYS">
       <recent name="fr.projet.diginamic.backend.repositories" />

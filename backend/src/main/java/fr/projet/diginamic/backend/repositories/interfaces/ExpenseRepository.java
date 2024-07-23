@@ -29,11 +29,24 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 	Page<Expense> findByMission_User_Id(Long id, Pageable pageable);
 
 	/**Method to get all expenses from users who got this Manager.
-	 * @param manager, the manager Entity.
+	 * @param manager, the user Entity who is a manager.
 	 * @param pageable the pagination and sorting information.
 	 * @return An arrayList of all expenses
 	 */
 	Page<Expense> findByMission_User_Manager(UserEntity manager, Pageable pageable);
 
+	/**Method check if the expense with this id is from a mission with this user.
+	 * @param user, the user Entity.
+	 * @param id, the id of the expense.
+	 * @return a boolean
+	 */
+	boolean existsByIdAndMission_User(Long id, UserEntity user);
+
+	/**Method check if the expense with this id is from a mission with this manager.
+	 * @param manager, the user Entity.
+	 * @param id, the id of the expense.
+	 * @return a boolean
+	 */
+	boolean existsByIdAndMission_User_Manager(Long id, UserEntity manager);
 
 }

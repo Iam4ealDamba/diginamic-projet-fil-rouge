@@ -31,39 +31,48 @@ public class ExpenseService {
 	private ExpenseRepository expenseRepo;
 
 	@Autowired
+	private JwtService jwtService;
+
+	@Autowired
 	private UserRepository userRepo;
 	
 	@Autowired
 	private ExpenseMapper expenseMapper;
 	
-	/**Method get all expenses and transform them into ExpenseDto
-     * @return the List of all expenses
-     */
-	public Page<ExpenseDto> getExpenses(int page, int size){
-		Pageable pagination = PageRequest.of(page, size);
-    	Page<Expense>expenses=expenseRepo.findAll(pagination);
-    	Page<ExpenseDto> expensesDto = expenses.map(expenseMapper::BeanToDto);
-		return expensesDto;
-	}
+//	/**Method get all expenses and transform them into ExpenseDto
+//     * @return the List of all expenses
+//     */
+//	public Page<ExpenseDto> getExpenses(int page, int size){
+//		Pageable pagination = PageRequest.of(page, size);
+//    	Page<Expense>expenses=expenseRepo.findAll(pagination);
+//    	Page<ExpenseDto> expensesDto = expenses.map(expenseMapper::BeanToDto);
+//		return expensesDto;
+//	}
 
 	/**Method get all expenses of a user and transform them into ExpenseDto
+	 * @param token, the Jwt token to know who try to get the expense data
 	 * @return the List of all expenses og this user.
 	 */
-	public Page<ExpenseDto> getMyExpenses(int page, int size, Long id){
+	public Page<ExpenseDto> getMyExpenses(int page, int size, String token) throws Exception {
+		String email =jwtService.extractUsername(token.substring(7));
+		UserEntity user= userRepo.findByEmail(email).orElseThrow(Exception::new);
 		Pageable pagination = PageRequest.of(page, size);
-		Page<Expense>expenses=expenseRepo.findByMission_User_Id(id, pagination);
+		Page<Expense>expenses=expenseRepo.findByMission_User_Id(user.getId(), pagination);
 		Page<ExpenseDto> expensesDto = expenses.map(expenseMapper::BeanToDto);
 		return expensesDto;
 	}
 
 	/**Method get all expenses of a manager, their associates and transform them into ExpenseDto
 	 * @return the List of all expenses og this a manager and their associates.
+	 * @param token, the Jwt token to know who try to get the expense data
+	 * @throws Exception if there is no user found
 	 */
-	public Page<ExpenseDto> getExpensesForManager(int page, int size, Long id){
-		UserEntity u= userRepo.findById(id).orElse(null);
+	public Page<ExpenseDto> getExpensesForManager(int page, int size, String token)  throws Exception{
+		String email =jwtService.extractUsername(token.substring(7));
+		UserEntity user= userRepo.findByEmail(email).orElseThrow(Exception::new);
 		Pageable pagination = PageRequest.of(page, size);
-		Page<Expense>expenses=expenseRepo.findByMission_User_Id(id, pagination);
-		Page<Expense>expensesUsers=expenseRepo.findByMission_User_Manager(u, pagination);
+		Page<Expense>expenses=expenseRepo.findByMission_User_Id(user.getId(), pagination);
+		Page<Expense>expensesUsers=expenseRepo.findByMission_User_Manager(user, pagination);
 		Page<Expense> allExpenses= PageUtils.mergePages(expenses, expensesUsers, page, size);
 		Page<ExpenseDto> expensesDto = allExpenses.map(expenseMapper::BeanToDto);
 		return expensesDto;
@@ -71,9 +80,11 @@ public class ExpenseService {
 	
 	/**Method to get an expense by its id and transform it into an ExpenseDto
 	 * @param id, the id of the expense to get
+	 * @param token, the Jwt token to know who try to get the expense data
      * @return the expenseLine found
      */
-	public ExpenseWithLinesDto getExpense(Long id){
+	public ExpenseWithLinesDto getExpense(Long id, String token) throws Exception{
+		CheckMyOrMyCollabExpense(token, id);
 		Expense expense= expenseRepo.findById(id).orElse(null);
 		ExpenseWithLinesDto expenseDto= expenseMapper.BeanToDtoWithLines(expense);
 		return expenseDto;
@@ -93,7 +104,8 @@ public class ExpenseService {
 	 * @param id, the id of the expense for the pdf
 	 * @param response, interface to send an http response with a pdf
 	 */
-public void exportExpense(Long id, HttpServletResponse response) throws IOException, DocumentException{
+public void exportExpense(Long id, HttpServletResponse response, String token) throws Exception {
+		CheckMyOrMyCollabExpense(token, id);
 		Expense expense= expenseRepo.findById(id).orElse(null);
         if (expense == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Expense not found");
@@ -191,5 +203,17 @@ private void addRows(PdfPTable table, Expense expense) {
 		cell.setBorderColorBottom(BaseColor.BLACK);
 		cell.setPhrase(new Phrase(phrase));
 		table.addCell(cell);
+	}
+
+	/**Method to create the cell with specific display
+	 * @param table, the pdfTable in construction
+	 * @param phrase, the string contain in this specific cell
+	 */
+	private void CheckMyOrMyCollabExpense(String token, Long idExpense) throws Exception {
+		String email =jwtService.extractUsername(token.substring(7));
+		UserEntity user= userRepo.findByEmail(email).orElseThrow(Exception::new);
+		if (!expenseRepo.existsByIdAndMission_User_Manager(idExpense, user) && !expenseRepo.existsByIdAndMission_User(idExpense, user)) {
+			throw new Exception();
+		}
 	}
 }
