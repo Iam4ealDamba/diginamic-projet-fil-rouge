@@ -1,5 +1,7 @@
 package fr.projet.diginamic.backend.services;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,5 +107,14 @@ public class AuthService {
 
         return new UserDto(newUser.getId(), newUser.getFirstName(), newUser.getLastName(),
                 newUser.getBirthDate(), newUser.getEmail(), newUser.getRole().getType());
+    }
+
+    public String refreshToken(String token) {
+        Boolean isTokenValid = jwtService.isTokenExpirationValid(token);
+        if (!isTokenValid) {
+            return null;
+        }
+        // return jwtService.refreshToken(token);
+        return "token";
     }
 }

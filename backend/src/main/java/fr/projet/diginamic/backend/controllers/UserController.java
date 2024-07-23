@@ -68,6 +68,28 @@ public class UserController {
     }
 
     /**
+     * Get one user by email
+     * 
+     * @param email - the email of the user
+     */
+    @GetMapping("/one")
+    public ResponseEntity<UserDto> oneByEmail(@PathVariable String email) {
+        UserEntity user = userService.getOneByEmail(email);
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setBirthDate(user.getBirthDate());
+        userDto.setEmail(user.getEmail());
+        return ResponseEntity.ok(userDto);
+    }
+
+    /**
      * Update one user
      * 
      * @param id      - the id of the user

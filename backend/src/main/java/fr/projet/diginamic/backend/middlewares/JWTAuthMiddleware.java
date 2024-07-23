@@ -1,4 +1,4 @@
-package fr.projet.diginamic.middlewares;
+package fr.projet.diginamic.backend.middlewares;
 
 import java.io.IOException;
 

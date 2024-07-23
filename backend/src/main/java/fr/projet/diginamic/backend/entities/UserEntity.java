@@ -52,7 +52,7 @@ public class UserEntity {
     private Date birthDate;
 
     /** The email of the user */
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     /** The password of the user */

@@ -46,6 +46,20 @@ public class UserService implements ServiceInterface<UserEntity, UserDto>, UserD
     }
 
     /**
+     * Get one user by email
+     * 
+     * @param email - the email of the user
+     */
+    public UserEntity getOneByEmail(String email) {
+        Optional<UserEntity> user = userRepository.findByEmail(email);
+
+        if (user.isEmpty()) {
+            return null;
+        }
+        return user.get();
+    }
+
+    /**
      * Update one user
      * 
      * @param id      - the id of the user

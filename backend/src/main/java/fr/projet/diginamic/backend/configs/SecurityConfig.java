@@ -10,17 +10,15 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import fr.projet.diginamic.backend.middlewares.JWTAuthMiddleware;
 import fr.projet.diginamic.backend.services.UserService;
-import fr.projet.diginamic.middlewares.JWTAuthMiddleware;
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +29,7 @@ public class SecurityConfig {
 
     /** JWT auth middleware */
     @Autowired
-    private JWTAuthMiddleware jwtAuthUtils;
+    private JWTAuthMiddleware jwtAuthMidlleware;
 
     /**
      * Security filter chain
@@ -59,7 +57,7 @@ public class SecurityConfig {
                             .anyRequest().authenticated();
                 });
         http.httpBasic(Customizer.withDefaults());
-        http.addFilterBefore(jwtAuthUtils, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthMidlleware, UsernamePasswordAuthenticationFilter.class);
         // http.logout(authz -> authz
         // .deleteCookies("JSESSIONID")
         // .logoutRequestMatcher(new AntPathRequestMatcher("/logout")));
