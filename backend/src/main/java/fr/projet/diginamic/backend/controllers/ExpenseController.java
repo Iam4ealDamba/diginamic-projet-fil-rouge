@@ -116,8 +116,7 @@ public class ExpenseController {
      * @throws Exception if there is no result
      */
     @Operation(summary = "Create a new mission", description = "Create a new expense . Returns a success response or errors.")
-    @ApiResponse(responseCode = "201", description = "Expense created successfully", content = {
-            @Content(mediaType = "application/json", schema = @Schema(implementation = Expense.class))})
+    @ApiResponse(responseCode = "201", description = "Expense created successfully", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "400", description = "Invalid Json", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class)))
     @PostMapping
     public ResponseEntity<String> saveExpense(@RequestBody ExpenseDto expense) throws Exception {
@@ -137,7 +136,7 @@ public class ExpenseController {
      * @throws Exception if there is no result
      */
     @Operation(summary = "Retrieve an expense by ID", description = "Fetches a detailed view of a single expense by its unique identifier.")
-    @ApiResponse(responseCode = "200", description = "Expense found and returned successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Expense.class)))
+    @ApiResponse(responseCode = "200", description = "Expense found and returned successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExpenseWithLinesDto.class)))
     @ApiResponse(responseCode = "404", description = "Expense not found", content = @Content(mediaType = "application/json"))
     @GetMapping("/{id}")
     public ExpenseWithLinesDto getExpense(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable Long id) throws Exception {

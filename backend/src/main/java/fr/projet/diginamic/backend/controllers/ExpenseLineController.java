@@ -1,5 +1,10 @@
 package fr.projet.diginamic.backend.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -41,6 +46,13 @@ public class ExpenseLineController {
 	     * @return a responseEntity with a succes message
 	     * @throws Exception if the save doesn't work
 	     */
+	 @Operation(summary = "Save a new ExpenseLine", description = "Saves a new ExpenseLine to the database.")
+	 @ApiResponses(value = {
+			 @ApiResponse(responseCode = "201", description = "ExpenseLine created successfully",
+					 content = @Content(mediaType = "application/json")),
+			 @ApiResponse(responseCode = "500", description = "Internal Server Error",
+					 content = @Content(mediaType = "application/json"))
+	 })
 	 @PostMapping
 	    public  ResponseEntity<String> saveExpenseLine(@RequestBody ExpenseLineDto expenseLine) throws Exception {
 		 ExpenseLine expenseLineSave= expenseLineService.saveExpenseLine(expenseLine);
@@ -54,6 +66,13 @@ public class ExpenseLineController {
 	     * @return the expenseLine found
 	     * @throws Exception if there is no result
 	     */
+	 @Operation(summary = "Get an ExpenseLine by ID", description = "Fetches a single ExpenseLine by its unique identifier.")
+	 @ApiResponses(value = {
+			 @ApiResponse(responseCode = "200", description = "ExpenseLine found and returned successfully",
+					 content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExpenseLineDto.class))),
+			 @ApiResponse(responseCode = "404", description = "ExpenseLine not found",
+					 content = @Content(mediaType = "application/json"))
+	 })
 	 @GetMapping("/{id}")
 	    public ExpenseLineDto getExpenseLine(@PathVariable Long id) throws Exception {
 		 ExpenseLineDto expenseLine= expenseLineService.getExpenseLine(id);
@@ -68,6 +87,13 @@ public class ExpenseLineController {
 	     * @return ResponseEntity with a success message
 	     * @throws Exception if there is nothing to delete
 	     */
+	 @Operation(summary = "Delete an ExpenseLine by ID", description = "Deletes a single ExpenseLine by its unique identifier.")
+	 @ApiResponses(value = {
+			 @ApiResponse(responseCode = "200", description = "ExpenseLine deleted successfully",
+					 content = @Content(mediaType = "application/json")),
+			 @ApiResponse(responseCode = "404", description = "ExpenseLine not found",
+					 content = @Content(mediaType = "application/json"))
+	 })
 	 @DeleteMapping
 	    public ResponseEntity<String> DeleteExpenseLine(@PathVariable Long id) throws Exception {
 		 ExpenseLine expenseLine= expenseLineService.deleteExpenseLine(id);
@@ -83,6 +109,13 @@ public class ExpenseLineController {
 	     * @return ResponseEntity with a success message
 	     * @throws Exception if there is no result
 	     */
+	 @Operation(summary = "Modify an ExpenseLine by ID", description = "Modifies a single ExpenseLine by its unique identifier.")
+	 @ApiResponses(value = {
+			 @ApiResponse(responseCode = "200", description = "ExpenseLine updated successfully",
+					 content = @Content(mediaType = "application/json")),
+			 @ApiResponse(responseCode = "404", description = "ExpenseLine not found",
+					 content = @Content(mediaType = "application/json"))
+	 })
 	 @PutMapping("/{id}")
 	    public ResponseEntity<String> modifyExpenseLine(@RequestBody ExpenseLineDto expenseLine, @PathVariable Long id) throws Exception{
 	        ExpenseLine expenseLineModify = expenseLineService.modifyExpenseLine(expenseLine,id);
