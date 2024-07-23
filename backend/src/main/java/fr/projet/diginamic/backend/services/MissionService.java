@@ -83,110 +83,7 @@ public class MissionService {
         Mission newMissionBean = missionRepository.save(bean);
         return missionMapper.fromBeantoDisplayedMissionDTO(newMissionBean);
     }
-    //---------------------------------- VALIDATE MISSION  ------------------------------------ 
-    /**
-     * Validates mission data before saving.
-     * 
-     * @param mission the mission to validate
-     * @param isNew   flag indicating if this is a new mission
-     * @throws IllegalArgumentException if validation fails
-     */
-    private void validateMission(Mission mission, boolean isNew) {
-        Date today = new Date();
-        boolean isManager = false;
-        Mission oldMission = isNew ? null : findOneMission(mission.getId());
-
-        validateStartDate(mission.getStartDate(), today, isNew);
-        validateEndDate(mission.getStartDate(), mission.getEndDate());
-        validateTransport(mission.getTransport(), mission.getStartDate());
-        
-        if (!isNew) {
-            validateStatusForUpdate(oldMission, isManager);
-        }
-
-        validateNatureOfMission(mission.getNatureMission(), today);
-    }
-
-    /**
-     * Validates the start date of the mission.
-     * 
-     * @param startDate the start date of the mission
-     * @param today     the current date
-     * @param isNew     flag indicating if this is a new mission
-     * @throws IllegalArgumentException if the start date is invalid
-     */
-    private void validateStartDate(Date startDate, Date today, boolean isNew) {
-        if (!startDate.after(today)) {
-            if (isNew) {
-                throw new IllegalArgumentException("Mission cannot start today or in the past.");
-            } else {
-                throw new IllegalArgumentException("Modifications to missions scheduled to start today are not allowed.");
-            }
-        }
-    }
-
-    /**
-     * Validates the transport type and booking time for flights.
-     * 
-     * @param transport the transport type of the mission
-     * @param startDate the start date of the mission
-     * @throws IllegalArgumentException if the transport type or booking time is invalid
-     */
-    private void validateTransport(TransportEnum transport, Date startDate) {
-        if (transport == TransportEnum.AIRPLANE) {
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DATE, 7);
-            if (startDate.before(cal.getTime())) {
-                throw new IllegalArgumentException("Flights must be booked at least 7 days in advance.");
-            }
-        }
-    }
-
-    /**
-     * Validates the status of the mission for updates.
-     * 
-     * @param oldMission the previous state of the mission
-     * @param isManager flag indicating if the user is a manager
-     * @throws IllegalArgumentException if the status is invalid for the update
-     */
-    private void validateStatusForUpdate(Mission oldMission, boolean isManager) {
-        if (isManager) {
-            if (oldMission.getStatus() != StatusEnum.WAITING) {
-                throw new IllegalArgumentException("Current status of mission doesn't allow updates by manager.");
-            }
-        } else {
-            if (!(oldMission.getStatus() == StatusEnum.INITIAL || oldMission.getStatus() == StatusEnum.REJECTED)) {
-                throw new IllegalArgumentException("Current status of mission doesn't allow updates by employee.");
-            }
-        }
-    }
-
-    /**
-     * Validates the nature of the mission.
-     * 
-     * @param natureMission the nature of the mission
-     * @param today         the current date
-     * @throws IllegalArgumentException if the nature of the mission is invalid
-     */
-    private void validateNatureOfMission(NatureMission natureMission, Date today) {
-        if (natureMission.getEndDate() != null && natureMission.getEndDate().before(today)) {
-            throw new IllegalArgumentException("The nature of the mission is no longer valid.");
-        }
-    }
-
-    /**
-     * Validates the end date of the mission.
-     * 
-     * @param startDate the start date of the mission
-     * @param endDate   the end date of the mission
-     * @throws IllegalArgumentException if the end date is before the start date
-     */
-    private void validateEndDate(Date startDate, Date endDate) {
-        if (endDate.before(startDate)) {
-            throw new IllegalArgumentException("End date must be after start date.");
-        }
-    }
-
+    
     //---------------------------------- FIND ONE MISSION  ------------------------------------ 
     /**
      * Retrieve a single mission by its ID.
@@ -349,6 +246,110 @@ public class MissionService {
                     return missionMapper.fromBeantoDisplayedMissionDTO(bean);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
+    }
+
+    //---------------------------------- VALIDATE MISSION  ------------------------------------ 
+    /**
+     * Validates mission data before saving.
+     * 
+     * @param mission the mission to validate
+     * @param isNew   flag indicating if this is a new mission
+     * @throws IllegalArgumentException if validation fails
+     */
+    private void validateMission(Mission mission, boolean isNew) {
+        Date today = new Date();
+        boolean isManager = false;
+        Mission oldMission = isNew ? null : findOneMission(mission.getId());
+
+        validateStartDate(mission.getStartDate(), today, isNew);
+        validateEndDate(mission.getStartDate(), mission.getEndDate());
+        validateTransport(mission.getTransport(), mission.getStartDate());
+        
+        if (!isNew) {
+            validateStatusForUpdate(oldMission, isManager);
+        }
+
+        validateNatureOfMission(mission.getNatureMission(), today);
+    }
+
+    /**
+     * Validates the start date of the mission.
+     * 
+     * @param startDate the start date of the mission
+     * @param today     the current date
+     * @param isNew     flag indicating if this is a new mission
+     * @throws IllegalArgumentException if the start date is invalid
+     */
+    private void validateStartDate(Date startDate, Date today, boolean isNew) {
+        if (!startDate.after(today)) {
+            if (isNew) {
+                throw new IllegalArgumentException("Mission cannot start today or in the past.");
+            } else {
+                throw new IllegalArgumentException("Modifications to missions scheduled to start today are not allowed.");
+            }
+        }
+    }
+
+    /**
+     * Validates the transport type and booking time for flights.
+     * 
+     * @param transport the transport type of the mission
+     * @param startDate the start date of the mission
+     * @throws IllegalArgumentException if the transport type or booking time is invalid
+     */
+    private void validateTransport(TransportEnum transport, Date startDate) {
+        if (transport == TransportEnum.AIRPLANE) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, 7);
+            if (startDate.before(cal.getTime())) {
+                throw new IllegalArgumentException("Flights must be booked at least 7 days in advance.");
+            }
+        }
+    }
+
+    /**
+     * Validates the status of the mission for updates.
+     * 
+     * @param oldMission the previous state of the mission
+     * @param isManager flag indicating if the user is a manager
+     * @throws IllegalArgumentException if the status is invalid for the update
+     */
+    private void validateStatusForUpdate(Mission oldMission, boolean isManager) {
+        if (isManager) {
+            if (oldMission.getStatus() != StatusEnum.WAITING) {
+                throw new IllegalArgumentException("Current status of mission doesn't allow updates by manager.");
+            }
+        } else {
+            if (!(oldMission.getStatus() == StatusEnum.INITIAL || oldMission.getStatus() == StatusEnum.REJECTED)) {
+                throw new IllegalArgumentException("Current status of mission doesn't allow updates by employee.");
+            }
+        }
+    }
+
+    /**
+     * Validates the nature of the mission.
+     * 
+     * @param natureMission the nature of the mission
+     * @param today         the current date
+     * @throws IllegalArgumentException if the nature of the mission is invalid
+     */
+    private void validateNatureOfMission(NatureMission natureMission, Date today) {
+        if (natureMission.getEndDate() != null && natureMission.getEndDate().before(today)) {
+            throw new IllegalArgumentException("The nature of the mission is no longer valid.");
+        }
+    }
+
+    /**
+     * Validates the end date of the mission.
+     * 
+     * @param startDate the start date of the mission
+     * @param endDate   the end date of the mission
+     * @throws IllegalArgumentException if the end date is before the start date
+     */
+    private void validateEndDate(Date startDate, Date endDate) {
+        if (endDate.before(startDate)) {
+            throw new IllegalArgumentException("End date must be after start date.");
+        }
     }
 
     //-------------------------------- SPECIFICATIONS --------------------------------
