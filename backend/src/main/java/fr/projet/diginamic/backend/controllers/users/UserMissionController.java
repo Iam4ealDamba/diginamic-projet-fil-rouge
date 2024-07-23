@@ -1,4 +1,4 @@
-package fr.projet.diginamic.backend.controllers;
+package fr.projet.diginamic.backend.controllers.users;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
