@@ -4,6 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
+import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
+import fr.projet.diginamic.backend.utils.MissionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,8 +33,21 @@ import lombok.Setter;
 @Service
 public class MissionService {
 
+
+
+    @Autowired
+    ExpenseService expenseService;
+
+    @Autowired
+    NatureMissionService natureMissionService;
+
+    @Autowired
+    MissionMapper missionMapper;
+
     @Autowired
     private MissionRepository missionRepository;
+
+
 
     /**
      * Save a mission entity.
@@ -42,6 +58,19 @@ public class MissionService {
     public Mission createMission(Mission mission) {
         validateMission(mission, true);
         return missionRepository.save(mission);
+    }
+
+    /**
+     * Retrieve a single mission by its ID.
+     *
+     * @param id the ID of the mission to retrieve.
+     * @return the found mission entity.
+     * @throws EntityNotFoundException if the mission is not found.
+     */
+    public DisplayedMissionDTO findOneMissionDto(Long id) {
+        return missionRepository.findById(id)
+                .map(m -> MissionMapper.fromBeantoDisplayedMissionDTO(m))
+                .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
     }
 
     /**
@@ -205,14 +234,14 @@ public class MissionService {
         return missionRepository.findById(id).map(mission -> {
             mission.setStatus(StatusEnum.INITIAL);
             mission.setLabel(updatedMission.getLabel());
-            mission.setDailyRate(updatedMission.getDailyRate());
+            mission.setTotalPrice(updatedMission.getTotalPrice());
             mission.setStartDate(updatedMission.getStartDate());
             mission.setEndDate(updatedMission.getEndDate());
             mission.setTransport(updatedMission.getTransport());
             mission.setDepartureCity(updatedMission.getDepartureCity());
             mission.setArrivalCity(updatedMission.getArrivalCity());
-            mission.setBonusDate(updatedMission.getBonusDate());
-            mission.setBonusAmount(updatedMission.getBonusAmount());
+            mission.setBountyDate(updatedMission.getBountyDate());
+            mission.setBountyAmount(updatedMission.getBountyAmount());
             mission.setUser(updatedMission.getUser());
             mission.setNatureMission(updatedMission.getNatureMission());
             mission.setExpense(updatedMission.getExpense());

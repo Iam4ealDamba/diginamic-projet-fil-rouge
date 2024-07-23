@@ -60,11 +60,12 @@ public class Mission {
 	private String label;
 
 	/**
-	 * Daily rate for the mission.
+	 *  * Total cost of the mission.
+	 *
 	 */
 	@Min(value = 1)
-	@Column(name = "daily_rate", nullable = false)
-	private Double dailyRate;
+	@Column(name = "total_price", nullable = false)
+	private Double totalPrice;
 
 	/**
 	 * Current status of the mission (e.g., pending, approved).
@@ -110,15 +111,15 @@ public class Mission {
 	/**
 	 * Date when the bonus is given.
 	 */
-	@Column(name = "bonus_date")
-	private Date bonusDate;
+	@Column(name = "bounty_date")
+	private Date bountyDate;
 
 	/**
 	 * Bonus amount for the mission.
 	 */
 	@Min(value = 0)
-	@Column(name = "bonus_amount")
-	private Double bonusAmount;
+	@Column(name = "bounty_amount")
+	private Double bountyAmount;
 
 	/**
 	 * The employee assigned to the mission.
