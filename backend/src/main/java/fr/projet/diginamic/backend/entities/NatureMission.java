@@ -3,12 +3,7 @@ package fr.projet.diginamic.backend.entities;
 import java.util.Date;
 import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -38,18 +33,20 @@ public class NatureMission {
     private String label;
 
     /** The ceiling TJM of the nature of the mission */
-    @Column(name = "ceiling_tjm")
-    private Double Tjm;
+    @Column(name = "Adr")
+    private Double adr;
 
     /** The billing status of the nature of the mission */
     @Column(name = "is_billed")
     private Boolean isBilled;
 
     /** The start date of the nature of the mission */
+    @Temporal(TemporalType.DATE)
     @Column(name = "start_date")
     private Date startDate;
 
     /** The end date of the nature of the mission */
+    @Temporal(TemporalType.DATE)
     @Column(name = "end_date")
     private Date endDate;
 
@@ -57,7 +54,7 @@ public class NatureMission {
     @Column(name = "bonus_percentage")
     private Double bonusPercentage;
 
-@Column(name = "is_eligible_to_bounty")
+    @Column(name = "is_eligible_to_bounty")
     private Boolean isEligibleToBounty;
 
     /** The missions associated with this nature */

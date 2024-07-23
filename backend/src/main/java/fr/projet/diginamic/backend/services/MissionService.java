@@ -53,8 +53,8 @@ public class MissionService {
      */
     private void validateMission(Mission mission, boolean isNew) {
         Date today = new Date();
-        boolean isManager = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-                .contains(new SimpleGrantedAuthority("ROLE_MANAGER"));
+        boolean isManager = false;
+        Mission oldMission = findOneMission(mission.getId());
 
         // Check if the mission starts in the past or today
         if (!mission.getStartDate().after(today)) {
@@ -74,15 +74,19 @@ public class MissionService {
                 throw new IllegalArgumentException("Flights must be booked at least 7 days in advance.");
             }
         }
-        // Check valid status for managers and non-managers
-        if (isManager) {
-            // Check status is either INITIAL or REJECTED for new or modified missions :
-            if (mission.getStatus() != StatusEnum.IN_PROGRESS) {
-                throw new IllegalArgumentException("Invalid status for operation by manager.");
-            }
-        } else {
-            if (!(mission.getStatus() == StatusEnum.INITIAL || mission.getStatus() == StatusEnum.REJECTED)) {
-                throw new IllegalArgumentException("Invalid status for operation by employees.");
+        if(!isNew){
+            // Check valid status for managers and non-managers
+            if (isManager) {
+                // TODO: /!\ fix logic: check old status and compare it with new one /!\
+                // + convert string into enum if necessary (create util for it)
+                // Check status is either INITIAL or REJECTED for new or modified missions :
+                if (oldMission.getStatus() != StatusEnum.WAITING) {
+                    throw new IllegalArgumentException("Current status of mission doesn't allow updates by manager.");
+                }
+            } else {
+                if (!(oldMission.getStatus() == StatusEnum.INITIAL || oldMission.getStatus() == StatusEnum.REJECTED)) {
+                    throw new IllegalArgumentException("Current status of mission doesn't allow updates by employee.");
+                }
             }
         }
 
@@ -114,14 +118,11 @@ public class MissionService {
      * 
      * @return a list of missions.
      */
-    public Page<Mission> findAllMissions(Pageable pageable) {
-        return missionRepository.findAll(pageable);
-    }
 
     /**
      * Retrieve all missions that match a given specification.
      * 
-     * @param spec     the specification for filtering missions.
+     * @param nature     the specification for filtering missions.
      * @param pageable the pagination information.
      * @return a page of missions that match the specification.
      */
