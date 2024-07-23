@@ -12,6 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -46,10 +48,11 @@ public class UserEntity {
 
     /** The birtgdate of the user */
     @Column(name = "birth_date")
+    @Temporal(TemporalType.DATE)
     private Date birthDate;
 
     /** The email of the user */
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     /** The password of the user */
@@ -58,14 +61,14 @@ public class UserEntity {
 
     // Relationships
 
+    /** The collaborators of the user */
+    @OneToMany(mappedBy = "manager")
+    private List<UserEntity> collaborators;
+
     /** The manager of the user */
     @ManyToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
     private UserEntity manager;
-
-    /** The collaborators of the user */
-    @OneToMany(mappedBy = "manager")
-    private List<UserEntity> collaborators;
 
     /** The role of the user */
     @ManyToOne
