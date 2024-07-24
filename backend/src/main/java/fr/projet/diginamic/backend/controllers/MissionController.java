@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,9 +33,13 @@ import fr.projet.diginamic.backend.dtos.BountyReportDTO;
 import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
 import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
+import fr.projet.diginamic.backend.entities.UserEntity;
+import fr.projet.diginamic.backend.exceptions.MissionServiceException;
+import fr.projet.diginamic.backend.services.UserService;
 import fr.projet.diginamic.backend.services.CSVGenerationService;
 import fr.projet.diginamic.backend.services.MissionService;
-import fr.projet.diginamic.backend.repositories.MissionRepository;
+import fr.projet.diginamic.backend.services.JwtService;
+import fr.projet.diginamic.backend.services.AccessService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,6 +48,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 
 
 /**
@@ -60,10 +65,16 @@ public class MissionController {
 	private MissionService missionService;
 
 	@Autowired
+	private UserService userService;
+
+	@Autowired
     private CSVGenerationService csvGenerationService;
 
 	@Autowired
-    private MissionRepository missionRepository;
+    private AccessService accessService;
+
+	@Autowired
+    private JwtService tokenService;
 
 // ---------------------------------- CREATE MISSIONS ----------------------------------
 
@@ -88,7 +99,7 @@ public class MissionController {
             content = @Content)
     })
 	@PostMapping
-	public ResponseEntity<?> createMission(@Valid @RequestBody CreateMissionDTO mission, BindingResult result) {
+	public ResponseEntity<?> createMission(@Valid @RequestBody CreateMissionDTO mission, BindingResult result, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 		if (result.hasErrors()) {
 			Map<String, String> errors = new HashMap<>();
 			result.getAllErrors().forEach(error -> {
@@ -100,12 +111,17 @@ public class MissionController {
 		}
 	
 		try {
-			DisplayedMissionDTO savedMission = missionService.createMission(mission);
+			String userEmail = tokenService.extractUsername(token.substring(7));
+			DisplayedMissionDTO savedMission = missionService.createMission(mission, userEmail);
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedMission);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } 
+		catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred." + e);
         }
 	}
 
@@ -134,6 +150,8 @@ public class MissionController {
 	 *                        specific nature.
 	 * @param userNameOrLabel Optional search term that matches either the username
 	 *                        of the mission assignee or the mission label.
+	 * @param token           The JWT token from the Authorization header, used to
+ *                        	  authenticate and identify the connected user.
 	 * @return A {@link ResponseEntity} object containing a {@link Page} of
 	 *         {@link Mission} objects
 	 *         that match the specified criteria. The response is always OK (200),
@@ -157,24 +175,40 @@ public class MissionController {
         @ApiResponse(responseCode = "500", description = "Internal server error",
             content = @Content)
     })
-	@GetMapping("/users/{userId}")
+
+	@GetMapping
 	public ResponseEntity<?> getAllMissionsWithSpecsForConnectedUser(
-			@PathVariable Long userId,
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
 			@RequestParam(value = "order", defaultValue = "asc") String order,
 			@RequestParam(value = "sort", defaultValue = "startDate") String sortField,
 			@RequestParam(value = "status", required = false) String status,
 			@RequestParam(value = "nature", required = false) String natureMission,
-			@RequestParam(value = "searchbar", required = false) String userNameOrLabel) {
+			@RequestParam(value = "searchbar", required = false) String userNameOrLabel,
+			@RequestHeader(HttpHeaders.AUTHORIZATION) String token
+			) {
 
         try {
+			String userEmail = tokenService.extractUsername(token.substring(7));
+			
 			Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortField));
-			Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecsForCurrentUser(userId,status, natureMission,
-					userNameOrLabel,
-					pageable);
+			Page<DisplayedMissionDTO> missions = null;
+
+			if (accessService.isAdmin(userEmail)) {
+
+				missions = missionService.findAllMissionsWithSpecsForAdmin(status, natureMission,
+						userNameOrLabel,
+						pageable);
+			} else {
+				missions = missionService.findAllMissionsWithSpecsForCurrentUser(userEmail,status, natureMission,
+						userNameOrLabel,
+						pageable);
+			}	
             return ResponseEntity.ok(missions);
+
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }catch (MissionServiceException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e);
@@ -225,25 +259,31 @@ public class MissionController {
             content = @Content)
     })
 	@GetMapping("/collaborators")
-	public ResponseEntity<?> getAllMissionsWithSpecsForManagers(
-            @PathVariable Long id,
+	public ResponseEntity<?> getAllMissionsWithSpecsForManager(
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
 			@RequestParam(value = "order", defaultValue = "asc") String order,
 			@RequestParam(value = "sort", defaultValue = "startDate") String sortField,
 			@RequestParam(value = "status", required = false) String status,
 			@RequestParam(value = "nature", required = false) String natureMission,
-			@RequestParam(value = "searchbar", required = false) String userNameOrLabel) {
+			@RequestParam(value = "searchbar", required = false) String userNameOrLabel,
+			@RequestHeader(HttpHeaders.AUTHORIZATION) String token
+			) {
 
-        try {
+		try {
+			String userEmail = tokenService.extractUsername(token.substring(7));	
 			Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortField));
-			Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecsByManagerId(id, status, natureMission, userNameOrLabel, pageable);
+			Page<DisplayedMissionDTO> missions = missionService.findAllMissionsWithSpecsByManagerId(userEmail, status, natureMission, userNameOrLabel, pageable);
             return ResponseEntity.ok(missions);
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+
+		}catch (MissionServiceException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred." + e);
-        }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred." + e.getMessage());
+        } 
 	}
 
 // -------------------------------- GET ONE MISSION BY ID  --------------------------------
@@ -264,8 +304,13 @@ public class MissionController {
             content = @Content)
     })
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getMissionById(@PathVariable Long id) {
-		try {
+	public ResponseEntity<?> getMissionById(@PathVariable Long id, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+
+	try {
+	String userEmail = tokenService.extractUsername(token.substring(7));
+		if(!accessService.hasReadAccessToMission(id, userEmail)){
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Ressource access forbidden for mission with id " + id);
+		}
             DisplayedMissionDTO mission = missionService.findOneMissionDto(id);
             return ResponseEntity.ok(mission);
         } catch (EntityNotFoundException e) {
@@ -299,7 +344,7 @@ public class MissionController {
 	})
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateMission(@PathVariable Long id, @Valid @RequestBody DisplayedMissionDTO mission,
-			BindingResult result) {
+			BindingResult result, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 		if (result.hasErrors()) {
 			Map<String, String> errors = new HashMap<>();
 			result.getAllErrors().forEach((error) -> {
@@ -310,6 +355,11 @@ public class MissionController {
 			return ResponseEntity.badRequest().body(errors);
 		}
 		try {
+			String userEmail = tokenService.extractUsername(token.substring(7));
+			if(!accessService.hasReadWriteAccessToMission(id, userEmail)){
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Ressource access forbidden for mission with id " + id);
+			}
+
             DisplayedMissionDTO updatedMission = missionService.updateMission(id, mission);
             return ResponseEntity.ok(updatedMission);
         } catch (EntityNotFoundException e) {
@@ -350,8 +400,13 @@ public class MissionController {
 	@PutMapping("/{id}/status")
 	// TODO: double check if can receive enum in body or if need to be converted in
 	// backend
-	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @RequestBody Map<String, String> res) {
+	public ResponseEntity<?> updateMissionStatus(@PathVariable Long id, @RequestBody Map<String, String> res, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 		try {
+			String userEmail = tokenService.extractUsername(token.substring(7));
+			if(!accessService.hasAdminOrManagerPrivilegesForMission(id, userEmail)){
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Ressource access forbidden for mission with id " + id);
+			}
+
         	DisplayedMissionDTO updatedMission = missionService.updateMissionStatus(id, res.get("status"));
         	return ResponseEntity.ok(updatedMission);
 		} catch (IllegalArgumentException e) {
@@ -379,8 +434,12 @@ public class MissionController {
             content = @Content)
 	})
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteMission(@PathVariable Long id) {
+	public ResponseEntity<?> deleteMission(@PathVariable Long id, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 		try {
+			String userEmail = tokenService.extractUsername(token.substring(7));
+			if(!accessService.hasReadWriteAccessToMission(id, userEmail)){
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Ressource access forbidden for mission with id " + id);
+			}
             missionService.deleteMission(id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
@@ -388,11 +447,10 @@ public class MissionController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete mission: An unexpected error occurred: " + e);
         }
 	}
 	// --------------------------- EXPORT BOUNTIES TO CSV -----------------------------
-	
 	 /**
      * Exports the mission bounties report to a CSV file.
      * This endpoint generates a CSV file containing the bounties report for all missions.
@@ -407,12 +465,18 @@ public class MissionController {
         @ApiResponse(responseCode = "200", description = "CSV generated successfully"),
         @ApiResponse(responseCode = "500", description = "Failed to generate CSV")
     })
-	@GetMapping("/users/{userId}/csv-export-bounties")
-    public ResponseEntity<Void> exportMissionBountiesToCSV(@PathVariable Long userId, HttpServletResponse response) throws IOException {
-		try {
+	@GetMapping("/csv-export-bounties")
+    public ResponseEntity<?> exportMissionBountiesToCSV(HttpServletResponse response, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
+		try {		
+			String userEmail = tokenService.extractUsername(token.substring(7));
+			UserEntity user = userService.getOneByEmail(userEmail);
+
+			if(user == null){
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with email " + userEmail);
+			}
             response.setHeader("Content-Disposition", "attachment; filename=\"mission_bounties.csv\"");
 
-            List<DisplayedMissionDTO> missions = missionService.findMissionsByUserId(userId);
+            List<DisplayedMissionDTO> missions = missionService.findMissionsByUserId(user.getId());
             String titleCSV = "Récapitulatif des primes de l'année " + new SimpleDateFormat("YYYY", Locale.FRENCH).format(new Date());
             csvGenerationService.generateBountiesCsvReport(titleCSV, missions, response.getOutputStream());
             response.flushBuffer();
@@ -449,10 +513,17 @@ public class MissionController {
         @ApiResponse(responseCode = "500", description = "Internal server error", 
             content = @Content)
     })
-	@GetMapping("/users/{userId}/bounties")
-	public ResponseEntity<?> getMissionBountiesOfTheYear(@PathVariable Long userId){
-		try{			
-			return ResponseEntity.ok(missionService.getBountiesReportForUser(userId));
+	@GetMapping("/bounties")
+	public ResponseEntity<?> getMissionBountiesOfTheYear(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+		try{	
+			String userEmail = tokenService.extractUsername(token.substring(7));
+			UserEntity user = userService.getOneByEmail(userEmail);
+
+			if(user == null){
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with email " + userEmail);
+			}
+
+			return ResponseEntity.ok(missionService.getBountiesReportForUser(user.getId()));
 
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
