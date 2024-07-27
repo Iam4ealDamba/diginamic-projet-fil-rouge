@@ -12,7 +12,7 @@ public class FallbackController {
 
     @GetMapping("/**")
     public ResponseEntity<String> handleAll() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Page not found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Route not found.");
     }
 
 }
