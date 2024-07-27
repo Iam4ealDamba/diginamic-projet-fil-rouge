@@ -8,11 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fr.projet.diginamic.backend.entities.Mission;
+import fr.projet.diginamic.backend.enums.StatusEnum;
 
 /**
  * Repository interface for {@link Mission} entities, providing methods to
@@ -87,5 +86,7 @@ public interface MissionRepository extends JpaRepository<Mission, Long>, JpaSpec
      * @return A page of missions associated with the subordinates of the given manager.
      */
 	Page<Mission> findAllByUser_Manager_Id(Long managerId, Pageable pageable);
+
+    public List<Mission> getAllByStatus(StatusEnum statusEnum);
 
 }
