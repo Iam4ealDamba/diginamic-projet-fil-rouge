@@ -1,10 +1,9 @@
 package fr.projet.diginamic.backend.entities;
 
-import fr.projet.diginamic.backend.enums.TransportEnum;
-import fr.projet.diginamic.backend.enums.StatusEnum;
-
 import java.util.Date;
 
+import fr.projet.diginamic.backend.enums.StatusEnum;
+import fr.projet.diginamic.backend.enums.TransportEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -63,7 +62,7 @@ public class Mission {
 	 */
 	@Min(value = 1)
 	@Column(name = "total_price", nullable = false)
-	private Double totalPrice;
+	private Double totalPrice = 0.0;
 
 	/**
 	 * Current status of the mission (e.g., pending, approved).
@@ -106,7 +105,7 @@ public class Mission {
 	private String arrivalCity;
 
 	/**
-	 * Date when the bounty is given.
+	 * Date when the bounty is calculated.
 	 */
 	@Column(name = "bounty_date")
 	private Date bountyDate;
@@ -116,7 +115,7 @@ public class Mission {
 	 */
 	@Min(value = 0)
 	@Column(name = "bounty_amount")
-	private Double bountyAmount;
+	private Double bountyAmount = 0.0;
 
 	/**
 	 * The employee assigned to the mission.
@@ -138,5 +137,9 @@ public class Mission {
 	@OneToOne
 	@JoinColumn(name = "expense_id", referencedColumnName = "id")
 	private Expense expense;
+
+	public Mission(Long id){
+		this.id = id;
+	}
 
 }
