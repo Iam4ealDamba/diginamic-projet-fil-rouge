@@ -37,11 +37,26 @@ public class CalculateMissionPricing {
             }
     }
 
+    /**
+     * Calculates the number of days between two dates, inclusive of the start date.
+     *
+     * @param d1 the start date
+     * @param d2 the end date
+     * @return the total number of days between the two dates, including the start date
+     */
     public static long getDifferenceDays(Date d1, Date d2) {
         long diff = d2.getTime() - d1.getTime();
         return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS) + 1;// Include start day
     }
 
+    /**
+     * Calculates the total price of a mission based on its daily rate and duration.
+     * If the mission is billable, the total price is calculated as the product of the
+     * daily rate (ADR) and the duration of the mission in days. If the mission is not billable,
+     * the total price is set to 0.0.
+     *
+     * @param mission the mission entity for which the total price is to be calculated
+     */
     public static void calculateTotalPrice(Mission mission) {
         if (mission.getNatureMission() != null && mission.getNatureMission().getIsBilled()) {
             long duration = getDifferenceDays(mission.getStartDate(), mission.getEndDate());

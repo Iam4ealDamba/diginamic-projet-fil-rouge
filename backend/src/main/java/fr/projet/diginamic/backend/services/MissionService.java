@@ -69,6 +69,7 @@ public class MissionService {
      * @param mission the mission to save.
      * @return the saved mission entity.
      */
+    @Transactional
     public Mission createMission(Mission mission, String userEmail) {
 
         UserEntity user = userService.getOneByEmail(userEmail);
@@ -91,6 +92,7 @@ public class MissionService {
      * @return A DisplayedMissionDTO object representing the newly created mission.
      * @throws IllegalArgumentException if the mission data is invalid.
      */
+    @Transactional
     public DisplayedMissionDTO createMission(CreateMissionDTO dto, String userEmail) {
        
         Mission bean = missionMapper.fromMissionFormToBean(dto);
@@ -115,6 +117,7 @@ public class MissionService {
      * @return the found mission entity.
      * @throws EntityNotFoundException if the mission is not found.
      */
+    @Transactional(readOnly = true)
     public Mission findOneMission(Long id) {
         return missionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
@@ -127,6 +130,7 @@ public class MissionService {
      * @return the found mission entity.
      * @throws EntityNotFoundException if the mission is not found.
      */
+    @Transactional(readOnly = true)
     public DisplayedMissionDTO findOneMissionDto(Long id) {
         return missionRepository.findById(id)
                 .map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m))
@@ -151,6 +155,7 @@ public class MissionService {
         return missionRepository.findAll().stream().map(missionMapper::fromBeantoDisplayedMissionDTO).toList();
     }
 
+    @Transactional(readOnly = true)
     public List<DisplayedMissionDTO> findMissionsByUserId(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException("User not found with ID: " + userId);

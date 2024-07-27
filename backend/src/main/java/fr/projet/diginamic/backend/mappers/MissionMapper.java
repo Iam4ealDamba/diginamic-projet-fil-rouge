@@ -129,19 +129,10 @@ public class MissionMapper {
     
         NatureMission natureMisison = natureMissionService.getNatureMissionBeanById(dto.getNatureMissionId());
         mission.setNatureMission(natureMisison);
-        // Calculate the total price based on the daily rate and duration
-        long duration = CalculateMissionPricing.getDifferenceDays(dto.getStartDate(), dto.getEndDate()); 
-        if (natureMisison.getIsBilled()) {
-            double dailyRate = natureMisison.getAdr();
-            mission.setTotalPrice(duration * dailyRate);
-        } else {
-            mission.setTotalPrice(0.0);
-        }
 
         UserEntity user = userService.getOne(dto.getUserId());
         mission.setUser(user);
         return mission;
     }
-
 
 }
