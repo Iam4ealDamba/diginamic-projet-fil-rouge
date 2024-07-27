@@ -25,26 +25,31 @@ public class CalculateMissionPricing {
      * 
      * @param mission the mission for which the pricing and bounty are to be calculated.
      */
-        public void calculatePricing(Mission mission) {
+        public static void calculateBounty(Mission mission) {
 
-        if (mission.getNatureMission() != null) {
-            long duration = getDifferenceDays(mission.getStartDate(), mission.getEndDate()); 
-            double dailyRate = mission.getNatureMission().getAdr();
-            double totalPrice = duration * dailyRate;
-            mission.setTotalPrice(totalPrice);
+            calculateTotalPrice(mission);
 
             if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().getIsEligibleToBounty()) {
-                double bountyRate = mission.getNatureMission().getBountyRate() / 100.0;
-                double bountyAmount = totalPrice * bountyRate;
+                double bountyRate = mission.getNatureMission().getBonusPercentage() / 100.0;
+                double bountyAmount = mission.getTotalPrice() * bountyRate;
                 mission.setBountyAmount(bountyAmount);
-                mission.setBountyDate(mission.getEndDate());
+                mission.setBountyDate(new Date()); 
             }
-        }
     }
 
     public static long getDifferenceDays(Date d1, Date d2) {
         long diff = d2.getTime() - d1.getTime();
         return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS) + 1;// Include start day
+    }
+
+    public static void calculateTotalPrice(Mission mission) {
+        if (mission.getNatureMission() != null && mission.getNatureMission().getIsBilled()) {
+            long duration = getDifferenceDays(mission.getStartDate(), mission.getEndDate());
+            double dailyRate = mission.getNatureMission().getAdr();
+            mission.setTotalPrice(duration * dailyRate);
+        } else {
+            mission.setTotalPrice(0.0);
+        }
     }
 
     /**
@@ -53,7 +58,7 @@ public class CalculateMissionPricing {
      * @param missions List of DisplayedMissionDTO
      * @return A map with month as key and sum of bounties as value.
      */
-    public Map<String, Double> summarizeBountiesPerMonth(List<DisplayedMissionDTO> missions) {
+    public static Map<String, Double> summarizeBountiesPerMonth(List<DisplayedMissionDTO> missions) {
         Map<String, Double> monthSum = new HashMap<>();
         for (DisplayedMissionDTO mission : missions) {
             String monthKey = new SimpleDateFormat("MMMM", Locale.FRENCH).format(mission.getStartDate()).toUpperCase();
