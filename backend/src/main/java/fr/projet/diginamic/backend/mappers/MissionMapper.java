@@ -9,12 +9,9 @@ import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.entities.NatureMission;
 import fr.projet.diginamic.backend.entities.UserEntity;
-import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.services.ExpenseService;
-import fr.projet.diginamic.backend.services.MissionService;
 import fr.projet.diginamic.backend.services.NatureMissionService;
 import fr.projet.diginamic.backend.services.UserService;
-import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
 
 /**
  * Mapper class for converting between Mission entities and their corresponding DTOs.
