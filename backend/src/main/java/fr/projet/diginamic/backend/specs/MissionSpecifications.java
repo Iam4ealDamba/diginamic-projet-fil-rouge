@@ -143,6 +143,15 @@ public class MissionSpecifications {
         };
     }
 
+    /**
+     * Creates a specification to find missions eligible for bounty calculation.
+     * This specification filters missions based on the following criteria:
+     * - The mission status is "FINISHED".
+     * - The nature of the mission is marked as eligible for bounty.
+     * - The bounty date is null, indicating that the bounty has not been calculated yet.
+     *
+     * @return a specification to find missions that are eligible for bounty calculation
+     */
     public static Specification<Mission> missionEligibleForBountyToCalculate(){
         return (root, query, criteriaBuilder) -> {
             Join<Mission, NatureMission> natureMissionJoin = root.join("natureMission", JoinType.LEFT);
