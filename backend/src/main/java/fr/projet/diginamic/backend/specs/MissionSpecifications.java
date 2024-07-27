@@ -2,15 +2,13 @@ package fr.projet.diginamic.backend.specs;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Root;
-
 import fr.projet.diginamic.backend.entities.Mission;
+import fr.projet.diginamic.backend.entities.NatureMission;
 import fr.projet.diginamic.backend.entities.UserEntity;
+import fr.projet.diginamic.backend.enums.StatusEnum;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 
 /**
  * Class containing various specifications for querying Mission entities.
@@ -142,6 +140,18 @@ public class MissionSpecifications {
                 return criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("label")), "%" + label.toLowerCase() + "%");
             }
+        };
+    }
+
+    public static Specification<Mission> missionEligibleForBountyToCalculate(){
+        return (root, query, criteriaBuilder) -> {
+            Join<Mission, NatureMission> natureMissionJoin = root.join("natureMission", JoinType.LEFT);
+            Predicate hasStatusFinished = criteriaBuilder.equal(root.get("status"), StatusEnum.FINISHED);
+            Predicate isEligibleToBounty = criteriaBuilder.isTrue(natureMissionJoin.get("isEligibleToBounty"));
+            Predicate bountyDateIsNull = criteriaBuilder.isNull(root.get("bountyDate"));
+
+            return criteriaBuilder.and(hasStatusFinished, isEligibleToBounty, bountyDateIsNull);
+            
         };
     }
 
