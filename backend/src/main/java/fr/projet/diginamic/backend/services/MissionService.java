@@ -77,7 +77,7 @@ public class MissionService {
         }
         mission.setUser(user);
         mission.setStatus(StatusEnum.INITIAL);
-        
+        CalculateMissionPricing.calculateTotalPrice(mission);
         validateMission(mission, true);
         return missionRepository.save(mission);
     }
@@ -101,6 +101,7 @@ public class MissionService {
         }
         bean.setUser(user);
         bean.setStatus(StatusEnum.INITIAL);
+        CalculateMissionPricing.calculateTotalPrice(bean);
         validateMission(bean, true);
         Mission newMissionBean = missionRepository.save(bean);
         return missionMapper.fromBeantoDisplayedMissionDTO(newMissionBean);
@@ -245,6 +246,12 @@ public class MissionService {
     @Transactional
     public DisplayedMissionDTO updateMission(Long id, DisplayedMissionDTO updatedMission) {
         Mission mission = missionMapper.fromDisplayedMissionDTOToBean(updatedMission);
+        
+        if (mission.getStatus() == StatusEnum.REJECTED) {
+            mission.setStatus(StatusEnum.INITIAL);
+        }
+        
+        CalculateMissionPricing.calculateTotalPrice(mission);
         validateMission(mission, false);
         missionRepository.save(mission);
         return missionMapper.fromBeantoDisplayedMissionDTO(mission);
