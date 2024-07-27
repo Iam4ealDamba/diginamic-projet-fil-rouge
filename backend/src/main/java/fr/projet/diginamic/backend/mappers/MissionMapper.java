@@ -29,9 +29,6 @@ public class MissionMapper {
 
     @Autowired
     UserService userService;
-
-    @Autowired
-    CalculateMissionPricing calculateMissionPricing;
     
     @Autowired
     ExpenseService expenseService;
@@ -56,25 +53,10 @@ public class MissionMapper {
         dto.setUserId(mission.getUser().getId());
         dto.setNatureMissionId(mission.getNatureMission().getId());
         dto.setExpenseId(mission.getExpense() != null ? mission.getExpense().getId() : null);
+        dto.setBountyAmount(mission.getBountyAmount());
+        dto.setBountyDate(mission.getBountyDate());
+        dto.setTotalPrice(mission.getTotalPrice());
 
-        // Calculate the total price based on the daily rate and duration
-        long duration = calculateMissionPricing.getDifferenceDays(mission.getStartDate(), mission.getEndDate()) ; 
-        if (mission.getNatureMission().getIsBilled()) {
-            double dailyRate = mission.getNatureMission().getAdr();
-            dto.setTotalPrice(duration * dailyRate);
-        } else {
-            dto.setTotalPrice(0.0);
-        }
-
-        // Set bounty amount if the mission is completed and eligible for a bounty
-        // TODO: handle bounty date : ask the group if can remove it
-        if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().getIsEligibleToBounty()) {
-            double bountyRate = mission.getNatureMission().getBountyRate() / 100.0;
-            dto.setBountyAmount(dto.getTotalPrice() * bountyRate);
-            dto.setBountyDate(mission.getEndDate()); // Bounty date set to the end date of the mission?
-        } else {
-            dto.setBountyAmount(0.0);
-        }
         dto.setLabelNatureMission(mission.getNatureMission().getLabel());
         return dto;
     }
@@ -87,9 +69,7 @@ public class MissionMapper {
      * @return The corresponding Mission entity.
      */
     public Mission fromDisplayedMissionDTOToBean(DisplayedMissionDTO dto) {
-        MissionService missionService = new MissionService();
-
-        Mission mission = missionService.findOneMission(dto.getId());
+        Mission mission = new Mission(dto.getId());
         mission.setLabel(dto.getLabel());
         mission.setStatus(dto.getStatus());
         mission.setStartDate(dto.getStartDate());
@@ -105,8 +85,6 @@ public class MissionMapper {
         mission.setUser(user);
         mission.setNatureMission(natureMisison);
         mission.setExpense(expense);
-
-        calculateMissionPricing.calculatePricing(mission);
 
         return mission;
     }
@@ -152,7 +130,7 @@ public class MissionMapper {
         NatureMission natureMisison = natureMissionService.getNatureMissionBeanById(dto.getNatureMissionId());
         mission.setNatureMission(natureMisison);
         // Calculate the total price based on the daily rate and duration
-        long duration = calculateMissionPricing.getDifferenceDays(dto.getStartDate(), dto.getEndDate()); 
+        long duration = CalculateMissionPricing.getDifferenceDays(dto.getStartDate(), dto.getEndDate()); 
         if (natureMisison.getIsBilled()) {
             double dailyRate = natureMisison.getAdr();
             mission.setTotalPrice(duration * dailyRate);
