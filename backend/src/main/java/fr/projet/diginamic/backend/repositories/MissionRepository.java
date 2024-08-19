@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import fr.projet.diginamic.backend.entities.Mission;
+import fr.projet.diginamic.backend.enums.StatusEnum;
 
 /**
  * Repository interface for {@link Mission} entities, providing methods to
@@ -68,5 +69,24 @@ public interface MissionRepository extends JpaRepository<Mission, Long>, JpaSpec
 	 *         elements, and so on.
 	 */
 	Page<Mission> findAll(Pageable pageable);
+
+	/**
+     * Retrieves a list of missions for a specific user.
+     * 
+     * @param userId The ID of the user whose missions are to be retrieved.
+     * @return A list of missions associated with the given user ID.
+     */
+	List<Mission> findByUser_Id(Long userId);
+	
+	 /**
+     * Retrieves a paginated list of missions for users managed by a specific manager.
+     * 
+     * @param managerId The ID of the manager whose subordinates' missions are to be retrieved.
+     * @param pageable  The pagination information.
+     * @return A page of missions associated with the subordinates of the given manager.
+     */
+	Page<Mission> findAllByUser_Manager_Id(Long managerId, Pageable pageable);
+
+    public List<Mission> getAllByStatus(StatusEnum statusEnum);
 
 }

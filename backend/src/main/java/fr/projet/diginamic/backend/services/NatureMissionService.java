@@ -3,6 +3,8 @@ package fr.projet.diginamic.backend.services;
 import fr.projet.diginamic.backend.dtos.NatureMissionDTO;
 import fr.projet.diginamic.backend.entities.NatureMission;
 import fr.projet.diginamic.backend.repositories.NatureMissionRepository;
+import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,16 @@ public class NatureMissionService {
     public Optional<NatureMissionDTO> getNatureMissionById(Long id) {
         Optional<NatureMission> natureMission = natureMissionRepository.findById(id);
         return natureMission.map(this::convertToDTO);
+    }
+
+    /**
+     * Get a NatureMission by ID.
+     *
+     * @param id the ID of the NatureMission.
+     * @return an Optional of NatureMissionDTO.
+     */
+    public NatureMission getNatureMissionBeanById(Long id) {
+        return natureMissionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("NatureMission not found with id " + id));
     }
 
     /**
