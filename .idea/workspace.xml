@@ -6,17 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="455828a1-068c-40e2-89f5-6c1b0513bb9f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/configs/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/configs/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/ExpenseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/ExpenseController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/ExpenseLineController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/ExpenseLineController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/ExpenseTypeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/ExpenseTypeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/MissionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/controllers/MissionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/entities/Mission.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/entities/Mission.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/repositories/MissionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/repositories/MissionRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/ExpenseLineService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/ExpenseLineService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/ExpenseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/ExpenseService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/ExpenseTypeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/ExpenseTypeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/MissionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/fr/projet/diginamic/backend/services/MissionService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
