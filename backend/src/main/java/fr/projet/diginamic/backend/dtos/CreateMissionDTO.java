@@ -18,13 +18,32 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 
 public class CreateMissionDTO {
-    private String label;
-    private StatusEnum status;
-    private Date startDate;
-    private Date endDate;
-    private TransportEnum transport;
-    private String departureCity;
-    private String arrivalCity;
-    private Long userId;
-    private Long natureMissionId;
+
+       /** The label or name of the mission */
+       private String label;
+
+       /** The current status of the mission */
+       private StatusEnum status;
+   
+       /** The start date of the mission */
+       private Date startDate;
+   
+       /** The end date of the mission */
+       private Date endDate;
+   
+       /** The transport mode used for the mission */
+       private TransportEnum transport;
+   
+       /** The city from which the mission starts */
+       private String departureCity;
+   
+       /** The city at which the mission ends */
+       private String arrivalCity;
+   
+       /** The unique identifier of the user assigned to the mission */
+       private Long userId;
+   
+       /** The unique identifier of the nature of the mission */
+       private Long natureMissionId;   
 }
+

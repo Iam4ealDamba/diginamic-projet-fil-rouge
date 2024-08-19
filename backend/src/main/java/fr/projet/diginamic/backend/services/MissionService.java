@@ -1,30 +1,38 @@
 package fr.projet.diginamic.backend.services;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
-import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
-import fr.projet.diginamic.backend.utils.MissionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.projet.diginamic.backend.dtos.BountyReportDTO;
+import fr.projet.diginamic.backend.dtos.CreateMissionDTO;
+import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
+import fr.projet.diginamic.backend.entities.NatureMission;
 import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.enums.TransportEnum;
+import fr.projet.diginamic.backend.mappers.MissionMapper;
 import fr.projet.diginamic.backend.repositories.MissionRepository;
+import fr.projet.diginamic.backend.repositories.interfaces.UserRepository;
 import fr.projet.diginamic.backend.specs.MissionSpecifications;
+import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.Getter;
-import lombok.Setter;
+
+import fr.projet.diginamic.backend.exceptions.MissionServiceException;
 
 /**
  * Service class for managing mission entities.
@@ -33,7 +41,14 @@ import lombok.Setter;
 @Service
 public class MissionService {
 
+    @Autowired
+    private MissionRepository missionRepository;
 
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     ExpenseService expenseService;
@@ -45,91 +60,57 @@ public class MissionService {
     MissionMapper missionMapper;
 
     @Autowired
-    private MissionRepository missionRepository;
+    CalculateMissionPricing calculateMissionPricing;
 
-
-
+    //---------------------------------- CREATE MISSION  ------------------------------------ 
     /**
      * Save a mission entity.
      * 
      * @param mission the mission to save.
      * @return the saved mission entity.
      */
-    public Mission createMission(Mission mission) {
+    @Transactional
+    public Mission createMission(Mission mission, String userEmail) {
+
+        UserEntity user = userService.getOneByEmail(userEmail);
+        if(user == null){
+            throw new EntityNotFoundException("Failed to create mission: User not found with email " + userEmail);
+        }
+        mission.setUser(user);
+        mission.setStatus(StatusEnum.INITIAL);
+        CalculateMissionPricing.calculateTotalPrice(mission);
         validateMission(mission, true);
         return missionRepository.save(mission);
     }
 
     /**
-     * Retrieve a single mission by its ID.
+     * Creates a new mission.
+     * This method converts a CreateMissionDTO to a Mission entity, sets its initial status,
+     * validates the mission, saves it to the repository, and then converts it to a DisplayedMissionDTO.
      *
-     * @param id the ID of the mission to retrieve.
-     * @return the found mission entity.
-     * @throws EntityNotFoundException if the mission is not found.
+     * @param dto The CreateMissionDTO object containing the details of the mission to be created.
+     * @return A DisplayedMissionDTO object representing the newly created mission.
+     * @throws IllegalArgumentException if the mission data is invalid.
      */
-    public DisplayedMissionDTO findOneMissionDto(Long id) {
-        return missionRepository.findById(id)
-                .map(m -> MissionMapper.fromBeantoDisplayedMissionDTO(m))
-                .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
+    @Transactional
+    public DisplayedMissionDTO createMission(CreateMissionDTO dto, String userEmail) {
+       
+        Mission bean = missionMapper.fromMissionFormToBean(dto);
+        UserEntity user = userService.getOneByEmail(userEmail);
+        
+        if(user == null){
+            throw new EntityNotFoundException("Failed to create mission: User not found with email " + userEmail);
+  
+        }
+        bean.setUser(user);
+        bean.setStatus(StatusEnum.INITIAL);
+        CalculateMissionPricing.calculateTotalPrice(bean);
+        validateMission(bean, true);
+        Mission newMissionBean = missionRepository.save(bean);
+        return missionMapper.fromBeantoDisplayedMissionDTO(newMissionBean);
     }
-
-    /**
-     * Validates mission data before saving.
-     * 
-     * @param mission the mission to validate
-     * @throws IllegalArgumentException if validation fails
-     * @return the mission if no exception were raised
-     */
-    private void validateMission(Mission mission, boolean isNew) {
-        Date today = new Date();
-        boolean isManager = false;
-        Mission oldMission = findOneMission(mission.getId());
-
-        // Check if the mission starts in the past or today
-        if (!mission.getStartDate().after(today)) {
-            if (isNew) {
-                throw new IllegalArgumentException("Mission cannot start today or in the past.");
-            } else {
-                throw new IllegalArgumentException(
-                        "Modifications to missions scheduled to start today are not allowed.");
-            }
-        }
-
-        // Check for 7-day advance booking for flights
-        if (mission.getTransport() == TransportEnum.AIRPLANE) {
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DATE, 7);
-            if (mission.getStartDate().before(cal.getTime())) {
-                throw new IllegalArgumentException("Flights must be booked at least 7 days in advance.");
-            }
-        }
-        if(!isNew){
-            // Check valid status for managers and non-managers
-            if (isManager) {
-                // TODO: /!\ fix logic: check old status and compare it with new one /!\
-                // + convert string into enum if necessary (create util for it)
-                // Check status is either INITIAL or REJECTED for new or modified missions :
-                if (oldMission.getStatus() != StatusEnum.WAITING) {
-                    throw new IllegalArgumentException("Current status of mission doesn't allow updates by manager.");
-                }
-            } else {
-                if (!(oldMission.getStatus() == StatusEnum.INITIAL || oldMission.getStatus() == StatusEnum.REJECTED)) {
-                    throw new IllegalArgumentException("Current status of mission doesn't allow updates by employee.");
-                }
-            }
-        }
-
-        // Check valid nature of mission
-        if (mission.getNatureMission().getEndDate() != null && mission.getNatureMission().getEndDate().before(today)) {
-            throw new IllegalArgumentException("The nature of the mission is no longer valid.");
-        }
-
-        // Ensure start date is before end date
-        if (mission.getEndDate().before(mission.getStartDate())) {
-            throw new IllegalArgumentException("End date must be after start date.");
-        }
-    }
-
+    
+    //---------------------------------- FIND ONE MISSION  ------------------------------------ 
     /**
      * Retrieve a single mission by its ID.
      * 
@@ -137,17 +118,53 @@ public class MissionService {
      * @return the found mission entity.
      * @throws EntityNotFoundException if the mission is not found.
      */
+    @Transactional(readOnly = true)
     public Mission findOneMission(Long id) {
         return missionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
     }
 
     /**
+     * Retrieve a single mission by its ID.
+     * 
+     * @param id the ID of the mission to retrieve.
+     * @return the found mission entity.
+     * @throws EntityNotFoundException if the mission is not found.
+     */
+    @Transactional(readOnly = true)
+    public DisplayedMissionDTO findOneMissionDto(Long id) {
+        return missionRepository.findById(id)
+                .map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m))
+                .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
+    }
+
+    //---------------------------------- FIND ALL MISSIONS  ------------------------------------ 
+    /**
      * Retrieve all missions.
      * 
      * @return a list of missions.
      */
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional(readOnly = true)
+    public Page<DisplayedMissionDTO> findAllMissions(Pageable pageable) {
+        return missionRepository.findAll(pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
+    }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional(readOnly = true)
+    public List<DisplayedMissionDTO> findAllMissions() {
+        return missionRepository.findAll().stream().map(missionMapper::fromBeantoDisplayedMissionDTO).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<DisplayedMissionDTO> findMissionsByUserId(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("User not found with ID: " + userId);
+        }
+        return missionRepository.findByUser_Id(userId).stream().map(missionMapper::fromBeantoDisplayedMissionDTO).toList();
+    }
+
+    //------------------------------ FIND ALL MISSIONS FOR ADMIN BY SPECS ------------------------------ 
     /**
      * Retrieve all missions that match a given specification.
      * 
@@ -155,19 +172,253 @@ public class MissionService {
      * @param pageable the pagination information.
      * @return a page of missions that match the specification.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
-    public Page<Mission> findAllMissionsWithSpecs(String status, String nature, String labelOrUsername,
+    public Page<DisplayedMissionDTO> findAllMissionsWithSpecsForAdmin(String status, String nature, String labelOrUsername,
             Pageable pageable) {
 
-        boolean isManager = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-                .contains(new SimpleGrantedAuthority("ROLE_MANAGER"));
+        Specification<Mission> spec = MissionSpecifications.createSpecificationForAdmin(status, nature, labelOrUsername);
+               
+        return missionRepository.findAll(spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
+    }
 
-        Specification<Mission> spec = isManager ? createSpecificationForManager(status, nature, labelOrUsername)
-                : createSpecificationForEmployee(status, nature, labelOrUsername);
-        return missionRepository.findAll(spec, pageable);
+    //--------------------------- FIND ALL MISSIONS FOR CURRENT USER BY SPECS --------------------------- 
+    /**
+     * Retrieve all missions for the connected user that match a given specification.
+     * 
+     * @param spec     the specification for filtering missions.
+     * @param pageable the pagination information.
+     * @return a page of missions that match the specification.
+     */
+    @Transactional(readOnly = true)
+    public Page<DisplayedMissionDTO> findAllMissionsWithSpecsForCurrentUser(String email, String status, String nature, String label,
+            Pageable pageable){
+
+                UserEntity user = userService.getOneByEmail(email);
+                if(user == null){
+                    throw new EntityNotFoundException("User not found with email " + email);
+                }
+                Long userId = user.getId();
+            
+                Specification<Mission> spec = createSpecificationForEmployee(userId, status, nature, label);
+
+                try{
+                    return missionRepository.findAll(spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
+                    
+                } catch(Exception e){
+                    throw new MissionServiceException("An error occurred while retrieving missions: ", e);   
+                }
+    }
+
+    //--------------------------- FIND ALL MISSIONS BY MANAGER ID BY SPECS --------------------------- 
+    /**
+     * Retrieve all missions of collaborators under supervision of a given manager and that match a given specification.
+     * 
+     * @param email     the manager's email to retrieve the associated user data for filtering employees missions who are under his/her supervision.
+     * @param spec     the specification for filtering missions.
+     * @param pageable the pagination information.
+     * @return a page of missions that match the specification.
+     */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @Transactional(readOnly = true)
+    public Page<DisplayedMissionDTO> findAllMissionsWithSpecsByManagerId(String email, String status, String nature, String label,
+            Pageable pageable){
+
+                UserEntity manager = userService.getOneByEmail(email);
+                if(manager == null){
+                    throw new EntityNotFoundException("User not found with email " + email);
+                }
+                Long managerId = manager.getId();
+              
+                Specification<Mission> spec = createSpecificationForManager(managerId, status, nature, label);
+
+                try{
+                    return missionRepository.findAll(spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
+                    
+                } catch(Exception e){
+                    throw new MissionServiceException("An error occurred while retrieving missions: ", e);   
+                }
+    }
+
+    //-------------------------------- UPDATE MISSION --------------------------------  
+    /**
+     * Retrieve a single mission by its ID and update it.
+     * 
+     * @param id                the ID of the mission to retrieve and update.
+     * @param updatedMissionDTO the updated mission data.
+     * @return the updated mission DTO.
+     * @throws EntityNotFoundException if the mission is not found.
+     */
+    @Transactional
+    public DisplayedMissionDTO updateMission(Long id, DisplayedMissionDTO updatedMission) {
+        Mission mission = missionMapper.fromDisplayedMissionDTOToBean(updatedMission);
+        
+        if (mission.getStatus() == StatusEnum.REJECTED) {
+            mission.setStatus(StatusEnum.INITIAL);
+        }
+        
+        CalculateMissionPricing.calculateTotalPrice(mission);
+        validateMission(mission, false);
+        missionRepository.save(mission);
+        return missionMapper.fromBeantoDisplayedMissionDTO(mission);
+    }
+
+    //-------------------------------- DELETE MISSION --------------------------------  
+    /**
+     * Delete a mission by its ID.
+     * 
+     * @param id the ID of the mission to delete.
+     * @throws EntityNotFoundException if the mission is not found.
+     */
+    @Transactional
+    public void deleteMission(Long id) {
+        Mission mission = missionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
+   
+        if(mission.getStatus() == StatusEnum.FINISHED){
+            throw new IllegalArgumentException("Cannot delete a mission that is already finished."); 
+        }
+        missionRepository.deleteById(id);
+    }
+    //-------------------------------- UPDATE MISSION STATUS --------------------------------  
+    /**
+     * Update a mission by its ID.
+     * 
+     * @param id the ID of the mission to update.
+     * @throws EntityNotFoundException if the mission is not found.
+     */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @Transactional
+    public DisplayedMissionDTO updateMissionStatus(Long id, String status) {
+        if(status == null || status.isEmpty()){
+            throw new IllegalArgumentException("Status value cannot be null or empty."); 
+        }
+        StatusEnum statusEnum;
+        try {
+            statusEnum = StatusEnum.valueOf(status.toUpperCase());   
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid status value " + status + " " + e);
+        }
+
+        if(statusEnum != StatusEnum.VALIDATED && statusEnum != StatusEnum.REJECTED){
+            throw new IllegalArgumentException("Invalid status value " + status);
+        }
+
+        return missionRepository.findById(id)
+                .map(m -> {
+                    validateMission(m, false);
+                    m.setStatus(statusEnum);
+                    Mission bean = missionRepository.save(m);
+                    return missionMapper.fromBeantoDisplayedMissionDTO(bean);
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
+    }
+
+    //---------------------------------- VALIDATE MISSION  ------------------------------------ 
+    /**
+     * Validates mission data before saving.
+     * 
+     * @param mission the mission to validate
+     * @param isNew   flag indicating if this is a new mission
+     * @throws IllegalArgumentException if validation fails
+     */
+    private void validateMission(Mission mission, boolean isNew) {
+        Date today = new Date();
+        boolean isManager = false;
+        Mission oldMission = isNew ? null : findOneMission(mission.getId());
+
+        validateStartDate(mission.getStartDate(), today, isNew);
+        validateEndDate(mission.getStartDate(), mission.getEndDate());
+        validateTransport(mission.getTransport(), mission.getStartDate());
+        
+        if (!isNew) {
+            validateStatusForUpdate(oldMission, isManager);
+        }
+
+        validateNatureOfMission(mission.getNatureMission(), today);
     }
 
     /**
+     * Validates the start date of the mission.
+     * 
+     * @param startDate the start date of the mission
+     * @param today     the current date
+     * @param isNew     flag indicating if this is a new mission
+     * @throws IllegalArgumentException if the start date is invalid
+     */
+    private void validateStartDate(Date startDate, Date today, boolean isNew) {
+        if (!startDate.after(today)) {
+            if (isNew) {
+                throw new IllegalArgumentException("Mission cannot start today or in the past.");
+            } else {
+                throw new IllegalArgumentException("Modifications to missions scheduled to start today are not allowed.");
+            }
+        }
+    }
+
+    /**
+     * Validates the transport type and booking time for flights.
+     * 
+     * @param transport the transport type of the mission
+     * @param startDate the start date of the mission
+     * @throws IllegalArgumentException if the transport type or booking time is invalid
+     */
+    private void validateTransport(TransportEnum transport, Date startDate) {
+        if (transport == TransportEnum.AIRPLANE) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, 7);
+            if (startDate.before(cal.getTime())) {
+                throw new IllegalArgumentException("Flights must be booked at least 7 days in advance.");
+            }
+        }
+    }
+
+    /**
+     * Validates the status of the mission for updates.
+     * 
+     * @param oldMission the previous state of the mission
+     * @param isManager flag indicating if the user is a manager
+     * @throws IllegalArgumentException if the status is invalid for the update
+     */
+    private void validateStatusForUpdate(Mission oldMission, boolean isManager) {
+        if (isManager) {
+            if (oldMission.getStatus() != StatusEnum.WAITING) {
+                throw new IllegalArgumentException("Current status of mission doesn't allow updates by manager.");
+            }
+        } else {
+            if (!(oldMission.getStatus() == StatusEnum.INITIAL || oldMission.getStatus() == StatusEnum.REJECTED)) {
+                throw new IllegalArgumentException("Current status of mission doesn't allow updates by employee.");
+            }
+        }
+    }
+
+    /**
+     * Validates the nature of the mission.
+     * 
+     * @param natureMission the nature of the mission
+     * @param today         the current date
+     * @throws IllegalArgumentException if the nature of the mission is invalid
+     */
+    private void validateNatureOfMission(NatureMission natureMission, Date today) {
+        if (natureMission.getEndDate() != null && natureMission.getEndDate().before(today)) {
+            throw new IllegalArgumentException("The nature of the mission is no longer valid.");
+        }
+    }
+
+    /**
+     * Validates the end date of the mission.
+     * 
+     * @param startDate the start date of the mission
+     * @param endDate   the end date of the mission
+     * @throws IllegalArgumentException if the end date is before the start date
+     */
+    private void validateEndDate(Date startDate, Date endDate) {
+        if (endDate.before(startDate)) {
+            throw new IllegalArgumentException("End date must be after start date.");
+        }
+    }
+
+    //-------------------------------- SPECIFICATIONS --------------------------------
+       /**
      * Creates a Specification object for filtering missions based on criteria
      * applicable to managers.
      * This method constructs a dynamic query specification that managers can use to
@@ -190,8 +441,8 @@ public class MissionService {
      * @return A Specification object that can be used to perform the query with the
      *         specified criteria.
      */
-    private Specification<Mission> createSpecificationForManager(String status, String nature, String labelOrUsername) {
-        return MissionSpecifications.filterMissionsByCriteriaForManager(status, nature, labelOrUsername);
+    private Specification<Mission> createSpecificationForManager(Long managerId, String status, String nature, String labelOrUsername) {
+        return MissionSpecifications.filterMissionsByCriteriaForManager(managerId, status, nature, labelOrUsername);
     }
 
     /**
@@ -216,68 +467,74 @@ public class MissionService {
      * @return A Specification object that can be used to perform the query with the
      *         specified criteria.
      */
-    private Specification<Mission> createSpecificationForEmployee(String status, String nature, String label) {
-        return MissionSpecifications.filterMissionsByCriteriaForEmployee(status, nature, label);
+    private Specification<Mission> createSpecificationForEmployee(Long userId, String status, String nature, String label) {
+        return MissionSpecifications.filterMissionsByCriteriaForEmployee(userId, status, nature, label);
     }
 
+    //-------------------------------- BOUNTY REPORT --------------------------------
+    
     /**
-     * Retrieve a single mission by its ID and update it.
-     * 
-     * @param id             the ID of the mission to retrieve and update.
-     * @param updatedMission the updated mission data.
-     * @return the updated mission entity.
-     * @throws EntityNotFoundException if the mission is not found.
+     * Retrieves a report of bounties for a user for the current year.
+     * This method fetches all missions for a given user, filters the missions to include only those with bounties for the current year,
+     * and calculates various statistics such as total number of bounties, total amount of bounties, and highest bounty amount.
+     *
+     * @param userId The ID of the user for whom to retrieve the bounty report.
+     * @return A BountyReportDTO object containing the bounty statistics and a list of missions with bounties.
+     * @throws IllegalArgumentException if the userId is null.
      */
-    @Transactional
-    public Mission updateMission(Long id, Mission updatedMission) {
-        validateMission(updatedMission, false);
-        return missionRepository.findById(id).map(mission -> {
-            mission.setStatus(StatusEnum.INITIAL);
-            mission.setLabel(updatedMission.getLabel());
-            mission.setTotalPrice(updatedMission.getTotalPrice());
-            mission.setStartDate(updatedMission.getStartDate());
-            mission.setEndDate(updatedMission.getEndDate());
-            mission.setTransport(updatedMission.getTransport());
-            mission.setDepartureCity(updatedMission.getDepartureCity());
-            mission.setArrivalCity(updatedMission.getArrivalCity());
-            mission.setBountyDate(updatedMission.getBountyDate());
-            mission.setBountyAmount(updatedMission.getBountyAmount());
-            mission.setUser(updatedMission.getUser());
-            mission.setNatureMission(updatedMission.getNatureMission());
-            mission.setExpense(updatedMission.getExpense());
-            return missionRepository.save(mission);
-        }).orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
-    }
+    @Transactional(readOnly = true)
+    public BountyReportDTO getBountiesReportForUser(Long userId){
 
-    /**
-     * Delete a mission by its ID.
-     * 
-     * @param id the ID of the mission to delete.
-     * @throws EntityNotFoundException if the mission is not found.
-     */
-    @Transactional
-    public void deleteMission(Long id) {
-        if (!missionRepository.existsById(id)) {
-            throw new EntityNotFoundException("Mission not found with ID: " + id);
+        if (userId == null) {
+            throw new IllegalArgumentException("Invalid userId");
         }
-        missionRepository.deleteById(id);
+
+        List<Mission> userMissions = missionRepository.findByUser_Id(userId);
+
+         List<DisplayedMissionDTO> currentYearMissionsWithBounties = userMissions.stream()
+            .filter(this::isBountyDateInCurrentYear)
+            .filter(m -> m.getBountyAmount() > 0.0)
+            .map(bean -> missionMapper.fromBeantoDisplayedMissionDTO(bean))
+            .collect(Collectors.toList());
+        
+        long totalNumberOfBounties = currentYearMissionsWithBounties.stream().filter(m -> m.getBountyAmount() > 0.0).count();
+
+        double totalAmountOfBounties = currentYearMissionsWithBounties.stream().mapToDouble(DisplayedMissionDTO::getBountyAmount).sum();
+
+        double highestBountyAmount = currentYearMissionsWithBounties.stream()
+            .mapToDouble(DisplayedMissionDTO::getBountyAmount)
+            .max()
+            .orElse(0.0);
+
+        // Get a map of <month, totalBounty> for months with bounties only: 
+        Map<String, Double> totalBountiesPerMonth = calculateMissionPricing.summarizeBountiesPerMonth(currentYearMissionsWithBounties);
+
+        List<String> listMonths = Arrays.asList(
+                "JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN",
+                "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE"
+        );
+
+        for (String month : listMonths) {
+            totalBountiesPerMonth.putIfAbsent(month, 0.0);
+        }
+
+        return new BountyReportDTO(totalNumberOfBounties,highestBountyAmount, totalAmountOfBounties, totalBountiesPerMonth,currentYearMissionsWithBounties);   
     }
 
     /**
-     * Update a mission by its ID.
-     * 
-     * @param id the ID of the mission to update.
-     * @throws EntityNotFoundException if the mission is not found.
+     * Checks if the bounty date of a mission falls within the current year.
+     * This method compares the bounty date of a given mission to the current year to determine if it is within the same year.
+     *
+     * @param mission The mission to check.
+     * @return true if the bounty date of the mission is within the current year, false otherwise.
      */
-    @Transactional
-    public Object updateMissionStatus(Long id, StatusEnum status) {
-        return missionRepository.findById(id)
-                .map(m -> {
-                    validateMission(m, false);
-                    m.setStatus(status);
-                    return missionRepository.save(m);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
-
+    public boolean isBountyDateInCurrentYear (Mission mission){
+        
+        if (mission.getBountyDate() == null) {
+            return false;
+        }
+        String currentYear = new SimpleDateFormat("YYYY", Locale.FRENCH).format(new Date());
+        String bountyYearDate = new SimpleDateFormat("YYYY", Locale.FRENCH).format(mission.getBountyDate());
+        return currentYear.equals(bountyYearDate);
     }
 }

@@ -52,4 +52,6 @@ public interface NatureMissionRepository extends JpaRepository<NatureMission, In
      * @return true if an active NatureMission with the given label exists, false otherwise.
      */
     boolean existsByLabelAndEndDateIsNull(String label);
+
 }
+

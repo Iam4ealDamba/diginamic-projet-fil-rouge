@@ -2,10 +2,16 @@ package fr.projet.diginamic.backend.services;
 
 import java.util.ArrayList;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import fr.projet.diginamic.backend.dtos.ExpenseDto;
 import fr.projet.diginamic.backend.dtos.ExpenseLineDto;
+import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.ExpenseLine;
 import fr.projet.diginamic.backend.entities.ExpenseType;
 import fr.projet.diginamic.backend.repositories.interfaces.ExpenseLineRepository;
@@ -23,18 +29,14 @@ public class ExpenseLineService {
 
 	@Autowired
 	private ExpenseLineMapper expenseLineMapper;
-
-	/**
-	 * method to get all ExpenseLines and transform them into ExpenseLineDto
-	 * 
-	 * @return expenseLinesDto, a Dto with all ExpenseLines
-	 */
-	public ArrayList<ExpenseLineDto> getExpenseLines() {
-		ArrayList<ExpenseLine> expenseLines = expenseLineRepo.findAll();
-		ArrayList<ExpenseLineDto> expenseLinesDto = new ArrayList();
-		for (ExpenseLine expenseLine : expenseLines) {
-			expenseLinesDto.add(expenseLineMapper.BeanToDto(expenseLine));
-		}
+	
+	/** method to get all ExpenseLines and transform them into ExpenseLineDto
+     * @return expenseLinesDto, a Dto with all ExpenseLines
+     */
+	public Page<ExpenseLineDto> getExpenseLines(int page, int size){
+		Pageable pagination = PageRequest.of(page, size);
+    	Page<ExpenseLine>expenseLines=expenseLineRepo.findAll(pagination);
+    	Page<ExpenseLineDto> expenseLinesDto = expenseLines.map(expenseLineMapper::BeanToDto);
 		return expenseLinesDto;
 	}
 
@@ -44,8 +46,8 @@ public class ExpenseLineService {
 	 * @param id, the id of the expenseLine
 	 * @return An expenseLineDto
 	 */
-	public ExpenseLineDto getExpenseLine(Long id) {
-		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElse(null);
+	public ExpenseLineDto getExpenseLine(Long id)  {
+		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Expense not find with id: " +id ));
 		ExpenseLineDto expenseLineDto = expenseLineMapper.BeanToDto(expenseLine);
 		return expenseLineDto;
 	}
@@ -53,7 +55,7 @@ public class ExpenseLineService {
 	/**
 	 * Method to save an expenseLine
 	 * 
-	 * @param expense line, the expenseLine to save
+	 * @param expenseLine, the expenseLine to save
 	 * @return the expenseLine who was saved
 	 */
 	public ExpenseLine saveExpenseLine(ExpenseLineDto expenseLine) {
@@ -69,7 +71,7 @@ public class ExpenseLineService {
 	 * @return the expenseLine deleted
 	 */
 	public ExpenseLine deleteExpenseLine(Long id) {
-		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElse(null);
+		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElseThrow(()-> new EntityNotFoundException("ExpenseLine not find with id: " +id ));
 		expenseLineRepo.delete(expenseLine);
 		return expenseLine;
 	}
@@ -81,8 +83,8 @@ public class ExpenseLineService {
 	 * @param id,          the id of the expenseLine to modify
 	 * @return the expenseLine after modification
 	 */
-	public ExpenseLine modifyExpenseLine(ExpenseLineDto expenseLine, Long id) {
-		ExpenseLine expenseLineBdd = expenseLineRepo.findById(id).orElse(null);
+	public ExpenseLine modifyExpenseLine(ExpenseLineDto expenseLine, Long id)  {
+		ExpenseLine expenseLineBdd = expenseLineRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Expense not find with id: " +id ));
 		expenseLineBdd.setTva(expenseLine.getTva());
 		expenseLineBdd.setAmount(expenseLine.getAmount());
 		expenseLineBdd.setDate(expenseLine.getDate());

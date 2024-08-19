@@ -23,7 +23,7 @@ public class NatureMissionMapper {
         entity.setIsBilled(dto.getIsBilled()); // Correct method name
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
-        entity.setBountyRate(dto.getBonusPercentage());
+        entity.setBountyRate(dto.getBountyRate());
         entity.setIsEligibleToBounty(dto.getIsEligibleToBounty()); // Add missing field
         return entity;
     }
@@ -42,7 +42,7 @@ public class NatureMissionMapper {
         dto.setIsBilled(entity.getIsBilled()); // Correct method name
         dto.setStartDate(entity.getStartDate());
         dto.setEndDate(entity.getEndDate());
-        dto.setBonusPercentage(entity.getBountyRate());
+        dto.setBountyRate(entity.getBountyRate());
         dto.setIsEligibleToBounty(entity.getIsEligibleToBounty()); // Add missing field
         return dto;
     }

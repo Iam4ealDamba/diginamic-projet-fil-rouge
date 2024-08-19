@@ -1,4 +1,4 @@
-package fr.projet.diginamic.backend.utils;
+package fr.projet.diginamic.backend.mappers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,13 +9,15 @@ import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.entities.NatureMission;
 import fr.projet.diginamic.backend.entities.UserEntity;
-import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.services.ExpenseService;
-import fr.projet.diginamic.backend.services.MissionService;
 import fr.projet.diginamic.backend.services.NatureMissionService;
 import fr.projet.diginamic.backend.services.UserService;
-import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
 
+/**
+ * Mapper class for converting between Mission entities and their corresponding DTOs.
+ * This class handles the transformation logic for creating, updating, and displaying
+ * mission data. It also includes calculations for mission pricing and bounties.
+ */
 @Service
 public class MissionMapper {
 
@@ -24,14 +26,18 @@ public class MissionMapper {
 
     @Autowired
     UserService userService;
-
-    @Autowired
-    static CalculateMissionPricing calculateMissionPricing;
-
+    
     @Autowired
     ExpenseService expenseService;
 
-    public static DisplayedMissionDTO fromBeantoDisplayedMissionDTO(Mission mission) {
+    /**
+     * Converts a Mission entity to a DisplayedMissionDTO.
+     * This method includes calculations for total price and bounty amount.
+     * 
+     * @param mission The Mission entity to convert.
+     * @return The corresponding DisplayedMissionDTO.
+     */
+    public DisplayedMissionDTO fromBeantoDisplayedMissionDTO(Mission mission) {
         DisplayedMissionDTO dto = new DisplayedMissionDTO();
         dto.setId(mission.getId());
         dto.setLabel(mission.getLabel());
@@ -44,29 +50,48 @@ public class MissionMapper {
         dto.setUserId(mission.getUser().getId());
         dto.setNatureMissionId(mission.getNatureMission().getId());
         dto.setExpenseId(mission.getExpense() != null ? mission.getExpense().getId() : null);
+        dto.setBountyAmount(mission.getBountyAmount());
+        dto.setBountyDate(mission.getBountyDate());
+        dto.setTotalPrice(mission.getTotalPrice());
 
-        // Calculate the total price based on the daily rate and duration
-        long duration = calculateMissionPricing.getDifferenceDays(mission.getStartDate(), mission.getEndDate()) ;
-        if (mission.getNatureMission().getIsBilled()) {
-            double dailyRate = mission.getNatureMission().getAdr();
-            dto.setTotalPrice(duration * dailyRate);
-        } else {
-            dto.setTotalPrice(0.0);
-        }
-
-        // Set bounty amount if the mission is completed and eligible for a bounty
-        // TODO: handle bounty date : ask the group if can remove it
-        if (mission.getStatus() == StatusEnum.FINISHED && mission.getNatureMission().getIsEligibleToBounty()) {
-            double bountyRate = mission.getNatureMission().getBountyRate() / 100.0;
-            dto.setBountyAmount(dto.getTotalPrice() * bountyRate);
-            dto.setBountyDate(mission.getEndDate()); // Bounty date set to the end date of the mission?
-        } else {
-            dto.setBountyAmount(0.0);
-        }
         dto.setLabelNatureMission(mission.getNatureMission().getLabel());
         return dto;
     }
 
+    /**
+     * Converts a DisplayedMissionDTO to a Mission entity.
+     * This method includes fetching related entities and recalculating mission pricing.
+     * 
+     * @param dto The DisplayedMissionDTO to convert.
+     * @return The corresponding Mission entity.
+     */
+    public Mission fromDisplayedMissionDTOToBean(DisplayedMissionDTO dto) {
+        Mission mission = new Mission(dto.getId());
+        mission.setLabel(dto.getLabel());
+        mission.setStatus(dto.getStatus());
+        mission.setStartDate(dto.getStartDate());
+        mission.setEndDate(dto.getEndDate());
+        mission.setTransport(dto.getTransport());
+        mission.setDepartureCity(dto.getDepartureCity());
+        mission.setArrivalCity(dto.getArrivalCity());
+
+        UserEntity user = userService.getOne(dto.getUserId());
+        NatureMission natureMisison = natureMissionService.getNatureMissionBeanById(dto.getNatureMissionId());
+
+        Expense expense = dto.getExpenseId() != null ? expenseService.getExpenseBean(dto.getExpenseId()) : null;
+        mission.setUser(user);
+        mission.setNatureMission(natureMisison);
+        mission.setExpense(expense);
+
+        return mission;
+    }
+
+     /**
+     * Converts a Mission entity to a CreateMissionDTO.
+     * 
+     * @param bean The Mission entity to convert.
+     * @return The corresponding CreateMissionDTO.
+     */
     public CreateMissionDTO fromBeanToMissionForm(Mission bean) {
         CreateMissionDTO dto = new CreateMissionDTO();
         dto.setLabel(bean.getLabel());
@@ -81,6 +106,12 @@ public class MissionMapper {
         return dto;
     }
 
+    /**
+     * Converts a CreateMissionDTO to a Mission entity.
+     * 
+     * @param dto The CreateMissionDTO to convert.
+     * @return The corresponding Mission entity.
+     */
     public Mission fromMissionFormToBean(CreateMissionDTO dto) {
         Mission mission = new Mission();
         mission.setLabel(dto.getLabel());
@@ -92,45 +123,12 @@ public class MissionMapper {
         mission.setArrivalCity(dto.getArrivalCity());
         mission.setBountyAmount(0.0);
         mission.setBountyDate(null);
-
-
+    
         NatureMission natureMisison = natureMissionService.getNatureMissionBeanById(dto.getNatureMissionId());
         mission.setNatureMission(natureMisison);
-        // Calculate the total price based on the daily rate and duration
-        long duration = calculateMissionPricing.getDifferenceDays(dto.getStartDate(), dto.getEndDate());
-        if (natureMisison.getIsBilled()) {
-            double dailyRate = natureMisison.getAdr();
-            mission.setTotalPrice(duration * dailyRate);
-        } else {
-            mission.setTotalPrice(0.0);
-        }
 
         UserEntity user = userService.getOne(dto.getUserId());
         mission.setUser(user);
-        return mission;
-    }
-
-    public Mission displayedMissionDTOToBean(DisplayedMissionDTO dto) {
-        MissionService missionService = new MissionService();
-
-        Mission mission = missionService.findOneMission(dto.getId());
-        mission.setLabel(dto.getLabel());
-        mission.setStatus(dto.getStatus());
-        mission.setStartDate(dto.getStartDate());
-        mission.setEndDate(dto.getEndDate());
-        mission.setTransport(dto.getTransport());
-        mission.setDepartureCity(dto.getDepartureCity());
-        mission.setArrivalCity(dto.getArrivalCity());
-
-        UserEntity user = userService.getOne(dto.getUserId());
-        NatureMission natureMisison = natureMissionService.getNatureMissionBeanById(dto.getNatureMissionId());
-        Expense expense = dto.getExpenseId() != null ? expenseService.getExpenseBean(dto.getExpenseId()) : null;
-        mission.setUser(user);
-        mission.setNatureMission(natureMisison);
-        mission.setExpense(expense);
-
-        calculateMissionPricing.calculatePricing(mission);
-
         return mission;
     }
 

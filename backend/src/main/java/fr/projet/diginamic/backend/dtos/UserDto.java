@@ -30,4 +30,6 @@ public class UserDto {
 
     /** The role of the user */
     private String role;
+
 }
+

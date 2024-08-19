@@ -1,6 +1,5 @@
 package fr.projet.diginamic.backend.dtos;
 
-import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -9,23 +8,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/** The Dto of the expense */
+/** The Dto of the expenseType */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
 @EqualsAndHashCode
-public class ExpenseDto {
+public class ExpenseTypeDto {
 	
-	/** The Id of the expense */
+	/** The id of the expenseTypeDto */
 	private Long id;
-
-	/** The date of the expense */
-	private Date date;
 	
-    /** The date of the status */
-	private String status;
-	
+	/** The type of the expenseTypeDto */
+	private String type;
 
 }

@@ -2,17 +2,47 @@ package fr.projet.diginamic.backend.specs;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import jakarta.persistence.criteria.JoinType;
+import fr.projet.diginamic.backend.entities.Mission;
+import fr.projet.diginamic.backend.entities.NatureMission;
+import fr.projet.diginamic.backend.entities.UserEntity;
+import fr.projet.diginamic.backend.enums.StatusEnum;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Root;
-
-import fr.projet.diginamic.backend.entities.Mission;
-import fr.projet.diginamic.backend.entities.UserEntity;
-
+/**
+ * Class containing various specifications for querying Mission entities.
+ * Specifications are used to create dynamic and complex queries using the Criteria API.
+ */
 public class MissionSpecifications {
+
+    /**
+     * Specification to filter missions based on the manager's ID.
+     * 
+     * @param id the ID of the manager to filter by.
+     * @return a Specification that filters missions where the manager's ID matches the given ID.
+     */
+    public static Specification<Mission> hasManagerId (Long id){
+
+        return (root, query, criteriaBuilder) -> {
+            if(id == null){
+                return criteriaBuilder.conjunction();
+            }
+            Join<Mission, UserEntity> userJoin = root.join("user", JoinType.LEFT);          
+            return criteriaBuilder.equal(userJoin.get("manager").get("id"), id);
+        };
+    }
+
+    public static Specification<Mission> hasUserId (Long id){
+
+        return (root, query, criteriaBuilder) -> {
+            if(id == null){
+                return criteriaBuilder.conjunction();
+            }
+            Join<Mission, UserEntity> userJoin = root.join("user", JoinType.LEFT);          
+            return criteriaBuilder.equal(userJoin.get("id"), id);
+        };
+    }
 
     /**
      * Specification to filter missions by status using the 'type' field of the
@@ -63,16 +93,16 @@ public class MissionSpecifications {
             } else {
                 Join<Mission, UserEntity> userJoin = root.join("user", JoinType.LEFT);
                 String[] nameParts = userName.trim().toLowerCase().split("\\s+");
-
+                
                 Predicate namePredicate;
-
+    
                 if (nameParts.length == 1) {
                     Predicate firstNamePredicate = criteriaBuilder.like(
                             criteriaBuilder.lower(userJoin.get("firstName")), "%" + nameParts[0] + "%");
-
+    
                     Predicate lastNamePredicate = criteriaBuilder.like(
                             criteriaBuilder.lower(userJoin.get("lastName")), "%" + nameParts[0] + "%");
-
+    
                     namePredicate = criteriaBuilder.or(firstNamePredicate, lastNamePredicate);
                 } else {
                     Predicate combinedPredicate = criteriaBuilder.and(
@@ -114,11 +144,33 @@ public class MissionSpecifications {
     }
 
     /**
+     * Creates a specification to find missions eligible for bounty calculation.
+     * This specification filters missions based on the following criteria:
+     * - The mission status is "FINISHED".
+     * - The nature of the mission is marked as eligible for bounty.
+     * - The bounty date is null, indicating that the bounty has not been calculated yet.
+     *
+     * @return a specification to find missions that are eligible for bounty calculation
+     */
+    public static Specification<Mission> missionEligibleForBountyToCalculate(){
+        return (root, query, criteriaBuilder) -> {
+            Join<Mission, NatureMission> natureMissionJoin = root.join("natureMission", JoinType.LEFT);
+            Predicate hasStatusFinished = criteriaBuilder.equal(root.get("status"), StatusEnum.FINISHED);
+            Predicate isEligibleToBounty = criteriaBuilder.isTrue(natureMissionJoin.get("isEligibleToBounty"));
+            Predicate bountyDateIsNull = criteriaBuilder.isNull(root.get("bountyDate"));
+
+            return criteriaBuilder.and(hasStatusFinished, isEligibleToBounty, bountyDateIsNull);
+            
+        };
+    }
+
+    /**
      * Combines multiple search and filter specifications into one based on various
      * mission attributes.
      * This specification allows filtering by status, nature, user name, and mission
      * label.
      *
+     * @param managerId       The manager's id of the employees to filter by.
      * @param status          The status of the mission to filter by.
      * @param nature          The nature of the mission to filter by.
      * @param labelOrUsername Either a username or a mission's label to filter by.
@@ -126,9 +178,45 @@ public class MissionSpecifications {
      * @return A combined specification based on the provided filters.
      */
 
-    public static Specification<Mission> filterMissionsByCriteriaForManager(String status, String nature,
+    public static Specification<Mission> createSpecificationForAdmin(String status, String nature,
             String labelOrUsername) {
         Specification<Mission> spec = Specification.where(null);
+
+        if (status != null && !status.isEmpty()) {
+            spec = spec.and(hasStatus(status));
+        }
+
+        if (nature != null && !nature.isEmpty()) {
+            spec = spec.and(hasNature(nature));
+        }
+
+        if (labelOrUsername != null && !labelOrUsername.isEmpty()) {
+            spec = spec.and(Specification.where(hasUserName(labelOrUsername)).or(hasLabel(labelOrUsername)));
+        }
+        return spec;
+    }
+
+    /**
+     * Combines multiple search and filter specifications into one based on various
+     * mission attributes.
+     * This specification allows filtering by status, nature, user name, and mission
+     * label.
+     *
+     * @param managerId       The manager's id of the employees to filter by.
+     * @param status          The status of the mission to filter by.
+     * @param nature          The nature of the mission to filter by.
+     * @param labelOrUsername Either a username or a mission's label to filter by.
+     * 
+     * @return A combined specification based on the provided filters.
+     */
+
+    public static Specification<Mission> filterMissionsByCriteriaForManager(Long managerId, String status, String nature,
+            String labelOrUsername) {
+        Specification<Mission> spec = Specification.where(null);
+
+        if(managerId != null){
+            spec = spec.and(hasManagerId(managerId));
+        }
 
         if (status != null && !status.isEmpty()) {
             spec = spec.and(hasStatus(status));
@@ -161,9 +249,14 @@ public class MissionSpecifications {
      * @return A Specification<Mission> that can be used to filter missions based on
      *         the provided criteria.
      */
-    public static Specification<Mission> filterMissionsByCriteriaForEmployee(String status, String nature,
+    public static Specification<Mission> filterMissionsByCriteriaForEmployee(Long userId, String status, String nature,
             String label) {
         Specification<Mission> spec = Specification.where(null);
+
+        if(userId != null){
+            spec = spec.and(hasUserId(userId));
+        }
+
         if (status != null && !status.isEmpty()) {
             spec = spec.and(hasStatus(status));
         }
