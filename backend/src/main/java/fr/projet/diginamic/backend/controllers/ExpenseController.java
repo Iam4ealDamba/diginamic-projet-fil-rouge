@@ -73,7 +73,7 @@ public class ExpenseController {
     @GetMapping("/user")
     public Page<ExpenseDto> getMyExpenses(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                           @RequestParam(value = "page", defaultValue = "0") int page,
-                                          @RequestParam(value = "size", defaultValue = "10") int size) throws Exception {
+                                          @RequestParam(value = "size", defaultValue = "10") int size) {
         return expenseService.getMyExpenses(page, size, token);
     }
 
@@ -85,7 +85,6 @@ public class ExpenseController {
      * @param size  The size of the page to retrieve, with a default value of 10 if not specified.
      * @param token The JWTtoken of the connected user
      * @return A list of ExpenseDto
-     * @throws Exception if there is no result
      */
     @Operation(
             summary = "Get a paginated list of all expenses for a manager",
@@ -103,7 +102,7 @@ public class ExpenseController {
     @GetMapping("/manager")
     public Page<ExpenseDto> getExpensesForManager(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                                   @RequestParam(value = "page", defaultValue = "0") int page,
-                                                  @RequestParam(value = "size", defaultValue = "10") int size) throws Exception {
+                                                  @RequestParam(value = "size", defaultValue = "10") int size) {
         return expenseService.getExpensesForManager(page, size, token);
     }
 
@@ -113,16 +112,15 @@ public class ExpenseController {
      *
      * @param expense, the expense to save
      * @return a responseEntity with a success message
-     * @throws Exception if there is no result
      */
     @Operation(summary = "Create a new mission", description = "Create a new expense . Returns a success response or errors.")
     @ApiResponse(responseCode = "201", description = "Expense created successfully", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "400", description = "Invalid Json", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class)))
     @PostMapping
-    public ResponseEntity<String> saveExpense(@RequestBody ExpenseDto expense) throws Exception {
+    public ResponseEntity<String> saveExpense(@RequestBody ExpenseDto expense) {
         Expense expenseSave = expenseService.saveExpense(expense);
         if (expenseSave == null) {
-            throw new Exception("The expense was not saved");
+            new ResponseEntity<>("fail", HttpStatus.NOT_IMPLEMENTED);
         }
         return new ResponseEntity<>("Success", HttpStatus.CREATED);
     }
@@ -139,10 +137,10 @@ public class ExpenseController {
     @ApiResponse(responseCode = "200", description = "Expense found and returned successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExpenseWithLinesDto.class)))
     @ApiResponse(responseCode = "404", description = "Expense not found", content = @Content(mediaType = "application/json"))
     @GetMapping("/{id}")
-    public ExpenseWithLinesDto getExpense(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable Long id) throws Exception {
+    public ExpenseWithLinesDto getExpense(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable Long id) {
         ExpenseWithLinesDto expense = expenseService.getExpense(id, token);
         if (expense == null) {
-            throw new Exception("No expense found");
+            new ResponseEntity<>("fail", HttpStatus.BAD_REQUEST);
         }
         return expense;
     }

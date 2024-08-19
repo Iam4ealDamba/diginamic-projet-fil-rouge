@@ -44,7 +44,6 @@ public class ExpenseLineController {
 	 /** Endpoint to save one ExpenseLine 
 	     * @param expenseLine, the ExpenseLine to save
 	     * @return a responseEntity with a succes message
-	     * @throws Exception if the save doesn't work
 	     */
 	 @Operation(summary = "Save a new ExpenseLine", description = "Saves a new ExpenseLine to the database.")
 	 @ApiResponses(value = {
@@ -54,17 +53,17 @@ public class ExpenseLineController {
 					 content = @Content(mediaType = "application/json"))
 	 })
 	 @PostMapping
-	    public  ResponseEntity<String> saveExpenseLine(@RequestBody ExpenseLineDto expenseLine) throws Exception {
+	    public  ResponseEntity<String> saveExpenseLine(@RequestBody ExpenseLineDto expenseLine)  {
 		 ExpenseLine expenseLineSave= expenseLineService.saveExpenseLine(expenseLine);
 		 if(expenseLineSave== null) {
-	    		throw new Exception("The expenseLine was not save");
+			 new ResponseEntity<>("fail", HttpStatus.NOT_IMPLEMENTED);
 	    	}
 	        return new ResponseEntity<>("Success", HttpStatus.CREATED);
 	    }
 	 /** Endpoint to obtain one ExpenseLine by the id
 	     * @param id, the expenseLine id
 	     * @return the expenseLine found
-	     * @throws Exception if there is no result
+
 	     */
 	 @Operation(summary = "Get an ExpenseLine by ID", description = "Fetches a single ExpenseLine by its unique identifier.")
 	 @ApiResponses(value = {
@@ -74,10 +73,10 @@ public class ExpenseLineController {
 					 content = @Content(mediaType = "application/json"))
 	 })
 	 @GetMapping("/{id}")
-	    public ExpenseLineDto getExpenseLine(@PathVariable Long id) throws Exception {
+	    public ExpenseLineDto getExpenseLine(@PathVariable Long id) {
 		 ExpenseLineDto expenseLine= expenseLineService.getExpenseLine(id);
 	        if(expenseLine== null) {
-	    		throw new Exception("No expenseLine found");
+				new ResponseEntity<>("fail", HttpStatus.BAD_REQUEST);
 	    	}
 	    	return expenseLine;
 	    }
@@ -85,7 +84,7 @@ public class ExpenseLineController {
 	 /** Endpoint to delete one Expense by the id
 	     * @param id, the expense id
 	     * @return ResponseEntity with a success message
-	     * @throws Exception if there is nothing to delete
+
 	     */
 	 @Operation(summary = "Delete an ExpenseLine by ID", description = "Deletes a single ExpenseLine by its unique identifier.")
 	 @ApiResponses(value = {
@@ -95,10 +94,10 @@ public class ExpenseLineController {
 					 content = @Content(mediaType = "application/json"))
 	 })
 	 @DeleteMapping
-	    public ResponseEntity<String> DeleteExpenseLine(@PathVariable Long id) throws Exception {
+	    public ResponseEntity<String> DeleteExpenseLine(@PathVariable Long id)  {
 		 ExpenseLine expenseLine= expenseLineService.deleteExpenseLine(id);
 	        if(expenseLine== null) {
-	    		throw new Exception("The expenseLine was not deleted");
+				new ResponseEntity<>("fail", HttpStatus.NOT_FOUND);
 	    	}
 	        return new ResponseEntity<>("Success", HttpStatus.CREATED);
 	    }
@@ -117,8 +116,11 @@ public class ExpenseLineController {
 					 content = @Content(mediaType = "application/json"))
 	 })
 	 @PutMapping("/{id}")
-	    public ResponseEntity<String> modifyExpenseLine(@RequestBody ExpenseLineDto expenseLine, @PathVariable Long id) throws Exception{
+	    public ResponseEntity<String> modifyExpenseLine(@RequestBody ExpenseLineDto expenseLine, @PathVariable Long id) {
 	        ExpenseLine expenseLineModify = expenseLineService.modifyExpenseLine(expenseLine,id);
+		 if(expenseLineModify== null) {
+			 new ResponseEntity<>("fail", HttpStatus.NOT_MODIFIED);
+		 }
 	        return new ResponseEntity<>("Success", HttpStatus.OK);
 	    }
 

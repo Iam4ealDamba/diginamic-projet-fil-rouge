@@ -2,6 +2,7 @@ package fr.projet.diginamic.backend.services;
 
 import java.util.ArrayList;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,8 +46,8 @@ public class ExpenseLineService {
 	 * @param id, the id of the expenseLine
 	 * @return An expenseLineDto
 	 */
-	public ExpenseLineDto getExpenseLine(Long id) throws Exception {
-		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElseThrow(Exception::new);
+	public ExpenseLineDto getExpenseLine(Long id)  {
+		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Expense not find with id: " +id ));
 		ExpenseLineDto expenseLineDto = expenseLineMapper.BeanToDto(expenseLine);
 		return expenseLineDto;
 	}
@@ -54,7 +55,7 @@ public class ExpenseLineService {
 	/**
 	 * Method to save an expenseLine
 	 * 
-	 * @param expense line, the expenseLine to save
+	 * @param expenseLine, the expenseLine to save
 	 * @return the expenseLine who was saved
 	 */
 	public ExpenseLine saveExpenseLine(ExpenseLineDto expenseLine) {
@@ -69,8 +70,8 @@ public class ExpenseLineService {
 	 * @param id, the id of the expenseLine to delete
 	 * @return the expenseLine deleted
 	 */
-	public ExpenseLine deleteExpenseLine(Long id) throws Exception {
-		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElseThrow(Exception::new);
+	public ExpenseLine deleteExpenseLine(Long id) {
+		ExpenseLine expenseLine = expenseLineRepo.findById(id).orElseThrow(()-> new EntityNotFoundException("ExpenseLine not find with id: " +id ));
 		expenseLineRepo.delete(expenseLine);
 		return expenseLine;
 	}
@@ -82,8 +83,8 @@ public class ExpenseLineService {
 	 * @param id,          the id of the expenseLine to modify
 	 * @return the expenseLine after modification
 	 */
-	public ExpenseLine modifyExpenseLine(ExpenseLineDto expenseLine, Long id) throws Exception {
-		ExpenseLine expenseLineBdd = expenseLineRepo.findById(id).orElseThrow(Exception::new);
+	public ExpenseLine modifyExpenseLine(ExpenseLineDto expenseLine, Long id)  {
+		ExpenseLine expenseLineBdd = expenseLineRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Expense not find with id: " +id ));
 		expenseLineBdd.setTva(expenseLine.getTva());
 		expenseLineBdd.setAmount(expenseLine.getAmount());
 		expenseLineBdd.setDate(expenseLine.getDate());

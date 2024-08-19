@@ -2,6 +2,7 @@ package fr.projet.diginamic.backend.services;
 
 import fr.projet.diginamic.backend.dtos.ExpenseTypeDto;
 import fr.projet.diginamic.backend.utils.ExpenseTypeMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,8 +46,8 @@ public class ExpenseTypeService {
 	 * @param id, the id of the expenseType
 	 * @return An expenseTypeDto
 	 */
-	public ExpenseTypeDto getExpenseType(Long id) throws Exception {
-		ExpenseType expenseType = expenseTypeRepo.findById(id).orElseThrow(Exception::new);;
+	public ExpenseTypeDto getExpenseType(Long id) {
+		ExpenseType expenseType = expenseTypeRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Expense not find with id: " +id ));;
         return expenseTypeMapper.BeanToDto(expenseType);
 	}
 
@@ -68,8 +69,8 @@ public class ExpenseTypeService {
 	 * @param id, the id of the expenseType to delete
 	 * @return the expenseType deleted
 	 */
-	public ExpenseType deleteExpenseType(Long id) throws Exception {
-		ExpenseType expenseType = expenseTypeRepo.findById(id).orElseThrow(Exception::new);;
+	public ExpenseType deleteExpenseType(Long id) {
+		ExpenseType expenseType = expenseTypeRepo.findById(id).orElseThrow(()-> new EntityNotFoundException("ExpenseType not find with id: " +id ));;
 		expenseTypeRepo.delete(expenseType);
 		return expenseType;
 	}
@@ -81,8 +82,8 @@ public class ExpenseTypeService {
 	 * @param id,          the id of the expenseType to modify
 	 * @return the expenseType after modification
 	 */
-	public ExpenseType modifyExpenseType(ExpenseTypeDto expenseType, Long id) throws Exception {
-		ExpenseType expenseTypeBdd = expenseTypeRepo.findById(id).orElseThrow(Exception::new);;
+	public ExpenseType modifyExpenseType(ExpenseTypeDto expenseType, Long id) {
+		ExpenseType expenseTypeBdd = expenseTypeRepo.findById(id).orElseThrow(()-> new EntityNotFoundException("ExpenseType not find with id: " +id ));;
 		expenseTypeBdd.setType(expenseType.getType());
 
 		return expenseTypeBdd;

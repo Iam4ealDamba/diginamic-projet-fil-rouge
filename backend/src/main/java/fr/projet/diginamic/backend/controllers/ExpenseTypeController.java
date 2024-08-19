@@ -42,7 +42,6 @@ public class ExpenseTypeController {
     /** Endpoint to save one ExpenseLine
      * @param expenseType, the ExpenseTypeDto to save
      * @return a responseEntity with a succes message
-     * @throws Exception if the save doesn't work
      */
     @Operation(summary = "Save a new ExpenseType", description = "Saves a new ExpenseType to the database.")
     @ApiResponses(value = {
@@ -52,10 +51,10 @@ public class ExpenseTypeController {
                     content = @Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<String> saveExpenseLine(@RequestBody ExpenseTypeDto expenseType) throws Exception {
+    public ResponseEntity<String> saveExpenseLine(@RequestBody ExpenseTypeDto expenseType) {
         ExpenseType expenseTypeSave= expenseTypeService.saveExpenseType(expenseType);
         if(expenseTypeSave== null) {
-            throw new Exception("The expenseType was not save");
+            new ResponseEntity<>("fail", HttpStatus.NOT_IMPLEMENTED);
         }
         return new ResponseEntity<>("Success", HttpStatus.CREATED);
     }
@@ -63,7 +62,6 @@ public class ExpenseTypeController {
     /** Endpoint to obtain one ExpenseType by the id
      * @param id, the expenseType id
      * @return the expenseType found
-     * @throws Exception if there is no result
      */
     @Operation(summary = "Get an ExpenseType by ID", description = "Fetches a single ExpenseType by its unique identifier.")
     @ApiResponses(value = {
@@ -73,10 +71,10 @@ public class ExpenseTypeController {
                     content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
-    public ExpenseTypeDto getExpenseType(@PathVariable Long id) throws Exception {
+    public ExpenseTypeDto getExpenseType(@PathVariable Long id)  {
         ExpenseTypeDto expenseType= expenseTypeService.getExpenseType(id);
         if(expenseType== null) {
-            throw new Exception("No expenseLine found");
+            new ResponseEntity<>("fail", HttpStatus.NOT_FOUND);
         }
         return expenseType;
     }
@@ -84,7 +82,6 @@ public class ExpenseTypeController {
     /** Endpoint to delete one ExpenseType by the id
      * @param id, the expenseType id
      * @return ResponseEntity with a success message
-     * @throws Exception if there is nothing to delete
      */
     @Operation(summary = "Delete an ExpenseType by ID", description = "Deletes a single ExpenseType by its unique identifier.")
     @ApiResponses(value = {
@@ -94,10 +91,10 @@ public class ExpenseTypeController {
                     content = @Content(mediaType = "application/json"))
     })
     @DeleteMapping
-    public ResponseEntity<String> DeleteExpenseType(@PathVariable Long id) throws Exception {
+    public ResponseEntity<String> DeleteExpenseType(@PathVariable Long id)  {
         ExpenseType expenseType= expenseTypeService.deleteExpenseType(id);
         if(expenseType== null) {
-            throw new Exception("The expenseType was not deleted");
+            new ResponseEntity<>("fail", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>("Success", HttpStatus.CREATED);
     }
@@ -106,7 +103,6 @@ public class ExpenseTypeController {
      * @param expenseType, the new expenseType
      * @param id, the expenseType id
      * @return ResponseEntity with a success message
-     * @throws Exception if there is no result
      */
     @Operation(summary = "Modify an ExpenseType by ID", description = "Modifies a single ExpenseType by its unique identifier.")
     @ApiResponses(value = {
@@ -116,8 +112,11 @@ public class ExpenseTypeController {
                     content = @Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<String> modifyExpenseType(@RequestBody ExpenseTypeDto expenseType, @PathVariable Long id) throws Exception{
+    public ResponseEntity<String> modifyExpenseType(@RequestBody ExpenseTypeDto expenseType, @PathVariable Long id) {
         ExpenseType expenseTypeModify = expenseTypeService.modifyExpenseType(expenseType,id);
+        if(expenseTypeModify== null) {
+            new ResponseEntity<>("fail", HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 

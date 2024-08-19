@@ -10,6 +10,7 @@ import com.itextpdf.text.pdf.*;
 import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.repositories.interfaces.UserRepository;
 import fr.projet.diginamic.backend.utils.PageUtils;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,10 +53,11 @@ public class ExpenseService {
 	/**Method get all expenses of a user and transform them into ExpenseDto
 	 * @param token, the Jwt token to know who try to get the expense data
 	 * @return the List of all expenses og this user.
+	 * @throws EntityNotFoundException if there is no user found
 	 */
-	public Page<ExpenseDto> getMyExpenses(int page, int size, String token) throws Exception {
+	public Page<ExpenseDto> getMyExpenses(int page, int size, String token) {
 		String email =jwtService.extractUsername(token.substring(7));
-		UserEntity user= userRepo.findByEmail(email).orElseThrow(Exception::new);
+		UserEntity user= userRepo.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User not found"));
 		Pageable pagination = PageRequest.of(page, size);
 		Page<Expense>expenses=expenseRepo.findByMission_User_Id(user.getId(), pagination);
         return expenses.map(expenseMapper::BeanToDto);
@@ -64,11 +66,11 @@ public class ExpenseService {
 	/**Method get all expenses of a manager, their associates and transform them into ExpenseDto
 	 * @return the List of all expenses og this a manager and their associates.
 	 * @param token, the Jwt token to know who try to get the expense data
-	 * @throws Exception if there is no user found
+	 * @throws EntityNotFoundException if there is no user found
 	 */
-	public Page<ExpenseDto> getExpensesForManager(int page, int size, String token)  throws Exception{
+	public Page<ExpenseDto> getExpensesForManager(int page, int size, String token) {
 		String email =jwtService.extractUsername(token.substring(7));
-		UserEntity user= userRepo.findByEmail(email).orElseThrow(Exception::new);
+		UserEntity user= userRepo.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User not found"));
 		Pageable pagination = PageRequest.of(page, size);
 		Page<Expense>expenses=expenseRepo.findByMission_User_Id(user.getId(), pagination);
 		Page<Expense>expensesUsers=expenseRepo.findByMission_User_Manager(user, pagination);
@@ -79,11 +81,12 @@ public class ExpenseService {
 	/**Method to get an expense by its id and transform it into an ExpenseDto
 	 * @param id, the id of the expense to get
 	 * @param token, the Jwt token to know who try to get the expense data
+	 * @throws EntityNotFoundException if there is no expense found
      * @return the expenseLine found
      */
-	public ExpenseWithLinesDto getExpense(Long id, String token) throws Exception{
+	public ExpenseWithLinesDto getExpense(Long id, String token) {
 		CheckMyOrMyCollabExpense(token, id);
-		Expense expense= expenseRepo.findById(id).orElseThrow(Exception::new);;
+		Expense expense= expenseRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Expense not find with id: " +id ));;
         return expenseMapper.BeanToDtoWithLines(expense);
 	}
 	
@@ -101,7 +104,7 @@ public class ExpenseService {
 	 * @param id, the id of the expense for the pdf
 	 * @param response, interface to send an http response with a pdf
 	 */
-public void exportExpense(Long id, HttpServletResponse response, String token) throws Exception {
+public void exportExpense(Long id, HttpServletResponse response, String token) throws Exception{
 		CheckMyOrMyCollabExpense(token, id);
 		Expense expense= expenseRepo.findById(id).orElse(null);
         if (expense == null) {
@@ -206,11 +209,11 @@ private void addRows(PdfPTable table, Expense expense) {
 	 * @param token, the token of the user connected
 	 * @param idExpense, the id of the specific expense
 	 */
-	private void CheckMyOrMyCollabExpense(String token, Long idExpense) throws Exception {
+	private void CheckMyOrMyCollabExpense(String token, Long idExpense) {
 		String email =jwtService.extractUsername(token.substring(7));
-		UserEntity user= userRepo.findByEmail(email).orElseThrow(Exception::new);
+		UserEntity user= userRepo.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User not found"));
 		if (!expenseRepo.existsByIdAndMission_User_Manager(idExpense, user) && !expenseRepo.existsByIdAndMission_User(idExpense, user)) {
-			throw new Exception();
+			throw new EntityNotFoundException("No expense found");
 		}
 	}
 }
