@@ -1,8 +1,14 @@
 package fr.projet.diginamic.backend.dtos;
 
-import lombok.*;
-
 import java.util.Date;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Data Transfer Object for NatureMission entity.
@@ -18,9 +24,13 @@ public class NatureMissionDTO {
 
     private Long id;
     private String label;
-    private Double ceilingTjm;
-    private Boolean billing;
+    private Double Adr;
+    private Boolean IsBilled;
     private Date startDate;
     private Date endDate;
-    private Double bonusPercentage;
+    private Double BountyRate;
+    private Boolean isEligibleToBounty;
+
+
 }
+

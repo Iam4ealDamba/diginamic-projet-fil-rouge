@@ -11,6 +11,8 @@ import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.repositories.interfaces.UserRepository;
 import fr.projet.diginamic.backend.utils.PageUtils;
 import jakarta.persistence.EntityNotFoundException;
+
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +25,7 @@ import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.ExpenseLine;
 import fr.projet.diginamic.backend.repositories.interfaces.ExpenseRepository;
 import fr.projet.diginamic.backend.utils.ExpenseMapper;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**Service for all expense's related method*/
@@ -40,43 +43,27 @@ public class ExpenseService {
 	@Autowired
 	private ExpenseMapper expenseMapper;
 	
-//	/**Method get all expenses and transform them into ExpenseDto
-//     * @return the List of all expenses
-//     */
-//	public Page<ExpenseDto> getExpenses(int page, int size){
-//		Pageable pagination = PageRequest.of(page, size);
-//    	Page<Expense>expenses=expenseRepo.findAll(pagination);
-//    	Page<ExpenseDto> expensesDto = expenses.map(expenseMapper::BeanToDto);
-//		return expensesDto;
-//	}
-
-	/**Method get all expenses of a user and transform them into ExpenseDto
-	 * @param token, the Jwt token to know who try to get the expense data
-	 * @return the List of all expenses og this user.
-	 * @throws EntityNotFoundException if there is no user found
-	 */
-	public Page<ExpenseDto> getMyExpenses(int page, int size, String token) {
-		String email =jwtService.extractUsername(token.substring(7));
-		UserEntity user= userRepo.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User not found"));
-		Pageable pagination = PageRequest.of(page, size);
-		Page<Expense>expenses=expenseRepo.findByMission_User_Id(user.getId(), pagination);
-        return expenses.map(expenseMapper::BeanToDto);
+	/**Method get all expenses and transform them into ExpenseDto
+     * @return the List of all expenses
+     */
+	public ArrayList<ExpenseDto> getExpenses(){
+		ArrayList<Expense> expenses= expenseRepo.findAll();
+		ArrayList<ExpenseDto> expensesDto= new ArrayList();
+		for(Expense expense: expenses) {
+			expensesDto.add(expenseMapper.BeanToDto(expense));
+		}
+		return expensesDto;
 	}
 
-	/**Method get all expenses of a manager, their associates and transform them into ExpenseDto
-	 * @return the List of all expenses og this a manager and their associates.
-	 * @param token, the Jwt token to know who try to get the expense data
-	 * @throws EntityNotFoundException if there is no user found
+	/**Method to get an expense by its id
+	 * @param id, the id of the expense to get
+	 * @return the expense found
+	 * @throws EntityNotFoundException if not found
 	 */
-	public Page<ExpenseDto> getExpensesForManager(int page, int size, String token) {
-		String email =jwtService.extractUsername(token.substring(7));
-		UserEntity user= userRepo.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User not found"));
-		Pageable pagination = PageRequest.of(page, size);
-		Page<Expense>expenses=expenseRepo.findByMission_User_Id(user.getId(), pagination);
-		Page<Expense>expensesUsers=expenseRepo.findByMission_User_Manager(user, pagination);
-		Page<Expense> allExpenses= PageUtils.mergePages(expenses, expensesUsers, page, size);
-        return allExpenses.map(expenseMapper::BeanToDto);
+	public Expense getExpenseBean(Long id){
+		return expenseRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Expense not found with ID: " + id));
 	}
+
 	
 	/**Method to get an expense by its id and transform it into an ExpenseDto
 	 * @param id, the id of the expense to get
@@ -84,10 +71,19 @@ public class ExpenseService {
 	 * @throws EntityNotFoundException if there is no expense found
      * @return the expenseLine found
      */
-	public ExpenseWithLinesDto getExpense(Long id, String token) {
-		CheckMyOrMyCollabExpense(token, id);
-		Expense expense= expenseRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Expense not find with id: " +id ));;
-        return expenseMapper.BeanToDtoWithLines(expense);
+	public ExpenseWithLinesDto getExpense(Long id){
+		Expense expense= expenseRepo.findById(id).orElse(null);
+		ExpenseWithLinesDto expenseDto= expenseMapper.BeanToDtoWithLines(expense);
+		return expenseDto;
+	}
+
+	/**Method to get an expense by its id 
+	 * @param id, the id of the expense to get
+     * @return the expense found 
+	 * @throws EntityNotFoundException if not found
+     */
+	public Expense getExpenseBean(Long id){
+		return expenseRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Expense not found with ID: " + id));
 	}
 	
 	/**Method to save an expense

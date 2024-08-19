@@ -27,4 +27,9 @@ public class UserDto {
 
     /** The email of the user */
     private String email;
+
+    /** The role of the user */
+    private String role;
+
 }
+

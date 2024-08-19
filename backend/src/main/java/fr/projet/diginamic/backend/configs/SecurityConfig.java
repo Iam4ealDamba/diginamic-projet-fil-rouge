@@ -33,7 +33,7 @@ public class SecurityConfig {
 
     /**
      * Security filter chain
-     *
+     * 
      * @param http - the http security
      * @throws Exception exception
      */
