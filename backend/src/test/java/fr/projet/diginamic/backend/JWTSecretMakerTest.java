@@ -17,4 +17,6 @@ public class JWTSecretMakerTest {
         String encoded = DatatypeConverter.printHexBinary(secret.getEncoded());
         System.out.println("Encoded Key: " + encoded);
     }
+
 }
+
