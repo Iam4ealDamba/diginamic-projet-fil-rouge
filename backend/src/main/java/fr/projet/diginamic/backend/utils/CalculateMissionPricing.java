@@ -14,6 +14,7 @@ import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.enums.StatusEnum;
 
+
 /**
  * Service class responsible for calculating the pricing and bounties for missions.
  */
@@ -88,3 +89,4 @@ public class CalculateMissionPricing {
     }
     
 }
+

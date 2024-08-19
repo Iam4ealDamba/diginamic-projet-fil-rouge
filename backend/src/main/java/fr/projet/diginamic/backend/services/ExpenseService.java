@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,16 @@ public class ExpenseService {
 		}
 		return expensesDto;
 	}
+
+	/**Method to get an expense by its id
+	 * @param id, the id of the expense to get
+	 * @return the expense found
+	 * @throws EntityNotFoundException if not found
+	 */
+	public Expense getExpenseBean(Long id){
+		return expenseRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Expense not found with ID: " + id));
+	}
+
 	
 	/**Method to get an expense by its id and transform it into an ExpenseDto
 	 * @param id, the id of the expense to get

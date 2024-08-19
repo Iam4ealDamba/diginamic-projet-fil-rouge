@@ -9,6 +9,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
+import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
+import fr.projet.diginamic.backend.utils.MissionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +44,17 @@ import fr.projet.diginamic.backend.exceptions.MissionServiceException;
 @Service
 public class MissionService {
 
+
+
+    @Autowired
+    ExpenseService expenseService;
+
+    @Autowired
+    NatureMissionService natureMissionService;
+
+    @Autowired
+    MissionMapper missionMapper;
+
     @Autowired
     private MissionRepository missionRepository;
 
@@ -63,6 +77,7 @@ public class MissionService {
     CalculateMissionPricing calculateMissionPricing;
 
     //---------------------------------- CREATE MISSION  ------------------------------------ 
+
     /**
      * Save a mission entity.
      * 

@@ -51,8 +51,8 @@ public class NatureMission {
     private Date endDate;
 
     /** The bonus percentage of the nature of the mission */
-    @Column(name = "bonus_percentage")
-    private Double bonusPercentage;
+    @Column(name = "Bounty_Rate")
+    private Double BountyRate;
 
     @Column(name = "is_eligible_to_bounty")
     private Boolean isEligibleToBounty;

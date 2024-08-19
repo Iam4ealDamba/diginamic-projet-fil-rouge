@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * Data Transfer Object for providing a comprehensive report on mission bounties.
  * This DTO aggregates various statistics and details about the bounties of missions within a specified period.
@@ -17,7 +18,6 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BountyReportDTO {
-
     /** The total number of bounties awarded */
     private long totalNumberOfBounties;
 
@@ -33,4 +33,3 @@ public class BountyReportDTO {
     /** A list of missions that have awarded bounties */
     private List<DisplayedMissionDTO> missionsWithBounties;
 }
-
