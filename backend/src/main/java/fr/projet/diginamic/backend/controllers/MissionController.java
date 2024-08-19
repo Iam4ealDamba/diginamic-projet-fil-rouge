@@ -289,7 +289,7 @@ public class MissionController {
 // -------------------------------- GET ONE MISSION BY ID  --------------------------------
 	/**
 	 * Retrieve a single mission by its ID.
-	 * 
+	 *
 	 * @param id The ID of the mission to retrieve.
 	 * @return The requested mission.
 	 */
@@ -323,7 +323,7 @@ public class MissionController {
 	// --------------------------- UPDATE ONE MISSION BY ID  ---------------------------
 	/**
 	 * Update an existing mission.
-	 * 
+	 *
 	 * @param id      The ID of the mission to update.
 	 * @param mission Updated details for the mission.
 	 *                * @param result The binding result that holds the validation
@@ -376,7 +376,7 @@ public class MissionController {
 	 * administrators.
 	 * Allows setting the mission status to either "Validé" or "Rejeté".
 	 *
-	 * @param missionId the ID of the mission to update
+	 * @param id the ID of the mission to update
 	 * @param status    the new status to be set for the mission
 	 *                  * @param result The binding result that holds the validation
 	 *                  errors.
@@ -420,7 +420,7 @@ public class MissionController {
 	// ----------------------------- DELETE ONE MISSION -------------------------------
 	/**
 	 * Delete a mission by its ID.
-	 * 
+	 *
 	 * @param id The ID of the mission to delete.
 	 * @return A status of 204 No Content on successful deletion.
 	 */

@@ -17,11 +17,6 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BountyReportDTO {
-
-    /** The total number of bounties awarded */
-    private long totalNumberOfBounties;
-
-    /** The highest single bounty amount awarded */
     private double highestBountyAmount;
 
     /** The total amount of all bounties awarded */
@@ -33,4 +28,3 @@ public class BountyReportDTO {
     /** A list of missions that have awarded bounties */
     private List<DisplayedMissionDTO> missionsWithBounties;
 }
-

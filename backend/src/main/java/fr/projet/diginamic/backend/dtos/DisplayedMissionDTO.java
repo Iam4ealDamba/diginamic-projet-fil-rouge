@@ -14,10 +14,7 @@ import lombok.ToString;
  * Data Transfer Object (DTO) representing a mission to be displayed.
  * This DTO is used for transferring mission data between layers of the application.
  */
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
-
 @ToString
 public class DisplayedMissionDTO {
      /** The unique identifier of the mission */

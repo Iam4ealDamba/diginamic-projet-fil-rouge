@@ -36,7 +36,6 @@ public class MissionUpdater {
     @Value("${mailgun.api.key}")
     private String apiKey;
 
-
      /**
      * Scheduled method to update mission statuses. 
      * This method runs at midnight every day.
