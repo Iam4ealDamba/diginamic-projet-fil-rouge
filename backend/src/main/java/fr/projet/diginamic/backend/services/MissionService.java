@@ -49,6 +49,13 @@ public class MissionService {
 
 
 
+    @Autowired
+    UserService userService;
+
+
+    //@Autowired
+    //CalculateMissionPricing calculateMissionPricing;
+
     /**
      * Save a mission entity.
      * 
