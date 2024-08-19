@@ -51,9 +51,6 @@ public class MissionService {
     UserRepository userRepository;
 
     @Autowired
-    ExpenseService expenseService;
-
-    @Autowired
     NatureMissionService natureMissionService;
 
     @Autowired
