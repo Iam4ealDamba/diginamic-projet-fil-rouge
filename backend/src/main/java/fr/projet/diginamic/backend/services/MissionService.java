@@ -9,9 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import fr.projet.diginamic.backend.dtos.DisplayedMissionDTO;
-import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
-import fr.projet.diginamic.backend.utils.MissionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,17 +41,6 @@ import fr.projet.diginamic.backend.exceptions.MissionServiceException;
 @Service
 public class MissionService {
 
-
-
-    @Autowired
-    ExpenseService expenseService;
-
-    @Autowired
-    NatureMissionService natureMissionService;
-
-    @Autowired
-    MissionMapper missionMapper;
-
     @Autowired
     private MissionRepository missionRepository;
 
@@ -77,10 +63,9 @@ public class MissionService {
     CalculateMissionPricing calculateMissionPricing;
 
     //---------------------------------- CREATE MISSION  ------------------------------------ 
-
     /**
      * Save a mission entity.
-     *
+     * 
      * @param mission the mission to save.
      * @return the saved mission entity.
      */
@@ -98,246 +83,6 @@ public class MissionService {
         return missionRepository.save(mission);
     }
 
-    /**
-     * Creates a new mission.
-     * This method converts a CreateMissionDTO to a Mission entity, sets its initial status,
-     * validates the mission, saves it to the repository, and then converts it to a DisplayedMissionDTO.
-     *
-     * @param dto The CreateMissionDTO object containing the details of the mission to be created.
-     * @return A DisplayedMissionDTO object representing the newly created mission.
-     * @throws IllegalArgumentException if the mission data is invalid.
-     */
-    @Transactional
-    public DisplayedMissionDTO createMission(CreateMissionDTO dto, String userEmail) {
-       
-        Mission bean = missionMapper.fromMissionFormToBean(dto);
-        UserEntity user = userService.getOneByEmail(userEmail);
-        
-        if(user == null){
-            throw new EntityNotFoundException("Failed to create mission: User not found with email " + userEmail);
-  
-        }
-        bean.setUser(user);
-        bean.setStatus(StatusEnum.INITIAL);
-        CalculateMissionPricing.calculateTotalPrice(bean);
-        validateMission(bean, true);
-        Mission newMissionBean = missionRepository.save(bean);
-        return missionMapper.fromBeantoDisplayedMissionDTO(newMissionBean);
-    }
-    
-    //---------------------------------- FIND ONE MISSION  ------------------------------------ 
-    /**
-     * Retrieve a single mission by its ID.
-     * 
-     * @param id the ID of the mission to retrieve.
-     * @return the found mission entity.
-     * @throws EntityNotFoundException if the mission is not found.
-     */
-    @Transactional(readOnly = true)
-    public Mission findOneMission(Long id) {
-        return missionRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
-    }
-
-    //---------------------------------- FIND ONE MISSION  ------------------------------------
-    /**
-     * Retrieve a single mission by its ID.
-     *
-     * @param id the ID of the mission to retrieve.
-     * @return the found mission entity.
-     * @throws EntityNotFoundException if the mission is not found.
-     */
-    @Transactional(readOnly = true)
-    public Mission findOneMission(Long id) {
-        return missionRepository.findById(id)
-                .map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m))
-                .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
-    }
-    @Transactional(readOnly = true)
-    public DisplayedMissionDTO findOneMissionDto(Long id) {
-        return missionRepository.findById(id)
-                .map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m))
-                .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
-    }
-
-    //---------------------------------- FIND ALL MISSIONS  ------------------------------------ 
-    /**
-     * Retrieve a single mission by its ID.
-     *
-     * @param id the ID of the mission to retrieve.
-     * @return the found mission entity.
-     * @throws EntityNotFoundException if the mission is not found.
-     */
-    @PreAuthorize("hasRole('ADMIN')")
-    @Transactional(readOnly = true)
-    public Page<DisplayedMissionDTO> findAllMissions(Pageable pageable) {
-        return missionRepository.findAll(pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @Transactional(readOnly = true)
-    public List<DisplayedMissionDTO> findAllMissions() {
-        return missionRepository.findAll().stream().map(missionMapper::fromBeantoDisplayedMissionDTO).toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<DisplayedMissionDTO> findMissionsByUserId(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new EntityNotFoundException("User not found with ID: " + userId);
-        }
-        return missionRepository.findByUser_Id(userId).stream().map(missionMapper::fromBeantoDisplayedMissionDTO).toList();
-    }
-
-    //------------------------------ FIND ALL MISSIONS FOR ADMIN BY SPECS ------------------------------ 
-    /**
-     * Retrieve all missions that match a given specification.
-     * 
-     * @param nature     the specification for filtering missions.
-     * @param pageable the pagination information.
-     * @return a page of missions that match the specification.
-     */
-    @PreAuthorize("hasRole('ADMIN')")
-    @Transactional(readOnly = true)
-    public Page<DisplayedMissionDTO> findAllMissionsWithSpecsForAdmin(String status, String nature, String labelOrUsername,
-            Pageable pageable) {
-
-        Specification<Mission> spec = MissionSpecifications.createSpecificationForAdmin(status, nature, labelOrUsername);
-               
-        return missionRepository.findAll(spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
-    }
-
-    //--------------------------- FIND ALL MISSIONS FOR CURRENT USER BY SPECS --------------------------- 
-    /**
-     * Retrieve all missions for the connected user that match a given specification.
-     * 
-     * @param spec     the specification for filtering missions.
-     * @param pageable the pagination information.
-     * @return a page of missions that match the specification.
-     */
-    @Transactional(readOnly = true)
-    public Page<DisplayedMissionDTO> findAllMissionsWithSpecsForCurrentUser(String email, String status, String nature, String label,
-            Pageable pageable){
-
-                UserEntity user = userService.getOneByEmail(email);
-                if(user == null){
-                    throw new EntityNotFoundException("User not found with email " + email);
-                }
-                Long userId = user.getId();
-            
-                Specification<Mission> spec = createSpecificationForEmployee(userId, status, nature, label);
-
-                try{
-                    return missionRepository.findAll(spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
-                    
-                } catch(Exception e){
-                    throw new MissionServiceException("An error occurred while retrieving missions: ", e);   
-                }
-    }
-
-    //--------------------------- FIND ALL MISSIONS BY MANAGER ID BY SPECS --------------------------- 
-    /**
-     * Retrieve all missions of collaborators under supervision of a given manager and that match a given specification.
-     * 
-     * @param email     the manager's email to retrieve the associated user data for filtering employees missions who are under his/her supervision.
-     * @param spec     the specification for filtering missions.
-     * @param pageable the pagination information.
-     * @return a page of missions that match the specification.
-     */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    @Transactional(readOnly = true)
-    public Page<DisplayedMissionDTO> findAllMissionsWithSpecsByManagerId(String email, String status, String nature, String label,
-            Pageable pageable){
-
-                UserEntity manager = userService.getOneByEmail(email);
-                if(manager == null){
-                    throw new EntityNotFoundException("User not found with email " + email);
-                }
-                Long managerId = manager.getId();
-              
-                Specification<Mission> spec = createSpecificationForManager(managerId, status, nature, label);
-
-                try{
-                    return missionRepository.findAll(spec, pageable).map(m -> missionMapper.fromBeantoDisplayedMissionDTO(m));
-                    
-                } catch(Exception e){
-                    throw new MissionServiceException("An error occurred while retrieving missions: ", e);   
-                }
-    }
-
-    //-------------------------------- UPDATE MISSION --------------------------------  
-    /**
-     * Retrieve a single mission by its ID and update it.
-     * 
-     * @param id                the ID of the mission to retrieve and update.
-     * @param updatedMissionDTO the updated mission data.
-     * @return the updated mission DTO.
-     * @throws EntityNotFoundException if the mission is not found.
-     */
-    @Transactional
-    public DisplayedMissionDTO updateMission(Long id, DisplayedMissionDTO updatedMission) {
-        Mission mission = missionMapper.fromDisplayedMissionDTOToBean(updatedMission);
-        
-        if (mission.getStatus() == StatusEnum.REJECTED) {
-            mission.setStatus(StatusEnum.INITIAL);
-        }
-        
-        CalculateMissionPricing.calculateTotalPrice(mission);
-        validateMission(mission, false);
-        missionRepository.save(mission);
-        return missionMapper.fromBeantoDisplayedMissionDTO(mission);
-    }
-
-    //-------------------------------- DELETE MISSION --------------------------------  
-    /**
-     * Delete a mission by its ID.
-     * 
-     * @param id the ID of the mission to delete.
-     * @throws EntityNotFoundException if the mission is not found.
-     */
-    @Transactional
-    public void deleteMission(Long id) {
-        Mission mission = missionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
-   
-        if(mission.getStatus() == StatusEnum.FINISHED){
-            throw new IllegalArgumentException("Cannot delete a mission that is already finished."); 
-        }
-        missionRepository.deleteById(id);
-    }
-    //-------------------------------- UPDATE MISSION STATUS --------------------------------  
-    /**
-     * Update a mission by its ID.
-     * 
-     * @param id the ID of the mission to update.
-     * @throws EntityNotFoundException if the mission is not found.
-     */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    @Transactional
-    public DisplayedMissionDTO updateMissionStatus(Long id, String status) {
-        if(status == null || status.isEmpty()){
-            throw new IllegalArgumentException("Status value cannot be null or empty."); 
-        }
-        StatusEnum statusEnum;
-        try {
-            statusEnum = StatusEnum.valueOf(status.toUpperCase());   
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid status value " + status + " " + e);
-        }
-
-        if(statusEnum != StatusEnum.VALIDATED && statusEnum != StatusEnum.REJECTED){
-            throw new IllegalArgumentException("Invalid status value " + status);
-        }
-
-        return missionRepository.findById(id)
-                .map(m -> {
-                    validateMission(m, false);
-                    m.setStatus(statusEnum);
-                    Mission bean = missionRepository.save(m);
-                    return missionMapper.fromBeantoDisplayedMissionDTO(bean);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Mission not found with ID: " + id));
-    }
-
-    //---------------------------------- VALIDATE MISSION  ------------------------------------ 
     /**
      * Creates a new mission.
      * This method converts a CreateMissionDTO to a Mission entity, sets its initial status,

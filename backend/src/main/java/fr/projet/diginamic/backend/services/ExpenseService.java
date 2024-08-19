@@ -1,28 +1,39 @@
 package fr.projet.diginamic.backend.services;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
-import fr.projet.diginamic.backend.entities.UserEntity;
-import fr.projet.diginamic.backend.repositories.interfaces.UserRepository;
-import fr.projet.diginamic.backend.utils.PageUtils;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
 import fr.projet.diginamic.backend.dtos.ExpenseDto;
 import fr.projet.diginamic.backend.dtos.ExpenseWithLinesDto;
 import fr.projet.diginamic.backend.entities.Expense;
 import fr.projet.diginamic.backend.entities.ExpenseLine;
+import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.repositories.interfaces.ExpenseRepository;
+import fr.projet.diginamic.backend.repositories.interfaces.UserRepository;
 import fr.projet.diginamic.backend.utils.ExpenseMapper;
+import fr.projet.diginamic.backend.utils.PageUtils;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**Service for all expense's related method*/
@@ -50,6 +61,14 @@ public class ExpenseService {
 //		return expensesDto;
 //	}
 
+	/**Method to get an expense by its id 
+	 * @param id, the id of the expense to get
+     * @return the expense found 
+	 * @throws EntityNotFoundException if not found
+     */
+	public Expense getExpenseBean(Long id){
+		return expenseRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Expense not found with ID: " + id));
+	}
 	/**Method get all expenses of a user and transform them into ExpenseDto
 	 * @param token, the Jwt token to know who try to get the expense data
 	 * @return the List of all expenses og this user.
