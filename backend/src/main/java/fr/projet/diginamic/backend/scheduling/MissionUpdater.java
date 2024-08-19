@@ -82,11 +82,11 @@ public class MissionUpdater {
         System.out.println("[CRON: updateMissionPricing] FINISHED.");
     }
 
-    @Scheduled(cron = "* * * * * ?")
+    // @Scheduled(cron = "* * * * * ?")
     // @Scheduled(fixedRate = 1)
-    public void testCron(){
-        System.out.println("TEST CRON:::::::::::");
-    }
+    // public void testCron(){
+    //     System.out.println("TEST CRON:::::::::::");
+    // }
 
     @Transactional(readOnly = true)
     public JsonNode emailManagerAboutPendingMission(Mission mission) throws UnirestException {
