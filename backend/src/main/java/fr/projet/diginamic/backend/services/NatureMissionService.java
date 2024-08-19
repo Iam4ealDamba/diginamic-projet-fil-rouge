@@ -1,5 +1,14 @@
 package fr.projet.diginamic.backend.services;
 
+import fr.projet.diginamic.backend.dtos.NatureMissionDTO;
+import fr.projet.diginamic.backend.entities.NatureMission;
+import fr.projet.diginamic.backend.repositories.NatureMissionRepository;
+import jakarta.persistence.EntityNotFoundException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -54,8 +63,7 @@ public class NatureMissionService {
      * @return an Optional of NatureMissionDTO.
      */
     public NatureMission getNatureMissionBeanById(Long id) {
-        return natureMissionRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("NatureMission not found with ID " + id));
+        return natureMissionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("NatureMission not found with id " + id));
     }
 
     /**

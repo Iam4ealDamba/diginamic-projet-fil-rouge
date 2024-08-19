@@ -41,4 +41,6 @@ public class RegisterDto {
         this.password = password;
         this.role = role.length > 0 ? role[0] : "USER";
     }
+
 }
+

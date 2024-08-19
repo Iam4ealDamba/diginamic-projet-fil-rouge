@@ -31,4 +31,6 @@ public class NatureMissionDTO {
     private Double BountyRate;
     private Boolean isEligibleToBounty;
 
+
 }
+
