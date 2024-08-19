@@ -100,6 +100,7 @@ public class MissionService {
         
         if(user == null){
             throw new EntityNotFoundException("Failed to create mission: User not found with email " + userEmail);
+  
         }
         bean.setUser(user);
         bean.setStatus(StatusEnum.INITIAL);
@@ -167,7 +168,7 @@ public class MissionService {
     /**
      * Retrieve all missions that match a given specification.
      * 
-     * @param spec     the specification for filtering missions.
+     * @param nature     the specification for filtering missions.
      * @param pageable the pagination information.
      * @return a page of missions that match the specification.
      */
