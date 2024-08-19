@@ -1,7 +1,7 @@
 package fr.projet.diginamic.backend.entities;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,7 +44,7 @@ public class Expense {
 
 	/** The expenseLines of this expense */
 	@OneToMany(mappedBy = "expense")
-	public Set<ExpenseLine> expenseLines;
+	public List<ExpenseLine> expenseLines;
 
 	/** The mission linked to the expense */
 	@OneToOne

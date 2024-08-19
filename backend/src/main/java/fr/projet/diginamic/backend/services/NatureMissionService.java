@@ -3,6 +3,8 @@ package fr.projet.diginamic.backend.services;
 import fr.projet.diginamic.backend.dtos.NatureMissionDTO;
 import fr.projet.diginamic.backend.entities.NatureMission;
 import fr.projet.diginamic.backend.repositories.NatureMissionRepository;
+import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import fr.projet.diginamic.backend.dtos.NatureMissionDTO;
+import fr.projet.diginamic.backend.entities.NatureMission;
+import fr.projet.diginamic.backend.repositories.NatureMissionRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 /**
  * Service class for managing NatureMission entities.
@@ -46,6 +57,16 @@ public class NatureMissionService {
     }
 
     /**
+     * Get a NatureMission by ID.
+     *
+     * @param id the ID of the NatureMission.
+     * @return an Optional of NatureMissionDTO.
+     */
+    public NatureMission getNatureMissionBeanById(Long id) {
+        return natureMissionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("NatureMission not found with id " + id));
+    }
+
+    /**
      * Create a new NatureMission.
      *
      * @param natureMissionDTO the NatureMissionDTO to create.
@@ -64,6 +85,8 @@ public class NatureMissionService {
         NatureMission savedNatureMission = natureMissionRepository.save(natureMission);
         return convertToDTO(savedNatureMission);
     }
+
+
 
     /**
      * Update an existing NatureMission.
@@ -84,7 +107,7 @@ public class NatureMissionService {
             natureMission.setIsBilled(natureMissionDTO.getIsBilled());
             natureMission.setStartDate(natureMissionDTO.getStartDate());
             natureMission.setEndDate(natureMissionDTO.getEndDate());
-            natureMission.setBonusPercentage(natureMissionDTO.getBonusPercentage());
+            natureMission.setBountyRate(natureMissionDTO.getBountyRate());
             natureMission.setIsEligibleToBounty(natureMissionDTO.getIsEligibleToBounty());
 
             NatureMission updatedNatureMission = natureMissionRepository.save(natureMission);
@@ -102,7 +125,7 @@ public class NatureMissionService {
         Date tomorrow = new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
         newNatureMissionDTO.setStartDate(tomorrow);
         newNatureMissionDTO.setEndDate(natureMissionDTO.getEndDate());
-        newNatureMissionDTO.setBonusPercentage(natureMissionDTO.getBonusPercentage());
+        newNatureMissionDTO.setBountyRate(natureMissionDTO.getBountyRate());
         newNatureMissionDTO.setIsEligibleToBounty(natureMissionDTO.getIsEligibleToBounty());
 
         return createNatureMission(newNatureMissionDTO);
@@ -139,7 +162,7 @@ public class NatureMissionService {
                 entity.getIsBilled(),
                 entity.getStartDate(),
                 entity.getEndDate(),
-                entity.getBonusPercentage(),
+                entity.getBountyRate(),
                 entity.getIsEligibleToBounty()
         );
     }
@@ -152,7 +175,7 @@ public class NatureMissionService {
                 dto.getIsBilled(),
                 dto.getStartDate(),
                 dto.getEndDate(),
-                dto.getBonusPercentage(),
+                dto.getBountyRate(),
                 dto.getIsEligibleToBounty(),
                 new HashSet<>() // Assuming no missions are set in the DTO
         );
