@@ -59,10 +59,9 @@ public class CSVGenerationService {
                 csvPrinter.printRecord(month, totalBounty);
             }
             csvPrinter.flush();
-
+           
         } catch (Exception e) {
             throw new IOException("Failed to generate CSV report", e);
         }
     }
-
 }

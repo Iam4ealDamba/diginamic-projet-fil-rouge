@@ -18,7 +18,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 
 public class CreateMissionDTO {
-
        /** The label or name of the mission */
        private String label;
 
@@ -46,4 +45,3 @@ public class CreateMissionDTO {
        /** The unique identifier of the nature of the mission */
        private Long natureMissionId;   
 }
-

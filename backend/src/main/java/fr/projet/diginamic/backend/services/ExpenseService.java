@@ -61,14 +61,6 @@ public class ExpenseService {
 //		return expensesDto;
 //	}
 
-	/**Method to get an expense by its id 
-	 * @param id, the id of the expense to get
-     * @return the expense found 
-	 * @throws EntityNotFoundException if not found
-     */
-	public Expense getExpenseBean(Long id){
-		return expenseRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Expense not found with ID: " + id));
-	}
 	/**Method get all expenses of a user and transform them into ExpenseDto
 	 * @param token, the Jwt token to know who try to get the expense data
 	 * @return the List of all expenses og this user.
@@ -107,6 +99,15 @@ public class ExpenseService {
 		CheckMyOrMyCollabExpense(token, id);
 		Expense expense= expenseRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Expense not find with id: " +id ));;
         return expenseMapper.BeanToDtoWithLines(expense);
+	}
+
+	/**Method to get an expense by its id 
+	 * @param id, the id of the expense to get
+     * @return the expense found 
+	 * @throws EntityNotFoundException if not found
+     */
+	public Expense getExpenseBean(Long id){
+		return expenseRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Expense not found with ID: " + id));
 	}
 	
 	/**Method to save an expense

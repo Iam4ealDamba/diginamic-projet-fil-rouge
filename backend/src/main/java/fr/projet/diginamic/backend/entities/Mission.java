@@ -3,11 +3,8 @@ package fr.projet.diginamic.backend.entities;
 import fr.projet.diginamic.backend.enums.TransportEnum;
 import fr.projet.diginamic.backend.enums.StatusEnum;
 
-import java.time.LocalDate;
 import java.util.Date;
 
-import fr.projet.diginamic.backend.enums.StatusEnum;
-import fr.projet.diginamic.backend.enums.TransportEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
