@@ -17,7 +17,6 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BountyReportDTO {
-
     /** The total number of bounties awarded */
     private long totalNumberOfBounties;
 

@@ -109,12 +109,12 @@ public class MissionSpecifications {
                             criteriaBuilder.like(criteriaBuilder.lower(userJoin.get("firstName")), "%" + nameParts[0] + "%"),
                             criteriaBuilder.like(criteriaBuilder.lower(userJoin.get("lastName")), "%" + nameParts[1] + "%")
                     );
-    
+
                     Predicate swappedCombinedPredicate = criteriaBuilder.and(
                             criteriaBuilder.like(criteriaBuilder.lower(userJoin.get("firstName")), "%" + nameParts[1] + "%"),
                             criteriaBuilder.like(criteriaBuilder.lower(userJoin.get("lastName")), "%" + nameParts[0] + "%")
                     );
-    
+
                     namePredicate = criteriaBuilder.or(combinedPredicate, swappedCombinedPredicate);
                 }
                 return namePredicate;

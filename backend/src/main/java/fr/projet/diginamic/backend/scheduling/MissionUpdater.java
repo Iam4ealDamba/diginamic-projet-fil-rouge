@@ -10,10 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.projet.diginamic.backend.entities.Mission;
 import fr.projet.diginamic.backend.entities.UserEntity;
+
 import fr.projet.diginamic.backend.enums.StatusEnum;
 import fr.projet.diginamic.backend.repositories.MissionRepository;
 import fr.projet.diginamic.backend.specs.MissionSpecifications;
 import fr.projet.diginamic.backend.utils.CalculateMissionPricing;
+
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.JsonNode;
 import kong.unirest.core.Unirest;
@@ -28,6 +30,7 @@ import kong.unirest.core.UnirestException;
 // import javax.ws.rs.core.MediaType;
 
 @Service
+
 public class MissionUpdater {
 
     @Autowired
@@ -84,6 +87,7 @@ public class MissionUpdater {
 
     // @Scheduled(cron = "* * * * * ?")
     // @Scheduled(fixedRate = 1)
+
     // public void testCron(){
     //     System.out.println("TEST CRON:::::::::::");
     // }
@@ -151,8 +155,5 @@ public class MissionUpdater {
     //     System.out.println("::::::::::email envoyé !!!!!!!!!!!::::::::::" + responseBody);
     //     return new JsonNode(responseBody);
     // }
-
-
-
 
 }

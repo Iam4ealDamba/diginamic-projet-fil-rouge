@@ -34,7 +34,9 @@ public class NatureMission {
 
     /** The ceiling TJM of the nature of the mission */
     @Column(name = "Adr")
+
     private Double adr = 0.0;
+
 
     /** The billing status of the nature of the mission */
     @Column(name = "is_billed")
@@ -52,6 +54,7 @@ public class NatureMission {
 
     /** The bonus percentage of the nature of the mission */
     @Column(name = "Bounty_Rate")
+
     private Double bountyRate = 0.0;
 
     @Column(name = "is_eligible_to_bounty")
