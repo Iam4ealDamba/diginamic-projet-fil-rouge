@@ -1,0 +1,39 @@
+// nature-mission.service.ts
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { NatureMission } from '../../../models/nature-mission.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class NatureMissionService {
+  private apiUrl = 'http://localhost:8080/api/naturemissions'; // URL de l'API
+
+  constructor(private http: HttpClient) {}
+
+  // Méthode pour récupérer toutes les natures de mission
+  getNatureMissions(): Observable<NatureMission[]> {
+    return this.http.get<NatureMission[]>(this.apiUrl);
+  }
+
+  // Méthode pour récupérer une nature de mission par ID
+  getNatureMission(id: number): Observable<NatureMission> {
+    return this.http.get<NatureMission>(`${this.apiUrl}/${id}`);
+  }
+
+  // Méthode pour créer une nouvelle nature de mission
+  createNatureMission(natureMission: NatureMission): Observable<NatureMission> {
+    return this.http.post<NatureMission>(this.apiUrl, natureMission);
+  }
+
+  // Méthode pour mettre à jour une nature de mission existante
+  updateNatureMission(natureMission: NatureMission): Observable<NatureMission> {
+    return this.http.put<NatureMission>(`${this.apiUrl}/${natureMission.id}`, natureMission);
+  }
+
+  // Méthode pour supprimer une nature de mission
+  deleteNatureMission(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+}
