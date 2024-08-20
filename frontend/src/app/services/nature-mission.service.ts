@@ -1,14 +1,13 @@
-// nature-mission.service.ts
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { NatureMission } from '../../../models/nature-mission.model';
+import { NatureMission } from '../interfaces/nature-mission.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NatureMissionService {
-  private apiUrl = 'http://localhost:8080/api/naturemissions'; // URL de l'API
+  private apiUrl = 'http://localhost:8080/api/naturemissions';
 
   constructor(private http: HttpClient) {}
 
