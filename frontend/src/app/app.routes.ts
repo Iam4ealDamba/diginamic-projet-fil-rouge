@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/auth/login/login.component';
-import { RegisterComponent } from './components/auth/register/register.component';
-import { HomeComponent } from './components/home/home.component';
-import { DashboardComponent } from './views/dashboard/dashboard.component';
+import { LoginComponent } from './pages/auth/login/login.component';
+import { RegisterComponent } from './pages/auth/register/register.component';
+import { HomeComponent } from './pages/home/home.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { MissionsComponent } from './pages/missions/missions.component';
 
 
 export const routes: Routes = [
@@ -20,9 +21,9 @@ export const routes: Routes = [
     path: 'register',
     component:RegisterComponent,
   },
-  // {
-  //   path: 'dashboard-missions',
-  //   component:DashboardComponent,
-  // },
+  {
+    path: 'missions',
+    component:MissionsComponent,
+  },
 
 ];

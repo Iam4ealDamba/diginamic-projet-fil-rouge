@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet,RouterModule } from '@angular/router';
 import { StatCardComponent } from '../../components/stat-card/stat-card.component';
 import { CommonModule } from '@angular/common';
-import { TableComponent } from '../../shared/table/table.component';
+import { TableComponent } from '../../components/table/table.component';
 
 @Component({
   selector: 'app-dashboard',
