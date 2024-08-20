@@ -1,31 +1,31 @@
 <div class="pt-5 bg-slate-50 px-12">
   <div class="cards grid grid-cols-4 gap-4">
-    <app-stat-card title="missions en attente de validation" [value]="3" subtext="voir plus" class="h-40"></app-stat-card>
-    <app-stat-card title="missions acceptées" [value]="4" class="h-40"></app-stat-card>
-    <app-stat-card title="missions à venir" [value]="2" class="h-40"></app-stat-card>
-    <app-stat-card title="de prime obtenus cette année" [value]="450" subtext="voir plus" class="h-40"></app-stat-card>
+    <app-stat-card title="missions en attente de validation" [value]="nbPendingMissions" class="h-40"></app-stat-card>
+    <app-stat-card title="missions acceptées" [value]="nbValidatedMissions" class="h-40"></app-stat-card>
+    <app-stat-card title="missions en cours" [value]="nbMissionsInProgress" class="h-40"></app-stat-card>
+    <app-stat-card title="montant total primes (année en cours)" [value]="(totalBountiesAmount + '€') || '0€'" class="h-40"></app-stat-card>
   </div>
   
   <div class="flex justify-between items-center mt-12">
     <h3 class="text-2xl font-medium leading-tight text-gray-700">Dernières missions</h3>
     <a routerLink="/missions" class="text-gray-500 hover:text-gray-800">Afficher tout</a>
   </div>
-
   <div class="table mt-12"></div>
-  <app-table [headers]="headers" [data]="dummyData" ></app-table>
+  <app-table [headers]="headers_missions_collaborators" [data]="missions" ></app-table>
+
   <div class="flex justify-between items-center mt-12">
     <h3 class="text-2xl font-medium leading-tight text-gray-700">Dernières notes de frais</h3>
     <a routerLink="/notes-de-frais" class="text-gray-500 hover:text-gray-800">Afficher tout</a>
   </div>
-
   <div class="table mt-12"></div>
-  <app-table [headers]="headers" [data]="dummyData" ></app-table>
+  <app-table [headers]="headers_expenses" [data]="dummyData" ></app-table>
+
   <div class="flex justify-between items-center mt-12">
     <h3 class="text-2xl font-medium leading-tight text-gray-700">Dernières primes</h3>
     <a routerLink="/primes" class="text-gray-500 hover:text-gray-800">Afficher tout</a>
   </div>
   <div class="table mt-12"></div>
-  <app-table [headers]="headers" [data]="dummyData" ></app-table>
+  <app-table [headers]="headers_bounties" [data]="dummyData"></app-table>
 
   </div>
   

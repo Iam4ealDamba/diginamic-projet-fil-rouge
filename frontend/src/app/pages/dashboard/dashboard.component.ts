@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet,RouterModule } from '@angular/router';
+import { RouterLink, RouterOutlet, RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { StatCardComponent } from '../../components/stat-card/stat-card.component';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { TableComponent } from '../../components/table/table.component';
+import { Mission } from '../../models/Mission';
+import { MissionService } from '../../services/mission.service';
+import { StatusEnum } from '../../enums/StatusEnum';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,13 +15,32 @@ import { TableComponent } from '../../components/table/table.component';
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
-  headers = [
-    { label: 'Nom', value: 'nom' },
-    { label: 'Prenom', value: 'prenom' },
-    { label: 'Signe astrologique', value: 'signeAstro' },
-    { label: 'Taille', value: 'taille' },
-    { label: 'Humeur', value: 'humeur' },
-    { label: 'Poids', value: 'poids' },
+  
+  headers_missions_collaborators = [
+    { label: 'Dates ', value: 'startDate' },
+    { label: 'Libelle', value: 'label' },
+    { label: 'Nature', value: 'labelNatureMission' },
+    { label: 'Villes', value: 'departureCity' },
+    { label: 'Transport', value: 'transport' },
+    { label: 'Statut', value: 'status' },
+    { label: 'Montant prime', value: 'bountyAmount' },
+    { label: 'Actions', value: 'actions' },
+  ];
+  headers_expenses= [
+    { label: 'Dates ', value: 'startDate' },
+    { label: 'Libelle', value: 'label' },
+    { label: 'Nature', value: 'labelNatureMission' },
+    { label: 'Villes', value: 'departureCity' },
+    { label: 'Transport', value: 'transport' },
+    { label: 'Frais', value: 'expenseId' }, //TODO: update this
+    { label: 'Actions', value: 'actions' },
+  ];
+  headers_bounties = [
+    { label: 'Nature mission', value: 'labelNatureMission' },
+    { label: 'Libelle mission', value: 'label' },
+    { label: 'Montant prime', value: 'bountyAmount' },
+    { label: 'Dates missions', value: 'startDate' },
+    { label: 'Actions', value: 'actions' },
   ];
 
   dummyData = [
@@ -79,5 +101,32 @@ export class DashboardComponent {
       poids: 80
     }
   ];
+
+  missions : Mission[] = [];
+  nbPendingMissions : number = 0;
+  nbValidatedMissions : number = 0;
+  nbMissionsInProgress : number = 0;
+  totalBountiesAmount : number = 0;
+
+  constructor(private route: ActivatedRoute, private router: Router, private missionService : MissionService){}
+
+  ngOnInit(): void {
+  
+    this.missionService.getMissions().subscribe({
+      next: (missions : any) => {
+        this.missions = missions.content;
+        console.log("this.missions", this.missions);
+        this.nbPendingMissions = [...this.missions].filter(m => m.status == StatusEnum.WAITING).length;
+        this.nbMissionsInProgress = [...this.missions].filter(m => m.status == StatusEnum.IN_PROGRESS).length;
+        this.nbValidatedMissions = [...this.missions].filter(m => m.status == StatusEnum.VALIDATED).length;
+        this.totalBountiesAmount = this.missions.map(m => m.bountyAmount || 0).reduce((a,b) => a + b, 0); //TODO: Filtrer primes de cette année
+        
+      },
+      error: (error) => {
+        console.error(error);
+        this.router.navigate(['/404']);
+      }
+    });
+  }
   
 }
