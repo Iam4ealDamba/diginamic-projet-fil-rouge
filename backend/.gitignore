@@ -14,7 +14,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+*.idea
 *.iws
 *.iml
 *.ipr
@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+.vscode/settings.json
+*.vscode/
+./
+### APPLICATION PROPERTIES ###
+*application.properties
+
+### DS STORE ###
+.DS_Store
+conception/.DS_Store
+backend/.DS_Store
