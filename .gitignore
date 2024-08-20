@@ -2,10 +2,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/eclipse,maven
 # Edit at https://www.toptal.com/developers/gitignore?templates=eclipse,maven
 
-# Node
-/node_modules
-node_modules/
-
 ### Eclipse ###
 .metadata
 bin/
@@ -99,3 +95,43 @@ buildNumber.properties
 
 *.idea
 
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# System files
+.DS_Store
+Thumbs.db
