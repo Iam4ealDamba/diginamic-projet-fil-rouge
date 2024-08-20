@@ -1,0 +1,17 @@
+<table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+    <thead class="bg-gray-100">
+      <tr class="">
+        <th *ngFor="let header of headers" class="py-2 px-4 text-left text-sm font-medium text-gray-700">
+          {{ header.label }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of data" class="hover:bg-gray-60">
+        <td *ngFor="let header of headers" class="border-t py-2 px-4 text-sm text-gray-600">
+          {{ row[header.value] }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  

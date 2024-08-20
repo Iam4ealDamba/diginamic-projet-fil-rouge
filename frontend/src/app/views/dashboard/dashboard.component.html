@@ -1,0 +1,10 @@
+<div class="grid grid-cols-4 gap-4 pt-5 bg-slate-50">
+    <app-stat-card title="missions en attente de validation" [value]="3" subtext="voir plus" class="h-40"></app-stat-card>
+    <app-stat-card title="missions acceptées" [value]="4" class="h-40"></app-stat-card>
+    <app-stat-card title="missions à venir" [value]="2" class="h-40"></app-stat-card>
+    <app-stat-card title="de prime obtenus cette année" [value]="450" subtext="voir plus" class="h-40"></app-stat-card>
+
+    <app-table [headers]="headers" [data]="dummyData"></app-table>
+
+  </div>
+  
