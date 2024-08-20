@@ -7,8 +7,8 @@ import { DashboardComponent } from './views/dashboard/dashboard.component';
 export const routes: Routes = [
   {
     path: '',
-    component: HomeComponent,
-    pathMatch: 'full',
+    component: DashboardComponent,
+    // pathMatch: 'full',
   },
   {
     path: 'login',
@@ -18,8 +18,8 @@ export const routes: Routes = [
     path: 'register',
     component:RegisterComponent,
   },
-  {
-    path: 'missions',
-    component:DashboardComponent,
-  },
+  // {
+  //   path: 'dashboard-missions',
+  //   component:DashboardComponent,
+  // },
 ];

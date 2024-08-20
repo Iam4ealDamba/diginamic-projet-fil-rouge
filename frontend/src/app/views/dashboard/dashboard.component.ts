@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterLink, RouterOutlet,RouterModule } from '@angular/router';
 import { StatCardComponent } from '../../components/stat-card/stat-card.component';
 import { CommonModule } from '@angular/common';
 import { TableComponent } from '../../shared/table/table.component';
@@ -6,7 +7,7 @@ import { TableComponent } from '../../shared/table/table.component';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [StatCardComponent, CommonModule, TableComponent],
+  imports: [StatCardComponent, CommonModule, TableComponent, RouterLink, RouterOutlet],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
