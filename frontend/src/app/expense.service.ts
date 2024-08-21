@@ -18,7 +18,7 @@ export interface Expense {
 
 export interface ExpenseLine {
   /** The ID of the expense */
-  id: number;
+  id: number | null;
 
   /** The date of the expense line */
   date: Date;
@@ -62,12 +62,23 @@ export class ExpenseService {
     return this.http.delete<void>(`${this.apiUrl}/expenseLines/${id}`);
 }
 
+updateLine(id: string, updatedLine: ExpenseLine, token:string): Observable<ExpenseLine> {
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }); // Définition des headers pour la requête
+  return this.http.put<ExpenseLine>(`${this.apiUrl}/expenseLines/${id}`, updatedLine, { headers }) // Met à jour la ligne existante
+    .pipe(
+      catchError(error => {
+        console.error(`Error updating expense line with ID ${id}: `, error); // Gestion des erreurs
+        return throwError(() => new Error('Failed to update expense line')); // Retourne une erreur si la mise à jour échoue
+      })
+    );
+}
+
 getExpenseLineById(id: string, token: string) {
   const headers = new HttpHeaders({
     'Authorization': `Bearer ${token}`
   });
 
-  return this.http.get<Expense>(`${this.apiUrl}/expenseLines/${id}`, { headers }).pipe(
+  return this.http.get<ExpenseLine>(`${this.apiUrl}/expenseLines/${id}`, { headers }).pipe(
     catchError(error => {
       console.error(`ExpenseLine with ID ${id} not found`, error);
       return throwError(() => new Error('Not Found'));

@@ -1,0 +1,23 @@
+<form #form="ngForm" (ngSubmit)="onSubmit(form)">
+    <div>
+      <label for="date">Date:</label>
+      <input type="date" id="date" [(ngModel)]="expenseLine.date" name="date" required />
+    </div>
+  
+    <div>
+      <label for="tva">TVA:</label>
+      <input type="number" id="tva" [(ngModel)]="expenseLine.tva" name="tva" required />
+    </div>
+  
+    <div>
+      <label for="amount">Amount:</label>
+      <input type="number" id="amount" [(ngModel)]="expenseLine.amount" name="amount" required />
+    </div>
+  
+    <div>
+      <label for="expenseType">Type:</label>
+      <input type="text" id="expenseType" [(ngModel)]="expenseLine.expenseType" name="expenseType" required />
+    </div>
+  
+    <button type="submit">Submit</button>
+  </form>
