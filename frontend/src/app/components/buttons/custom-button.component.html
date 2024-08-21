@@ -1,0 +1,10 @@
+<button
+  [type]="type"
+  class="flex items-center justify-center px-4 py-2 border rounded-lg font-semibold + {{
+    getRegularTheme()
+  }}"
+>
+  <fa-icon *ngIf="iconLeft" [icon]="iconLeft!" class="mr-2"></fa-icon>
+  <p>{{ text }}</p>
+  <fa-icon *ngIf="iconRight" [icon]="iconRight!" class="ml-2"></fa-icon>
+</button>

@@ -1,0 +1,59 @@
+<main class="flex h-[100vh]">
+  <section aria-label="left" class="max-w-[800px] h-full max_lg:hidden">
+    <img [src]="bgImage" alt="" class="w-full h-full object-cover" />
+  </section>
+  <section
+    aria-label="right"
+    class="flex-1 w-full min-w-[600px] relative max_sm:min-w-0"
+  >
+    <div aria-label="logo">
+      <img src="images/logo.svg" alt="" class="absolute top-20 right-20" />
+    </div>
+    <div
+      aria-label="container"
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[550px] px-6"
+    >
+      <div aria-label="form-content" class="space-y-8">
+        <h1 class="text-center text-3xl font-semibold">Se Connecter</h1>
+        <form class="space-y-8">
+          <div aria-label="inputs" class="flex flex-col gap-y-4">
+            <label aria-label="input" class="border px-4 py-2">
+              <input
+                type="email"
+                name="email"
+                placeholder="Entrer votre adresse email"
+                class="w-full outline-none"
+              />
+            </label>
+            <label aria-label="input" class="flex border px-4 py-2">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                name="password"
+                placeholder="Entrer votre mot de passe"
+                class="w-full outline-none"
+              />
+              <fa-icon
+                [icon]="showPassword ? faEyeSlashIcon : faEyeIcon"
+                (click)="showPassword = !showPassword"
+                class="cursor-pointer"
+              ></fa-icon>
+            </label>
+            <div class="text-end">
+              <a routerLink="/password-reset" class="text-sm underline">Mot de passe oublié ?</a>
+            </div>
+          </div>
+          <div aria-label="button" class="flex justify-center">
+            <app-custom-button text="Se Connecter"></app-custom-button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div
+      class="absolute bottom-20 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center px-6"
+    >
+      <a routerLink="/register" class="font-semibold text-sm underline w-full"
+        >Pas encore de compte ? inscrivez-vous ici</a
+      >
+    </div>
+  </section>
+</main>
