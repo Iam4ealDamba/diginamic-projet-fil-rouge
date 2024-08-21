@@ -7,6 +7,12 @@ import { Mission } from '../../models/Mission';
 import { MissionService } from '../../services/mission.service';
 import { StatusEnum } from '../../enums/StatusEnum';
 
+type HeaderConfigType = {
+  label: string;
+  value: keyof Mission;
+  displayCurrency?: boolean;
+  isChip?: boolean;
+};
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -16,31 +22,30 @@ import { StatusEnum } from '../../enums/StatusEnum';
 })
 export class DashboardComponent {
   
-  headers_missions_collaborators = [
+  headers_missions_collaborators : HeaderConfigType[] = [
     { label: 'Dates ', value: 'startDate' },
     { label: 'Libelle', value: 'label' },
     { label: 'Nature', value: 'labelNatureMission' },
     { label: 'Villes', value: 'departureCity' },
     { label: 'Transport', value: 'transport' },
-    { label: 'Statut', value: 'status' },
-    { label: 'Montant prime', value: 'bountyAmount' },
-    { label: 'Actions', value: 'actions' },
+    { label: 'Statut', value: 'status', isChip: true },
+    { label: 'Montant prime', value: 'bountyAmount', displayCurrency: true},
   ];
-  headers_expenses= [
+
+  headers_expenses : HeaderConfigType[] = [
     { label: 'Dates ', value: 'startDate' },
     { label: 'Libelle', value: 'label' },
     { label: 'Nature', value: 'labelNatureMission' },
     { label: 'Villes', value: 'departureCity' },
     { label: 'Transport', value: 'transport' },
     { label: 'Frais', value: 'expenseId' }, //TODO: update this
-    { label: 'Actions', value: 'actions' },
   ];
-  headers_bounties = [
+
+  headers_bounties: HeaderConfigType[] = [
     { label: 'Nature mission', value: 'labelNatureMission' },
     { label: 'Libelle mission', value: 'label' },
-    { label: 'Montant prime', value: 'bountyAmount' },
+    { label: 'Montant prime', value: 'bountyAmount', displayCurrency: true },
     { label: 'Dates missions', value: 'startDate' },
-    { label: 'Actions', value: 'actions' },
   ];
 
   dummyData = [
@@ -103,10 +108,11 @@ export class DashboardComponent {
   ];
 
   missions : Mission[] = [];
+  bounties : Mission[] = [];
   nbPendingMissions : number = 0;
   nbValidatedMissions : number = 0;
   nbMissionsInProgress : number = 0;
-  totalBountiesAmount : number = 0;
+  totalBountiesAmountOfYear : number = 0;
 
   constructor(private route: ActivatedRoute, private router: Router, private missionService : MissionService){}
 
@@ -119,8 +125,12 @@ export class DashboardComponent {
         this.nbPendingMissions = [...this.missions].filter(m => m.status == StatusEnum.WAITING).length;
         this.nbMissionsInProgress = [...this.missions].filter(m => m.status == StatusEnum.IN_PROGRESS).length;
         this.nbValidatedMissions = [...this.missions].filter(m => m.status == StatusEnum.VALIDATED).length;
-        this.totalBountiesAmount = this.missions.map(m => m.bountyAmount || 0).reduce((a,b) => a + b, 0); //TODO: Filtrer primes de cette année
-        
+        this.totalBountiesAmountOfYear = [...this.missions]
+                                  .filter(m => 
+                                    new Date(m.endDate).getFullYear() === new Date().getFullYear()
+                                  )
+                                  .map(m => m.bountyAmount || 0).reduce((a,b) => a + b, 0); 
+        this.bounties = [...this.missions].filter(m => m.bountyAmount && m.bountyAmount > 0);
       },
       error: (error) => {
         console.error(error);

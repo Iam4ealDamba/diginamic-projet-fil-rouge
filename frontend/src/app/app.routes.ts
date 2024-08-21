@@ -25,5 +25,9 @@ export const routes: Routes = [
     path: 'missions',
     component:MissionsComponent,
   },
+  {
+    path: 'missions/:id',
+    component:RegisterComponent,
+  },
 
 ];

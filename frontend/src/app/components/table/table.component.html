@@ -1,57 +1,76 @@
-<!-- Full width table -->
-<table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
-  <thead class="bg-gray-100">
-    <tr>
-      <th *ngFor="let header of headers" class="py-2 px-4 text-left text-sm font-medium text-gray-700">
-        {{ header.label }}
-      </th>
-    </tr>
+<table class="min-w-full divide-y divide-gray-200 overflow-x-auto border rounded-lg">
+  <thead class="bg-gray-50 ">
+      <tr>
+          <th *ngFor="let header of headers" scope="col" class=" text-center px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+              {{header.label}}
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Actions
+          </th>
+      </tr>
   </thead>
-  <tbody>
-    <tr *ngFor="let row of data" class="hover:bg-gray-60">
-      <td *ngFor="let header of headers" class="border-t py-2 px-4 text-sm text-gray-600">
-        {{ row[header.value] }}
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <tbody class="bg-white divide-y divide-gray-200">
+    <tr *ngFor="let row of data" class="cursor-pointer hover hover:bg-slate-50">
+      <td *ngFor="let header of headers" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+        <div (click)="navigateToMission(row.id)">
 
-<!-- Full width footer navigation -->
-<nav aria-label="Page navigation example" class="w-full border rounded-xl mt-4 p-4">
-  <ul class="list-style-none flex justify-center space-x-2">
-    <li>
-      <a
-        class="pointer-events-none text-gray-400 px-3 py-1.5 text-sm"
-        >Previous</a
-      >
-    </li>
-    <li>
-      <a
-        class="bg-blue-100 rounded-lg text-blue-600 text-black px-3 py-1.5 text-sm"
-        href="#!"
-        >1</a
-      >
-    </li>
-    <li aria-current="page">
-      <a
-        class="px-3 py-1.5 text-sm rounded"
-        href="#!"
-        >2</a
-      >
-    </li>
-    <li>
-      <a
-        class="text-black px-3 py-1.5 text-sm"
-        href="#!"
-        >3</a
-      >
-    </li>
-    <li>
-      <a
-        class="text-black px-3 py-1.5 text-sm"
-        href="#!"
-        >Next</a
-      >
-    </li>
-  </ul>
-</nav>
+          <!-- Custom rendering based on the column -->
+          <ng-container [ngSwitch]="header.value" >
+            
+            <!-- Custom rendering for "Dates" column -->
+            <div *ngSwitchCase="'startDate'" class="flex flex-col">
+              <span class="mb-1">Du: {{ row.startDate }}</span>
+              <span> Au: {{ row.endDate }}</span>
+            </div>
+          
+            <!-- Custom rendering for "Bounty Amount" column -->
+            <div *ngSwitchCase="'transport'" class="text-center">
+              {{ getTransportLabel(row.transport) }}
+            </div>
+    
+            <!-- Custom rendering for "Status" column -->
+            <div *ngSwitchCase="'status'" class="px-2 py-1 rounded-full text-center" [ngClass]="{
+              'bg-green-100 text-green-800': row.status.toUpperCase() === 'VALIDATED',
+              'bg-yellow-100 text-yellow-800': row.status.toUpperCase() === 'IN_PROGRESS',
+              'bg-red-100 text-red-800': row.status.toUpperCase() === 'REJECTED',
+              'bg-blue-100 text-blue-800': row.status.toUpperCase() === 'FINISHED', 
+              'bg-gray-200 text-gray-800': row.status.toUpperCase() === 'WAITING'
+            }">
+                {{getStatusLabel(row.status)}}
+            </div>   
+  
+            <!-- Default rendering for all other columns -->
+            <div *ngSwitchDefault class="text-center">
+              {{ row[header.value] }} <span *ngIf="header.displayCurrency">€</span>
+            </div>
+    
+          </ng-container>
+
+        </div>
+      </td>
+  
+      <!-- Colonne pour les actions -->
+      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ">
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="action-btn">
+          <mat-icon class="text-slate-600">more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu" aftermenu="matMenu" xposition="after">
+          <button mat-menu-item>
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+
+      </td>
+      
+    </tr>
+  </tbody>  
+</table>
+<mat-paginator [length]="dataSource.data.length" [pageSizeOptions]="[2, 10, 50, 100]" aria-label="Select page" class="border bg-white-300">
+</mat-paginator>
+
+

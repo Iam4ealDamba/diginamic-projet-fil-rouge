@@ -12,7 +12,7 @@ export interface Mission {
     totalPrice: number;
   
     /** The current status of the mission */
-    status: StatusEnum;
+    status: string;
   
     /** The start date of the mission */
     startDate: Date;
@@ -21,7 +21,7 @@ export interface Mission {
     endDate: Date;
   
     /** The transport mode used for the mission */
-    transport: TransportEnum;
+    transport: string;
   
     /** The city from which the mission starts */
     departureCity: string;

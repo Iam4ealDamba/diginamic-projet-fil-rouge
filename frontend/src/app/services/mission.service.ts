@@ -18,7 +18,8 @@ export class MissionService {
   // Get the list of missions
   getMissions(): Observable<Mission[]> {
 
-    const token = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiTUFOQUdFUiIsInN1YiI6Im1pc3NseWx5ZHU3NUBob3RtYWlsLmZyIiwiaWF0IjoxNzI0MTk2ODMwLCJleHAiOjE3MjQxOTg2MzB9.FnqYo-DLjI6n5vz2VQDq030jZd8Sy3VrPzvrzeBR582WgoPathyEkJYxx4tHWM5T";
+    const token = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiTUFOQUdFUiIsInN1YiI6Im1pc3NseWx5ZHU3NUBob3RtYWlsLmZyIiwiaWF0IjoxNzI0MjgyMDMxLCJleHAiOjE3MjQyODM4MzF9.T4REijEZ01DeF9Vq10MmRWm3MjvuelJDJzp-Oxq0nqQMpTXuHxJ1DC12UU-UL31f";
+    
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
