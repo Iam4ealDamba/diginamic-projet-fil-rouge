@@ -1,0 +1,13 @@
+<div *ngIf="expense$ | async as expense">
+  <h2>Expense Details</h2>
+  <p>Date: {{ expense.date | date }}</p>
+  <p>Status: {{ expense.status }}</p>
+
+  <app-expense-line-table 
+    [expenseLines]="expense.expenseLines"
+    [expenseId]="expense.id"
+    (modifyLine)="modifyExpenseLine($event)"
+    (removeLine)="removeExpenseLine($event)"
+    (addLine)="addExpenseLine($event)">
+  </app-expense-line-table>
+</div>

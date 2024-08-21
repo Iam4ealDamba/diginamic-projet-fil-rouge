@@ -1,0 +1,29 @@
+<h3>Expense Lines</h3>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Date</th>
+      <th>TVA</th>
+      <th>Amount</th>
+      <th>Type</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let line of expenseLines">
+      <td>{{ line.id }}</td>
+      <td>{{ line.date | date }}</td>
+      <td>{{ line.tva }}</td>
+      <td>{{ line.amount }}</td>
+      <td>{{ line.expenseType }}</td>
+      <td>
+        <button (click)="onModifyLine(line.id)">Modifier</button>
+        <button (click)="onRemoveLine(line.id)">Supprimer</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<button (click)="onAddLine()">Ajouter une nouvelle ligne de frais</button>
+
