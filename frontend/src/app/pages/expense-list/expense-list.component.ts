@@ -3,11 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { Expense, ExpenseService } from '../../expense.service';
 import { EMPTY, Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ExpenseLineTableComponent } from '../../components/expense-line-table/expense-line-table.component';
 
 @Component({
   selector: 'app-expense-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ExpenseLineTableComponent],
   templateUrl: './expense-list.component.html',
   styleUrl: './expense-list.component.scss'
 })
@@ -19,7 +20,7 @@ export class ExpenseListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this.route.snapshot.paramMap.get('missionId');
     if (id === null) {
       console.error('Invalid ID: null');
       return;
@@ -28,7 +29,7 @@ export class ExpenseListComponent implements OnInit {
   }
   
 
-  addExpenseLine(id: string) {
+  addExpenseLine(id: number) {
     this.expense$.subscribe({
       next: (expense) => {
     console.log(`Navigating to /expenseLine/add/${id}`);
@@ -43,8 +44,8 @@ export class ExpenseListComponent implements OnInit {
   modifyExpenseLine() {
     this.expense$.subscribe({
       next: (expense) => {
-        console.log(`Navigating to /expenseLine/modify/${expense.id}`);
-        this.router.navigate([`/expenseLine/modify/${expense.id}`]);
+        console.log(`Navigating to /expenseLine/update/${expense.id}`);
+        this.router.navigate([`/expenseLine/update/${expense.id}`]);
       },
       error: (error) => {
         console.error('Error fetching expenseLine:', error);
@@ -52,9 +53,9 @@ export class ExpenseListComponent implements OnInit {
     }); 
   }
   
-  RemoveExpenseLine(id: string): void {
-    this.expenseService.removeLine(id).subscribe(() => {
-      this.expense$ = this.expenseService.getExpenseById(id, "token");
+  removeExpenseLine(id: number): void {
+    this.expenseService.removeLine(id.toString()).subscribe(() => {
+      this.expense$ = this.expenseService.getExpenseById(id.toString(), "token");
     })
   }
 

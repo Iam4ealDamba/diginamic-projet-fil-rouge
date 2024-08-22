@@ -21,4 +21,5 @@ export const routes: Routes = [
   },
   { path: 'expense/:missionId', component: ExpenseListComponent},
   { path: 'expenseLine/add/:ExpenseId', component: ExpenseLineAddComponent},
+  { path: 'expenseLine/update/:ExpenseId', component: ExpenseLineAddComponent},
 ];

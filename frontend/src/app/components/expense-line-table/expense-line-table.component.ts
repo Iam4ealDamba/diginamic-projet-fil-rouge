@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ExpenseLine } from '../../expense.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-expense-line-table',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './expense-line-table.component.html',
   styleUrl: './expense-line-table.component.scss'
 })

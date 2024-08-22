@@ -37,13 +37,15 @@ export interface ExpenseLine {
   providedIn: 'root'
 })
 export class ExpenseService {
-  private apiUrl: string = 'http://localhost:3000/api';
+  private apiUrl: string = 'http://localhost:8080/api';
+
+  private tokenTest: string = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNzI0MzM0MTI0LCJleHAiOjE3MjQzMzU5MjR9.0jTXQ2ivLDDVV9nx7cGve76kBSlgPuX9PY0ARFKhBEIhJxM10Pj2Y9Yotb3njvd7"
 
   constructor(private http: HttpClient) { }
 
   getExpenseById(id: string, token: string) {
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${this.tokenTest}`
     });
   
     return this.http.get<Expense>(`${this.apiUrl}/expenses/${id}`, { headers }).pipe(
@@ -55,15 +57,21 @@ export class ExpenseService {
   }
 
   addLine(expenseLine: ExpenseLine):Observable<void>{
-    return this.http.post<void>(this.apiUrl+"/expenseLines", {expenseLine})
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.tokenTest}`
+    });
+    return this.http.post<void>(this.apiUrl+"/expenseLines", {expenseLine}, { headers })
   }
 
   removeLine(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/expenseLines/${id}`);
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.tokenTest}`
+    });
+    return this.http.delete<void>(`${this.apiUrl}/expenseLines/${id}`, { headers });
 }
 
 updateLine(id: string, updatedLine: ExpenseLine, token:string): Observable<ExpenseLine> {
-  const headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }); // Définition des headers pour la requête
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.tokenTest}` }); // Définition des headers pour la requête
   return this.http.put<ExpenseLine>(`${this.apiUrl}/expenseLines/${id}`, updatedLine, { headers }) // Met à jour la ligne existante
     .pipe(
       catchError(error => {
@@ -75,7 +83,7 @@ updateLine(id: string, updatedLine: ExpenseLine, token:string): Observable<Expen
 
 getExpenseLineById(id: string, token: string) {
   const headers = new HttpHeaders({
-    'Authorization': `Bearer ${token}`
+    'Authorization': `Bearer ${this.tokenTest}`
   });
 
   return this.http.get<ExpenseLine>(`${this.apiUrl}/expenseLines/${id}`, { headers }).pipe(
