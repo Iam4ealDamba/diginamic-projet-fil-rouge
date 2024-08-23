@@ -7,6 +7,8 @@ import { Mission } from '../../models/Mission';
 import { MissionService } from '../../services/mission/mission.service';
 import { StatusEnum } from '../../enums/StatusEnum';
 import { PageEvent } from '@angular/material/paginator';
+import { ExpenseService } from '../../services/expense/expense.service';
+import { Expense } from '../../models/Expense';
 
 type HeaderConfigType = {
   label: string;
@@ -29,6 +31,20 @@ type Pageable = {
   unpaged: boolean;
   paged: boolean;
 }
+
+type ExpensesData =  {
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  content: Expense[];
+  number: number;
+  sort: Sort;
+  numberOfElements: number;
+  first: boolean;
+  last: boolean;
+  pageable: Pageable;
+  empty: boolean;
+};
 
 type responseData =  {
   totalPages: number;
@@ -140,20 +156,26 @@ export class DashboardComponent {
   loading = true;
   responseData?: responseData;
   missions : Mission[] = [];
+  expenses: Expense[] = [];
+  expensesData? : ExpensesData;
   bounties : Mission[] = [];
   nbPendingMissions : number = 0;
   nbValidatedMissions : number = 0;
   nbMissionsInProgress : number = 0;
   totalBountiesAmountOfYear : number = 0;
 
-  constructor(private route: ActivatedRoute, private router: Router, private missionService : MissionService){}
+  constructor(private route: ActivatedRoute, private router: Router, private missionService : MissionService, private expenseService: ExpenseService){}
 
   ngOnInit(): void {
     this.loadAllMissionsForStats();
    this.fetchData();
+   this.fetchExpenses();
   }
 
   handlePageEvent(event: PageEvent) {
+    this.fetchData(event.pageIndex, event.pageSize);
+  }
+  handleExpenseEvent(event: PageEvent) {
     this.fetchData(event.pageIndex, event.pageSize);
   }
   
@@ -169,6 +191,21 @@ export class DashboardComponent {
         this.router.navigate(['/404']);
         this.loading = false;
       }
+    });
+  }
+
+  fetchExpenses(pageIndex = 0, pageSize = 5){
+    this.expenseService.getExpenses().subscribe({
+      next: (res : any) => {
+        this.expenses = res.content;
+        this.expensesData = res;
+      },
+      error: (error) => {
+        console.error(error);
+        this.router.navigate(['/404']);
+        this.loading = false;
+      }
+
     });
   }
 

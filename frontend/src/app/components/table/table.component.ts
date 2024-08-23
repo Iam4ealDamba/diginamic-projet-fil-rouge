@@ -62,7 +62,7 @@ type data =  {
 })
 export class TableComponent {
   @Input() headers: HeaderConfigType[] = [];
-  @Input() data: Mission[] = [];
+  @Input() data: any[] = [];
   @Input() totalElements: number = 0; 
   @Input() pageIndex: number = 0; 
   @Input() pageSize: number = 5; 
@@ -70,7 +70,7 @@ export class TableComponent {
   @Output() pageChange = new EventEmitter<PageEvent>(); 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   
-  dataSource = new MatTableDataSource<Mission>();
+  dataSource = new MatTableDataSource<any>();
 
   statusEnum = StatusEnum;
   transportEnum = TransportEnum;

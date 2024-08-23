@@ -7,7 +7,7 @@
   </div>
   
   <div class="flex justify-between items-center mt-12">
-    <h3 class="text-2xl font-medium leading-tight text-gray-700">Dernières missions</h3>
+    <h6 class="font-medium leading-tight text-gray-700">Dernières missions</h6>
     <a routerLink="/missions" class="text-gray-500 hover:text-gray-800">Afficher tout</a>
   </div>
   <div class="table mt-12"></div>
@@ -17,23 +17,35 @@
   [totalElements]="responseData?.totalElements ?? 0" 
   [pageIndex]="responseData?.number ?? 0"
   [pageSize]="responseData?.size ?? 5"
-  (pageChange)="handlePageEvent($event)">
+  (pageChange)="handlePageEvent($event)"
+  >
 </app-table>
 
 
-  <div class="flex justify-between items-center mt-12">
-    <h3 class="text-2xl font-medium leading-tight text-gray-700">Dernières notes de frais</h3>
+  <div class="flex justify-between items-center mt-12" *ngIf="expenses.length">
+    <h6 class="font-medium leading-tight text-gray-700">Dernières notes de frais</h6>
     <a routerLink="/notes-de-frais" class="text-gray-500 hover:text-gray-800">Afficher tout</a>
   </div>
   <div class="table mt-12"></div>
-  <!-- <app-table [headers]="headers_expenses" [data]="dummyData" ></app-table> -->
+  <app-table 
+  *ngIf="expenses.length"
+  [headers]="headers_expenses" 
+  [data]="expenses" 
+  [totalElements]="expensesData?.totalElements ?? 0" 
+  [pageIndex]="expensesData?.number ?? 0"
+  [pageSize]="expensesData?.size ?? 5"
+  (pageChange)="handleExpenseEvent($event)"
+  ></app-table>
 
   <div class="flex justify-between items-center mt-12">
-    <h3 class="text-2xl font-medium leading-tight text-gray-700">Dernières primes</h3>
+    <h6 class="font-medium leading-tight text-gray-700">Dernières primes</h6>
     <a routerLink="/primes" class="text-gray-500 hover:text-gray-800">Afficher tout</a>
   </div>
   <div class="table mt-12"></div>
-  <app-table [headers]="headers_bounties" [data]="bounties"></app-table>
+  <app-table 
+  [headers]="headers_bounties"
+   [data]="bounties"
+   ></app-table>
 
   </div>
   
