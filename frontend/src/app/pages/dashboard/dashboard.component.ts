@@ -6,12 +6,42 @@ import { TableComponent } from '../../components/table/table.component';
 import { Mission } from '../../models/Mission';
 import { MissionService } from '../../services/mission.service';
 import { StatusEnum } from '../../enums/StatusEnum';
+import { PageEvent } from '@angular/material/paginator';
 
 type HeaderConfigType = {
   label: string;
   value: keyof Mission;
   displayCurrency?: boolean;
   isChip?: boolean;
+};
+
+type Sort = {
+  empty: boolean;
+  unsorted: boolean;
+  sorted: boolean;
+}
+
+type Pageable = {
+  pageNumber: number;
+  pageSize: number;
+  sort: Sort;
+  offset: number;
+  unpaged: boolean;
+  paged: boolean;
+}
+
+type responseData =  {
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  content: Mission[];
+  number: number;
+  sort: Sort;
+  numberOfElements: number;
+  first: boolean;
+  last: boolean;
+  pageable: Pageable;
+  empty: boolean;
 };
 @Component({
   selector: 'app-dashboard',
@@ -106,7 +136,9 @@ export class DashboardComponent {
       poids: 80
     }
   ];
-
+ 
+  loading = true;
+  responseData?: responseData;
   missions : Mission[] = [];
   bounties : Mission[] = [];
   nbPendingMissions : number = 0;
@@ -117,20 +149,34 @@ export class DashboardComponent {
   constructor(private route: ActivatedRoute, private router: Router, private missionService : MissionService){}
 
   ngOnInit(): void {
+    this.loadAllMissionsForStats();
+   this.fetchData();
+  }
+
+  handlePageEvent(event: PageEvent) {
+    this.fetchData(event.pageIndex, event.pageSize);
+  }
   
-    this.missionService.getMissions().subscribe({
-      next: (missions : any) => {
-        this.missions = missions.content;
-        console.log("this.missions", this.missions);
-        this.nbPendingMissions = [...this.missions].filter(m => m.status == StatusEnum.WAITING).length;
-        this.nbMissionsInProgress = [...this.missions].filter(m => m.status == StatusEnum.IN_PROGRESS).length;
-        this.nbValidatedMissions = [...this.missions].filter(m => m.status == StatusEnum.VALIDATED).length;
-        this.totalBountiesAmountOfYear = [...this.missions]
-                                  .filter(m => 
-                                    new Date(m.endDate).getFullYear() === new Date().getFullYear()
-                                  )
-                                  .map(m => m.bountyAmount || 0).reduce((a,b) => a + b, 0); 
-        this.bounties = [...this.missions].filter(m => m.bountyAmount && m.bountyAmount > 0);
+  fetchData(pageIndex = 0, pageSize = 5){
+    this.missionService.getMissions(pageIndex, pageSize, undefined).subscribe({
+      next: (response : any) => {
+        this.responseData = response;
+        this.missions = response.content;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error(error);
+        this.router.navigate(['/404']);
+        this.loading = false;
+      }
+    });
+  }
+
+  loadAllMissionsForStats() {
+    this.missionService.getMissions(0).subscribe({
+      next: (response: any) => {
+        // this.allMissions = response.content;
+        this.calculateStats(response.content);
       },
       error: (error) => {
         console.error(error);
@@ -138,5 +184,18 @@ export class DashboardComponent {
       }
     });
   }
-  
+
+  calculateStats(missions : Mission[]) {
+    
+    this.nbPendingMissions = [...missions].filter(m => m.status == StatusEnum.WAITING).length;
+    this.nbMissionsInProgress = [...missions].filter(m => m.status == StatusEnum.IN_PROGRESS).length;
+    this.nbValidatedMissions = [...missions].filter(m => m.status == StatusEnum.VALIDATED).length;
+    this.totalBountiesAmountOfYear = [...missions]
+                              .filter(m => 
+                                new Date(m.endDate).getFullYear() === new Date().getFullYear()
+                              )
+                              .map(m => m.bountyAmount || 0).reduce((a,b) => a + b, 0); 
+    this.bounties = [...missions].filter(m => m.bountyAmount && m.bountyAmount > 0);
+  }
+
 }
