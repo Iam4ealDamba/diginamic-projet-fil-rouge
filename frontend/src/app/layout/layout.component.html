@@ -23,121 +23,68 @@
     class="flex flex-col justify-between w-[300px] mt-28 py-8"
   >
     <ul>
-      <li>
-        <a href="" class="flex items-center gap-x-4 px-6 py-4">
-          <fa-icon [icon]="faHouseIcon" class="text-base"></fa-icon>
-          <p class="text-sm font-bold">Tableau de bord</p>
-        </a>
-      </li>
-      <li>
-        <a href="" class="flex items-center gap-x-4 px-6 py-4">
-          <fa-icon [icon]="faUsersIcon" class="text-base"></fa-icon>
-          <p class="text-sm">Collaborateurs</p>
-        </a>
-      </li>
-      <li>
-        <a href="" class="flex items-center gap-x-4 px-6 py-4">
-          <fa-icon [icon]="faBookIcon" class="text-base"></fa-icon>
-          <p class="text-sm">Missions</p>
-        </a>
-      </li>
-      <li>
-        <a href="" class="flex items-center gap-x-4 px-6 py-4">
-          <fa-icon [icon]="faSuitcaseIcon" class="text-base"></fa-icon>
-          <p class="text-sm">Nature Missions</p>
-        </a>
-      </li>
-      <li>
-        <a href="" class="flex items-center gap-x-4 px-6 py-4">
-          <fa-icon [icon]="faScrollIcon" class="text-base"></fa-icon>
-          <p class="text-sm">Notes de frais</p>
-        </a>
-      </li>
-      <li>
-        <a href="" class="flex items-center gap-x-4 px-6 py-4">
-          <fa-icon [icon]="faCoinsIcon" class="text-base"></fa-icon>
-          <p class="text-sm">Primes</p>
+      <li *ngFor="let item of sidebarMenu.top">
+        <a
+          [routerLink]="item.link"
+          [routerLinkActive]="'font-bold'"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center gap-x-2 px-6 py-4 transition-all hover:font-bold"
+        >
+          <fa-icon [icon]="item.icon" class="w-6 h-6"></fa-icon>
+          @if (item.active) {
+            <p class="text-sm font-bold">
+              {{ item.name }}
+            </p>
+            }@else {
+            <p class="text-sm">
+              {{ item.name }}
+            </p>
+            }
         </a>
       </li>
     </ul>
+
     <ul>
-      <li>
-        <a href="" class="flex items-center gap-x-4 px-6 py-4">
-          <fa-icon [icon]="faGearIcon" class="text-base"></fa-icon>
-          <p class="text-sm">Paramètre</p>
+      <li *ngFor="let item of sidebarMenu.bottom">
+        <a
+          *ngIf="item.link !== 'logout'"
+          [routerLink]="item.link"
+          [routerLinkActive]="'font-bold'"
+          class="flex items-center gap-x-2 px-6 py-4 transition-all hover:font-bold"
+        >
+          <fa-icon
+            [icon]="item.icon"
+            class="text-base{{ item.active && 'font-bold' }}"
+          ></fa-icon>
+          @if (item.active) {
+          <p class="text-sm font-bold">
+            {{ item.name }}
+          </p>
+          }@else {
+          <p class="text-sm">
+            {{ item.name }}
+          </p>
+          }
         </a>
-      </li>
-      <li>
-        <a href="login" class="flex items-center gap-x-4 px-6 py-4">
-          <fa-icon [icon]="faLogoutIcon" class="text-base"></fa-icon>
-          <p class="text-sm">Déconnexion</p>
+        <a
+          class="flex items-center gap-x-2 px-6 py-4 transition-all cursor-pointer hover:font-bold"
+          *ngIf="item.link == 'logout'"
+          (click)="logout()"
+        >
+          <fa-icon [icon]="item.icon" class="text-base"></fa-icon>
+          <p class="text-sm">
+            {{ item.name }}
+          </p>
         </a>
       </li>
     </ul>
   </aside>
   <section
     aria-label="container"
-    class="w-full h-full bg-tw_black/5"
+    class="flex w-full h-[100%] pt-[110px] bg-tw_black/5"
   >
-    <div class="overflow-y-scroll h-full">
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>azdazd</div>
-      <div>good</div>
+    <div class="overflow-y-scroll w-full p-10">
+      <ng-content></ng-content>
     </div>
   </section>
 </section>

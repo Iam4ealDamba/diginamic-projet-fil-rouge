@@ -17,38 +17,46 @@
         <h1 class="text-center text-3xl font-semibold">
           Inscrivez-vous dès maintenant !
         </h1>
-        <form class="space-y-8">
+        <form
+          class="space-y-8"
+          [formGroup]="registerForm"
+          (ngSubmit)="submitRegister()"
+        >
           <div aria-label="inputs" class="flex flex-col gap-y-4">
             <label aria-label="input" class="border px-4 py-2">
               <input
                 type="text"
-                name="firstname"
+                formControlName="firstname"
                 placeholder="Entrer votre prenom"
                 class="w-full outline-none"
+                required
               />
             </label>
             <label aria-label="input" class="border px-4 py-2">
               <input
                 type="text"
-                name="lastname"
+                formControlName="lastname"
                 placeholder="Entrer votre nom"
                 class="w-full outline-none"
+                required
               />
             </label>
             <label aria-label="input" class="border px-4 py-2">
               <input
                 type="email"
-                name="email"
+                formControlName="email"
                 placeholder="Entrer votre adresse email"
                 class="w-full outline-none"
+                required
               />
             </label>
             <label aria-label="input" class="flex border px-4 py-2">
               <input
                 [type]="showPassword ? 'text' : 'password'"
-                name="password"
+                formControlName="password"
                 placeholder="Entrer votre mot de passe"
                 class="w-full outline-none"
+                required
               />
               <fa-icon
                 [icon]="showPassword ? faEyeSlashIcon : faEyeIcon"
@@ -59,19 +67,22 @@
             <label aria-label="input" class="flex border px-4 py-2">
               <input
                 [type]="showConfirmPassword ? 'text' : 'password'"
-                name="password"
+                formControlName="confirmPassword"
                 placeholder="Confirmer votre mot de passe"
                 class="w-full outline-none"
+                required
               />
               <fa-icon
-                [icon]="showPassword ? faEyeSlashIcon : faEyeIcon"
+                [icon]="showConfirmPassword ? faEyeSlashIcon : faEyeIcon"
                 (click)="showConfirmPassword = !showConfirmPassword"
                 class="cursor-pointer"
               ></fa-icon>
             </label>
           </div>
           <div aria-label="button" class="flex justify-center">
-            <app-custom-button text="S'inscrire"></app-custom-button>
+            <app-custom-button-component type="submit"
+              >S'inscrire</app-custom-button-component
+            >
           </div>
         </form>
       </div>

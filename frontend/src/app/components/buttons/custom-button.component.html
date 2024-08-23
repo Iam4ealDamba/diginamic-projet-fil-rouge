@@ -4,7 +4,7 @@
     getRegularTheme()
   }}"
 >
-  <fa-icon *ngIf="iconLeft" [icon]="iconLeft!" class="mr-2"></fa-icon>
-  <p>{{ text }}</p>
-  <fa-icon *ngIf="iconRight" [icon]="iconRight!" class="ml-2"></fa-icon>
+  <fa-icon [icon]="iconLeft" class="mr-2"></fa-icon>
+  <p><ng-content></ng-content></p>
+  <fa-icon [icon]="iconRight" class="ml-2"></fa-icon>
 </button>

@@ -15,22 +15,28 @@
     >
       <div aria-label="form-content" class="space-y-8">
         <h1 class="text-center text-3xl font-semibold">Se Connecter</h1>
-        <form class="space-y-8">
+        <form
+          class="space-y-8"
+          [formGroup]="loginForm"
+          (ngSubmit)="submitLogin()"
+        >
           <div aria-label="inputs" class="flex flex-col gap-y-4">
             <label aria-label="input" class="border px-4 py-2">
               <input
                 type="email"
-                name="email"
+                formControlName="email"
                 placeholder="Entrer votre adresse email"
                 class="w-full outline-none"
+                required
               />
             </label>
             <label aria-label="input" class="flex border px-4 py-2">
               <input
                 [type]="showPassword ? 'text' : 'password'"
-                name="password"
+                formControlName="password"
                 placeholder="Entrer votre mot de passe"
                 class="w-full outline-none"
+                required
               />
               <fa-icon
                 [icon]="showPassword ? faEyeSlashIcon : faEyeIcon"
@@ -39,11 +45,15 @@
               ></fa-icon>
             </label>
             <div class="text-end">
-              <a routerLink="/password-reset" class="text-sm underline">Mot de passe oublié ?</a>
+              <a routerLink="/password-reset" class="text-sm underline"
+                >Mot de passe oublié ?</a
+              >
             </div>
           </div>
           <div aria-label="button" class="flex justify-center">
-            <app-custom-button text="Se Connecter"></app-custom-button>
+            <app-custom-button-component type="submit"
+              >Se Connecter</app-custom-button-component
+            >
           </div>
         </form>
       </div>

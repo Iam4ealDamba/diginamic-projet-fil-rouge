@@ -1,17 +1,21 @@
 import { Component, Input } from '@angular/core';
+import { RouterLink, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   standalone: true,
-  imports: [FontAwesomeModule],
-  selector: 'app-custom-button-component',
-  templateUrl: './custom-button.component.html',
+  imports: [FontAwesomeModule, RouterModule],
+  providers: [RouterLink],
+  selector: 'app-custom-button-link-component',
+  templateUrl: './custom-button-link.component.html',
 })
-export class CustomButtonComponent { 
-  @Input() type?: 'submit' | 'button' | 'reset' = 'button';
+export class CustomButtonLinkComponent {
+  @Input() text!: string;
+  @Input() link?: string = '';
+  @Input() textSize?: string = '';
   @Input() theme?: 'regular' | 'error' | 'border' = 'regular';
-  @Input() iconLeft: any;
-  @Input() iconRight: any;
+  @Input() iconLeft: any | undefined;
+  @Input() iconRight: any | undefined;
 
   getRegularTheme(): string {
     let _theme = '';
