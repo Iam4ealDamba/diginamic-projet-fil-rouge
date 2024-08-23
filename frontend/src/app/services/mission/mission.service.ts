@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Mission } from '../models/Mission';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Mission } from '../../models/Mission';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { environnement } from '../../environnements/environnement';
+import { environnement } from '../../../environnements/environnement';
 
 @Injectable({
   providedIn: 'root'
@@ -15,23 +15,37 @@ export class MissionService {
 
   constructor(private http: HttpClient) {}
 
-  // Get the list of missions
-  getMissions(): Observable<Mission[]> {
+  token = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiTUFOQUdFUiIsInN1YiI6Im1pc3NseWx5ZHU3NUBob3RtYWlsLmZyIiwiaWF0IjoxNzI0NDA1Njk5LCJleHAiOjE3MjQ0MjM2OTl9.hGdIAA_ictKk4feM82ZZ1Qw4Ng8KA92j3s0q-Yu9HjNrwFCUM497eRz_LgqhsyLi";
 
-    const token = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiTUFOQUdFUiIsInN1YiI6Im1pc3NseWx5ZHU3NUBob3RtYWlsLmZyIiwiaWF0IjoxNzI0MjgyMDMxLCJleHAiOjE3MjQyODM4MzF9.T4REijEZ01DeF9Vq10MmRWm3MjvuelJDJzp-Oxq0nqQMpTXuHxJ1DC12UU-UL31f";
+  // Get the list of missions
+  getMissions(page: number, size?: number, searchbar?: string): Observable<any> {
+
     
+    let params = new HttpParams()
+    .set('page', page.toString());
+    
+    if(size){
+      params = params.set('size', size.toString());
+    }
+    if(searchbar && searchbar.trim() !== ""){
+      params = params.set('searchbar', searchbar);
+    }
+
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${this.token}`
     });
     
-    return this.http.get<Mission[]>(this.apiURL, { headers }).pipe(
+    return this.http.get<any >(this.apiURL, { headers, params }).pipe(
       catchError(this.handleError)
     );
   }
 
    // Get a mission by its id. Return the mission or throws an error if the mission is not found.
    getMissionById(id: string): Observable<Mission> {
-    return this.http.get<Mission>(`${this.apiURL}/${id}`).pipe(
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`
+    });
+    return this.http.get<Mission>(`${this.apiURL}/${id}`, {headers}).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error(`Mission with ID ${id} not found`, error);
         return throwError(() => new Error('Not Found'));

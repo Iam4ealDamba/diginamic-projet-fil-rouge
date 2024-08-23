@@ -4,6 +4,7 @@ import { RegisterComponent } from './pages/auth/register/register.component';
 import { HomeComponent } from './pages/home/home.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MissionsComponent } from './pages/missions/missions.component';
+import { MissionDetailsComponent } from './pages/missions/mission-details/mission-details.component';
 
 
 export const routes: Routes = [
@@ -27,7 +28,7 @@ export const routes: Routes = [
   },
   {
     path: 'missions/:id',
-    component:RegisterComponent,
+    component:MissionDetailsComponent,
   },
 
 ];

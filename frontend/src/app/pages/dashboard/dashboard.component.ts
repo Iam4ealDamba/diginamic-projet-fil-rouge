@@ -4,7 +4,7 @@ import { StatCardComponent } from '../../components/stat-card/stat-card.componen
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { TableComponent } from '../../components/table/table.component';
 import { Mission } from '../../models/Mission';
-import { MissionService } from '../../services/mission.service';
+import { MissionService } from '../../services/mission/mission.service';
 import { StatusEnum } from '../../enums/StatusEnum';
 import { PageEvent } from '@angular/material/paginator';
 
