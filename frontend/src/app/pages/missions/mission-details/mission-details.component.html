@@ -1,83 +1,5 @@
-<!-- <div class="bg-slate-50 container mx-auto min-w-full px-12 min-h-full" *ngIf="mission">
-
-    <div class="mb-6">
-      <button (click)="router.navigate(['/missions'])" class="flex items-center text-gray-600 hover:text-gray-800">
-        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        Revenir en arrière
-      </button>
-    </div>
-  
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-      <div class="bg-white p-6 rounded-lg shadow-md">
-        <div class="mb-4">
-          <span class="text-sm text-gray-500">N°</span>
-          <h2 class="text-xl font-bold">{{ mission.id }}</h2>
-          <span class="text-xs text-gray-400">Créée le {{ mission.startDate | date:'dd/MM/yyyy à HH:mm' }}</span>
-        </div>
-        <div class="mb-4">
-          <span class="text-sm text-gray-500">Libellé mission</span>
-          <p class="text-medium text-gray-600 font-normal">{{ mission.label }}</p>
-        </div>
-        <div class="mb-4">
-          <span class="text-sm text-gray-500">Type</span>
-          <p class="text-medium text-gray-600 font-normal">{{ mission.labelNatureMission }}</p>
-        </div>
-        <div class="mb-4">
-          <span class="text-sm text-gray-500">Montant prime</span>
-          <p class="text-medium text-gray-600 font-normal">{{ mission.bountyAmount | currency:'EUR' }}</p>
-        </div>
-        <div class="mb-4">
-          <span class="text-sm text-gray-500">Dates de mission</span>
-          <p class="text-medium text-gray-600 font-normal">Du {{ mission.startDate | date:'dd/MM/yyyy' }} au {{ mission.endDate | date:'dd/MM/yyyy' }}</p>
-        </div>
-        <div class="mt-6 flex justify-between">
-          <button class="bg-gray-400 text-white px-4 py-2 rounded">Modifier</button>
-          <button class="bg-red-400 text-white px-4 py-2 rounded">Supprimer</button>
-        </div>
-      </div>
-  
-      <div *ngIf="mission && mission.expenseId" class="bg-white p-6 rounded-lg shadow-md">
-        <div class="mb-4">
-          <h3 class="text-xl font-bold">Notes de frais associée</h3>
-        </div>
-        <table class="min-w-full bg-white">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="py-2 px-4 text-left text-sm text-gray-500">Date</th>
-              <th class="py-2 px-4 text-left text-sm text-gray-500">Nature</th>
-              <th class="py-2 px-4 text-left text-sm text-gray-500">TVA</th>
-              <th class="py-2 px-4 text-left text-sm text-gray-500">Coût TTC</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="py-2 px-4 text-sm text-gray-500">01/01/2024</td>
-              <td class="py-2 px-4 text-sm text-gray-500">Train</td>
-              <td class="py-2 px-4 text-sm text-gray-500">15%</td>
-              <td class="py-2 px-4 text-sm text-gray-500">25€</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 text-sm text-gray-500">01/01/2024</td>
-              <td class="py-2 px-4 text-sm text-gray-500">Train</td>
-              <td class="py-2 px-4 text-sm text-gray-500">15%</td>
-              <td class="py-2 px-4 text-sm text-gray-500">25€</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="mt-6">
-          <p class="text-right text-sm text-gray-500">Total HT: 42,75€</p>
-          <p class="text-right text-lg font-bold">Total TTC: 50€</p>
-        </div>
-      </div>
-    </div>
-  </div>
-   -->
-
-   <div class="container mx-auto p-8">
-    <!-- Bouton de retour en arrière -->
+   
+   <div *ngIf="mission && mission.status" class="container mx-auto p-8 bg-slate-50 container mx-auto min-w-full px-12 min-h-full">
     <div class="mb-6">
       <button (click)="goBack()" class="flex items-center text-gray-600 hover:text-gray-800">
         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -89,31 +11,43 @@
   
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div class="bg-white p-6 rounded-lg shadow-md">
-        <div class="mb-4">
-          <span class="text-sm text-gray-500">N°</span>
-          <h2 class="text-xl font-bold">{{ mission?.id }}</h2>
-          <span class="text-xs text-gray-400">Créée le {{ mission?.startDate | date:'dd/MM/yyyy à HH:mm' }}</span>
+        <!-- Ajoutez la classe flex pour aligner les éléments sur la même ligne -->
+        <div class="flex justify-between mb-4 text-center pb-6">
+          <div class="mx-auto">
+            <h6 class="text-sm font-bold text-gray-800">Mission #{{ mission.id }}</h6>
+            <span class="text-xs text-gray-400 flex flex-column justify-center mt-1">Créée le {{ mission.startDate | date:'dd/MM/yyyy à HH:mm' }}</span>
+          </div>
+          <!-- Statut à droite -->
+          <div class="inline-block w-fit h-fit px-5 py-1 rounded-lg text-sm font-medium text-center" [ngClass]="{
+            'bg-green-100 text-green-800': mission.status.toUpperCase() === 'VALIDATED',
+            'bg-yellow-100 text-yellow-800': mission.status.toUpperCase() === 'IN_PROGRESS',
+            'bg-red-100 text-red-800': mission.status.toUpperCase() === 'REJECTED',
+            'bg-blue-100 text-blue-800': mission.status.toUpperCase() === 'FINISHED', 
+            'bg-gray-200 text-gray-800': mission.status.toUpperCase() === 'WAITING'
+          }">
+            {{ getStatusLabel(mission.status) }}
+          </div>
         </div>
-        
+  
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <span class="text-sm text-gray-500">Libellé mission</span>
-            <p class="text-lg font-semibold">{{ mission?.label }}</p>
+            <p class="text-medium text-gray-600">{{ mission.label }}</p>
           </div>
           <div>
             <span class="text-sm text-gray-500">Type</span>
-            <p class="text-lg font-semibold">{{ mission?.labelNatureMission }}</p>
+            <p class="text-medium text-gray-600">{{ mission.labelNatureMission }}</p>
           </div>
         </div>
   
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <span class="text-sm text-gray-500">Montant prime</span>
-            <p class="text-lg font-semibold">{{ mission?.bountyAmount | currency:'EUR' }}</p>
+            <p class="text-medium text-gray-600">{{ mission.bountyAmount }}€</p>
           </div>
           <div>
             <span class="text-sm text-gray-500">Dates de mission</span>
-            <p class="text-lg font-semibold">Du {{ mission?.startDate | date:'dd/MM/yyyy' }} au {{ mission?.endDate | date:'dd/MM/yyyy' }}</p>
+            <p class="text-medium text-gray-600">Du {{ mission.startDate | date:'dd/MM/yyyy' }} au {{ mission.endDate | date:'dd/MM/yyyy' }}</p>
           </div>
         </div>
   
@@ -125,7 +59,7 @@
   
       <div *ngIf="expense?.expenseLines?.length" class="bg-white p-6 rounded-lg shadow-md">
         <div class="mb-4">
-          <h3 class="text-xl font-bold">Notes de frais associée</h3>
+          <h6 class="font-bold text-center text-gray-800">Notes de frais associée</h6>
         </div>
         <table class="min-w-full bg-white">
           <thead class="bg-gray-100">
@@ -137,20 +71,19 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let line of expense.expenseLines">
+            <tr *ngFor="let line of expense.expenseLines" class="py-1 hover:bg-slate-50">
               <td class="py-2 px-4 text-sm text-gray-500">{{ line.date | date:'dd/MM/yyyy' }}</td>
               <td class="py-2 px-4 text-sm text-gray-500">{{ line.expenseType }}</td>
               <td class="py-2 px-4 text-sm text-gray-500">{{ line.tva }}%</td>
-              <td class="py-2 px-4 text-sm text-gray-500">{{ line.amount | currency:'EUR' }}</td>
+              <td class="py-2 px-4 text-sm text-gray-500">{{ line.amount }}€</td>
             </tr>
           </tbody>
         </table>
         <div class="mt-6">
-          <p class="text-right text-sm text-gray-500">Total HT: {{ calculateTotalHT() | currency:'EUR' }}</p>
-          <p class="text-right text-lg font-bold">Total TTC: {{ calculateTotalTTC() | currency:'EUR' }}</p>
+          <p class="text-right text-sm text-gray-500">Total HT: {{ calculateTotalHT() }}€</p>
+          <p class="text-right text-lg font-bold">Total TTC: {{ calculateTotalTTC() }}€</p>
         </div>
       </div>
     </div>
   </div>
-  
   

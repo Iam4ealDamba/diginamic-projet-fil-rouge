@@ -4,6 +4,8 @@ import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/route
 import { MissionService } from '../../../services/mission/mission.service';
 import { CommonModule, CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { ExpenseService } from '../../../services/expense/expense.service';
+import { StatusEnum } from '../../../enums/StatusEnum';
+import { TransportEnum } from '../../../enums/TransportEnum';
 
 @Component({
   selector: 'app-mission-details',
@@ -17,6 +19,8 @@ export class MissionDetailsComponent {
   mission?: Mission;
   updatedMission?: Mission;
   expense: any = {};
+  statusEnum = StatusEnum;
+  transportEnum = TransportEnum;
 
   constructor(private route: ActivatedRoute, public router: Router, private missionService : MissionService,private expenseService: ExpenseService, private _location: Location){}
 
@@ -68,5 +72,13 @@ export class MissionDetailsComponent {
     this._location.back();
   }
   
+  getStatusLabel(status: string): string {
+    const upperCaseStatus = status.toUpperCase() as keyof typeof StatusEnum;
+    return this.statusEnum[upperCaseStatus] || status;
+  }
+  getTransportLabel(transport: string): string {
+    const upperCaseStatus = transport.toUpperCase() as keyof typeof TransportEnum;
+    return this.transportEnum[upperCaseStatus] || transport;
+  }
 
 }
