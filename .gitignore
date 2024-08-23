@@ -34,6 +34,10 @@ e2e/*.map
 # System Files
 .DS_Store/
 
+# Node
+/node_modules
+node_modules/
+
 ### Eclipse ###
 .metadata
 bin/
@@ -142,3 +146,4 @@ buildNumber.properties
 *application.properties
 *.vscode
 *.idea
+
