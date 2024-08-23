@@ -27,7 +27,7 @@
     <a routerLink="/notes-de-frais" class="text-gray-500 hover:text-gray-800">Afficher tout</a>
   </div>
   <div class="table mt-12"></div>
-  <app-table 
+  <!-- <app-table 
   *ngIf="expenses.length"
   [headers]="headers_expenses" 
   [data]="expenses" 
@@ -35,7 +35,7 @@
   [pageIndex]="expensesData?.number ?? 0"
   [pageSize]="expensesData?.size ?? 5"
   (pageChange)="handleExpenseEvent($event)"
-  ></app-table>
+  ></app-table> -->
 
   <div class="flex justify-between items-center mt-12">
     <h6 class="font-medium leading-tight text-gray-700">Dernières primes</h6>

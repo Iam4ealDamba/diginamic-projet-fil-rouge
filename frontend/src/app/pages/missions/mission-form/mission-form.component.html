@@ -1,0 +1,53 @@
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <form [formGroup]="missionForm" (ngSubmit)="save()" class="grid grid-cols-2 gap-4 mb-4">
+      <mat-form-field class="col-span-2">
+        <mat-label>Libellé de la mission</mat-label>
+        <input matInput formControlName="label" placeholder="Mission n° 678">
+        <mat-error *ngIf="missionForm.controls.label.invalid">Le libellé est obligatoire.</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field>
+        <mat-label>Date de début de la mission</mat-label>
+        <input matInput [matDatepicker]="startDatePicker" formControlName="startDate" placeholder="JJ/MM/AAAA">
+        <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #startDatePicker></mat-datepicker>
+        <mat-error *ngIf="missionForm.controls.startDate.invalid">Date invalide.</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field>
+        <mat-label>Date de la fin de la mission</mat-label>
+        <input matInput [matDatepicker]="endDatePicker" formControlName="endDate" placeholder="JJ/MM/AAAA">
+        <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #endDatePicker></mat-datepicker>
+        <mat-error *ngIf="missionForm.controls.endDate.invalid">Date invalide.</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field>
+        <mat-label>Ville de départ</mat-label>
+        <mat-select formControlName="departureCity">
+          <mat-option *ngFor="let city of cities" [value]="city">{{city}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field>
+        <mat-label>Ville d'arrivée</mat-label>
+        <mat-select formControlName="arrivalCity">
+          <mat-option *ngFor="let city of cities" [value]="city">{{city}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <!-- <mat-form-field>
+        <mat-label>Transport</mat-label>
+        <mat-select formControlName="transport">
+          <mat-option *ngFor="let transport of transports" [value]="transport">{{transport}}</mat-option>
+        </mat-select>
+      </mat-form-field> -->
+  
+      <div class="col-span-2 flex justify-evenly mt-6">
+        <button mat-button type="button" class="bg-gray-400 text-white" (click)="cancel()">Annuler</button>
+        <button mat-raised-button color="primary" type="submit">Enregistrer</button>
+      </div>
+  
+    </form>
+  </div>
+  

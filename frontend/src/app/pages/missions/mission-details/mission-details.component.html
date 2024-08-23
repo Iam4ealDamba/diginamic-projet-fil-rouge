@@ -10,14 +10,17 @@
     </div>
   
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="bg-white p-6 rounded-lg shadow-md">
+      <div *ngIf="!editionMode" class="bg-white p-6 rounded-lg shadow-md">
         <div class="flex justify-between mb-4 text-center pb-6">
           <div class="mx-auto">
-            <h6 class="text-sm font-bold text-gray-800">Mission #{{ mission.id }}</h6>
+            <h6 class="text-sm font-bold text-gray-800">
+              <span *ngIf="mission.label && mission.label.trim() !== ''">{{ mission.label }}</span>
+              <span *ngIf="!mission.label || mission.label.trim() === ''">Mission #{{ mission.id }}</span>
+            </h6>            
             <span class="text-xs text-gray-400 flex flex-column justify-center mt-1">Créée le {{ mission.startDate | date:'dd/MM/yyyy à HH:mm' }}</span>
           </div>
 
-          <div class="inline-block w-fit h-fit px-5 py-1 rounded-lg text-sm font-medium text-center" [ngClass]="{
+          <div class="inline-block w-fit h-fit px-5 py-1 rounded-2xl text-sm font-medium text-center" [ngClass]="{
             'bg-green-100 text-green-800': mission.status.toUpperCase() === 'VALIDATED',
             'bg-yellow-100 text-yellow-800': mission.status.toUpperCase() === 'IN_PROGRESS',
             'bg-red-100 text-red-800': mission.status.toUpperCase() === 'REJECTED',
@@ -51,9 +54,13 @@
         </div>
   
         <div class="mt-10 mx-auto flex justify-evenly">
-          <button class="bg-gray-400 text-white px-4 py-2 rounded">Modifier</button>
+          <button class="bg-gray-400 text-white px-4 py-2 rounded" (click)="editionMode = true">Modifier</button>
           <button class="bg-red-400 text-white px-4 py-2 rounded">Supprimer</button>
         </div>
+      </div>
+
+      <div *ngIf="editionMode" class="bg-white p-6 rounded-lg shadow-md p-0">
+        <app-mission-form [mission]="mission" (closeForm)="editionMode = false"></app-mission-form>
       </div>
   
       <div *ngIf="expense?.expenseLines?.length" class="bg-white p-6 rounded-lg shadow-md">
@@ -80,7 +87,7 @@
         </table>
         <div class="mt-6">
           <p class="text-right text-sm text-gray-500">Total HT: {{ calculateTotalHT() }}€</p>
-          <p class="text-right text-lg font-bold">Total TTC: {{ calculateTotalTTC() }}€</p>
+          <p class="text-right text-lg font-bold text-gray-800">Total TTC: {{ calculateTotalTTC() }}€</p>
         </div>
       </div>
     </div>

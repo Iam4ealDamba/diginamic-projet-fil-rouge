@@ -45,6 +45,6 @@ export interface Mission {
     natureMissionId: number;
   
     /** The unique identifier of the associated expense */
-    expenseId: number;
+    expenseId?: number;
   }
   

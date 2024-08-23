@@ -6,11 +6,12 @@ import { CommonModule, CurrencyPipe, DatePipe, Location } from '@angular/common'
 import { ExpenseService } from '../../../services/expense/expense.service';
 import { StatusEnum } from '../../../enums/StatusEnum';
 import { TransportEnum } from '../../../enums/TransportEnum';
+import { MissionFormComponent } from '../mission-form/mission-form.component';
 
 @Component({
   selector: 'app-mission-details',
   standalone: true,
-  imports: [CommonModule,RouterLink, RouterOutlet,CurrencyPipe, DatePipe],
+  imports: [CommonModule,RouterLink, RouterOutlet,CurrencyPipe, DatePipe, MissionFormComponent],
   templateUrl: './mission-details.component.html',
   styleUrl: './mission-details.component.scss'
 })
@@ -21,6 +22,7 @@ export class MissionDetailsComponent {
   expense: any = {};
   statusEnum = StatusEnum;
   transportEnum = TransportEnum;
+  editionMode = true;
 
   constructor(private route: ActivatedRoute, public router: Router, private missionService : MissionService,private expenseService: ExpenseService, private _location: Location){}
 
@@ -28,7 +30,6 @@ export class MissionDetailsComponent {
     this.route.paramMap.subscribe(params => {
       const id: string | null = params.get('id');
       if(id){
-        console.log("id", id);
         this.missionService.getMissionById(id).subscribe({
           next: (mission) => {
             this.mission = mission;
@@ -54,6 +55,15 @@ export class MissionDetailsComponent {
     })
   }
 
+  getStatusLabel(status: string): string {
+    const upperCaseStatus = status.toUpperCase() as keyof typeof StatusEnum;
+    return this.statusEnum[upperCaseStatus] || status;
+  }
+  getTransportLabel(transport: string): string {
+    const upperCaseStatus = transport.toUpperCase() as keyof typeof TransportEnum;
+    return this.transportEnum[upperCaseStatus] || transport;
+  }
+
   calculateTotalHT(): number {
     return this.expense.expenseLines.reduce((total: number, line: any) => total + line.amount, 0);
   }
@@ -64,7 +74,6 @@ export class MissionDetailsComponent {
       return total + line.amount + tvaAmount;
     }, 0);
   }
-
    /**
    * Method to navigate back to the previous location.
    */
@@ -72,13 +81,6 @@ export class MissionDetailsComponent {
     this._location.back();
   }
   
-  getStatusLabel(status: string): string {
-    const upperCaseStatus = status.toUpperCase() as keyof typeof StatusEnum;
-    return this.statusEnum[upperCaseStatus] || status;
-  }
-  getTransportLabel(transport: string): string {
-    const upperCaseStatus = transport.toUpperCase() as keyof typeof TransportEnum;
-    return this.transportEnum[upperCaseStatus] || transport;
-  }
-
+//TODO:
+//Create component for expense
 }
