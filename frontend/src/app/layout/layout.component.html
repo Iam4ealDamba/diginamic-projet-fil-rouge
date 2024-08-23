@@ -1,0 +1,90 @@
+<header
+  class="fixed top-0 left-0 z-10 w-full flex items-center justify-between py-7 px-10 border-b drop-shadow bg-tw_white"
+>
+  <div aria-label="left">
+    <img src="/images/logo.svg" alt="" class="object-cover" width="60" />
+  </div>
+  <div aria-label="right">
+    <div aria-label="card" class="flex items-center gap-x-4">
+      <div
+        aria-label="card-image"
+        class="w-8 h-8 rounded-full bg-neutral-700"
+      ></div>
+      <div aria-label="card-text" class="font-semibold">
+        <p class="text-sm">Thomas Dupont</p>
+        <p class="text-xs text-tw_black/55">Consultant Informatique</p>
+      </div>
+    </div>
+  </div>
+</header>
+<section class="flex h-[100vh]">
+  <aside
+    aria-label="menu-sidebar"
+    class="flex flex-col justify-between w-[300px] mt-28 py-8"
+  >
+    <ul>
+      <li *ngFor="let item of sidebarMenu.top">
+        <a
+          [routerLink]="item.link"
+          [routerLinkActive]="'font-bold'"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center gap-x-2 px-6 py-4 transition-all hover:font-bold"
+        >
+          <fa-icon [icon]="item.icon" class="w-6 h-6"></fa-icon>
+          @if (item.active) {
+            <p class="text-sm font-bold">
+              {{ item.name }}
+            </p>
+            }@else {
+            <p class="text-sm">
+              {{ item.name }}
+            </p>
+            }
+        </a>
+      </li>
+    </ul>
+
+    <ul>
+      <li *ngFor="let item of sidebarMenu.bottom">
+        <a
+          *ngIf="item.link !== 'logout'"
+          [routerLink]="item.link"
+          [routerLinkActive]="'font-bold'"
+          class="flex items-center gap-x-2 px-6 py-4 transition-all hover:font-bold"
+        >
+          <fa-icon
+            [icon]="item.icon"
+            class="text-base{{ item.active && 'font-bold' }}"
+          ></fa-icon>
+          @if (item.active) {
+          <p class="text-sm font-bold">
+            {{ item.name }}
+          </p>
+          }@else {
+          <p class="text-sm">
+            {{ item.name }}
+          </p>
+          }
+        </a>
+        <a
+          class="flex items-center gap-x-2 px-6 py-4 transition-all cursor-pointer hover:font-bold"
+          *ngIf="item.link == 'logout'"
+          (click)="logout()"
+        >
+          <fa-icon [icon]="item.icon" class="text-base"></fa-icon>
+          <p class="text-sm">
+            {{ item.name }}
+          </p>
+        </a>
+      </li>
+    </ul>
+  </aside>
+  <section
+    aria-label="container"
+    class="flex w-full h-[100%] pt-[110px] bg-tw_black/5"
+  >
+    <div class="overflow-y-scroll w-full p-10">
+      <ng-content></ng-content>
+    </div>
+  </section>
+</section>
