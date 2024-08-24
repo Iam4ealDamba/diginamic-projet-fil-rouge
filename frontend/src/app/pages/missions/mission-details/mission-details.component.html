@@ -54,14 +54,14 @@
         </div>
   
         <div class="mt-10 mx-auto flex justify-evenly">
-          <button class="bg-gray-400 text-white px-4 py-2 rounded" (click)="editionMode = true">Modifier</button>
           <button class="bg-red-400 text-white px-4 py-2 rounded">Supprimer</button>
+          <button class="bg-gray-400 text-white px-4 py-2 rounded" (click)="editionMode = true">Modifier</button>
         </div>
       </div>
 
-      <div *ngIf="editionMode" class="bg-white p-6 rounded-lg shadow-md p-0">
-        <app-mission-form [mission]="mission" (closeForm)="editionMode = false"></app-mission-form>
-      </div>
+      <!-- <div class="bg-white p-6 rounded-lg shadow-md p-0"> -->
+        <app-mission-form *ngIf="editionMode" [mission]="mission" (closeForm)="editionMode = false" (closeFormAndSave)="handleMissionUpdate($event)" class=""></app-mission-form>
+      <!-- </div> -->
   
       <div *ngIf="expense?.expenseLines?.length" class="bg-white p-6 rounded-lg shadow-md">
         <div class="mb-4">

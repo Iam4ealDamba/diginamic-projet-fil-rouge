@@ -1,5 +1,6 @@
 <div class="bg-white p-6 rounded-lg shadow-md">
-    <form [formGroup]="missionForm" (ngSubmit)="save()" class="grid grid-cols-2 gap-4 mb-4">
+    <form [formGroup]="missionForm" (ngSubmit)="submit()" class="grid grid-cols-2 gap-4 mb-4">
+      
       <mat-form-field class="col-span-2">
         <mat-label>Libellé de la mission</mat-label>
         <input matInput formControlName="label" placeholder="Mission n° 678">
@@ -35,13 +36,6 @@
           <mat-option *ngFor="let city of cities" [value]="city">{{city}}</mat-option>
         </mat-select>
       </mat-form-field>
-  
-      <!-- <mat-form-field>
-        <mat-label>Transport</mat-label>
-        <mat-select formControlName="transport">
-          <mat-option *ngFor="let transport of transports" [value]="transport">{{transport}}</mat-option>
-        </mat-select>
-      </mat-form-field> -->
   
       <div class="col-span-2 flex justify-evenly mt-6">
         <button mat-button type="button" class="bg-gray-400 text-white" (click)="cancel()">Annuler</button>

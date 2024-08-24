@@ -22,7 +22,7 @@ export class MissionDetailsComponent {
   expense: any = {};
   statusEnum = StatusEnum;
   transportEnum = TransportEnum;
-  editionMode = true;
+  editionMode = false;
 
   constructor(private route: ActivatedRoute, public router: Router, private missionService : MissionService,private expenseService: ExpenseService, private _location: Location){}
 
@@ -53,6 +53,11 @@ export class MissionDetailsComponent {
       }
 
     })
+  }
+
+  handleMissionUpdate(updatedMission: Mission){
+    this.mission = {...updatedMission};
+    this.editionMode = false;
   }
 
   getStatusLabel(status: string): string {

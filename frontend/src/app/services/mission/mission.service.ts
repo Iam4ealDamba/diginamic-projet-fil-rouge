@@ -15,7 +15,7 @@ export class MissionService {
 
   constructor(private http: HttpClient) {}
 
-  token = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiTUFOQUdFUiIsInN1YiI6Im1pc3NseWx5ZHU3NUBob3RtYWlsLmZyIiwiaWF0IjoxNzI0NDQ0MTYzLCJleHAiOjE3MjQ0NjIxNjN9.awjDJSXj4OrTL_xe78DFJOWiLPru9JpzTzptwCZ4j35f-I3s42FjPLpSFSZCjx0k";
+  token = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiTUFOQUdFUiIsInN1YiI6Im1pc3NseWx5ZHU3NUBob3RtYWlsLmZyIiwiaWF0IjoxNzI0NTM0NDE3LCJleHAiOjE3MjQ1NTI0MTd9.GGJIgFkNyzOR44XXghYLY7CxT5zx49HzLUmWQUKZGMFjTOPvThOoV1U0W-PUxMfm";
 
   // Get the list of missions
   getMissions(page: number, size?: number, searchbar?: string): Observable<any> {
@@ -55,7 +55,10 @@ export class MissionService {
 
   // Create a mission. Return the newly added mission or throws an error if the method fails.
   addMission(mission: Mission): Observable<Mission> {
-    return this.http.post<Mission>(this.apiURL, mission).pipe(
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`
+    });
+    return this.http.post<Mission>(this.apiURL, mission, {headers}).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error(`Mission ${mission.label} cannot be created`, error);
         return throwError(() => new Error('Creation error'));
@@ -65,7 +68,10 @@ export class MissionService {
 
   // Update a mission by its id. Return the updated mission or throws an error if the mission is not found.
   updateMission(mission: Mission): Observable<Mission> {
-    return this.http.put<Mission>(`${this.apiURL}/${mission.id}`, mission).pipe(
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`
+    });
+    return this.http.put<Mission>(`${this.apiURL}/${mission.id}`, mission, {headers}).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error(`Mission with ID ${mission.id} not found`, error);
         return throwError(() => new Error('Not Found'));
@@ -75,7 +81,11 @@ export class MissionService {
 
   // Delete a mission by its id. Throws an error if the mission is not found.
   deleteMission(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiURL}/${id}`).pipe(
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`
+    });
+
+    return this.http.delete<void>(`${this.apiURL}/${id}`, {headers}).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error(`Mission with ID ${id} not found`, error);
         return throwError(() => new Error('Not Found'));

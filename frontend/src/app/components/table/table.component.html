@@ -17,15 +17,21 @@
           <ng-container [ngSwitch]="header.value" >
            
             <div *ngSwitchCase="'startDate'" class="flex flex-col">
-              <span class="mb-1">Du: {{ row.startDate }}</span>
-              <span> Au: {{ row.endDate }}</span>
+              <span class="mb-1">Du: {{ row.startDate | date:'dd/MM/yyyy' }}</span>
+              <span> Au: {{ row.endDate | date:'dd/MM/yyyy' }}</span>
             </div>
  
             <div *ngSwitchCase="'transport'" class="text-center">
               {{ getTransportLabel(row.transport) }}
             </div>
+
+            <div *ngSwitchCase="'departureCity'" class="flex flex-col">
+             <span class="mb-1">De: {{ row.departureCity }}</span>
+             <span>A: {{row.arrivalCity}}</span>
+            </div>
     
             <div *ngSwitchCase="'status'" class="px-2 py-1 rounded-full text-center" [ngClass]="{
+              'bg-indigo-100 text-indigo-800': row.status?.toUpperCase() === 'INITIAL',
               'bg-green-100 text-green-800': row.status?.toUpperCase() === 'VALIDATED',
               'bg-yellow-100 text-yellow-800': row.status?.toUpperCase() === 'IN_PROGRESS',
               'bg-red-100 text-red-800': row.status?.toUpperCase() === 'REJECTED',
@@ -50,11 +56,11 @@
         <mat-menu #menu="matMenu" aftermenu="matMenu" xposition="after">
           <button mat-menu-item>
             <mat-icon>edit</mat-icon>
-            <span>Edit</span>
+            <span>Modifier</span>
           </button>
           <button mat-menu-item>
             <mat-icon>delete</mat-icon>
-            <span>Delete</span>
+            <span>Supprimer</span>
           </button>
         </mat-menu>
 
