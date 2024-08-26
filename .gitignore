@@ -1,6 +1,38 @@
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
-# Created by https://www.toptal.com/developers/gitignore/api/eclipse,maven
-# Edit at https://www.toptal.com/developers/gitignore?templates=eclipse,maven
+# Created by https://www.toptal.com/developers/gitignore/api/yarn,maven,eclipse,angular
+# Edit at https://www.toptal.com/developers/gitignore?templates=yarn,maven,eclipse,angular
+
+### Angular ###
+## Angular ##
+# compiled output
+dist/
+tmp/
+app/**/*.js
+app/**/*.js.map
+
+# dependencies
+*node_modules/
+bower_components/
+
+# IDEs and editors
+.idea/
+
+# misc
+.sass-cache/
+connect.lock/
+coverage/
+libpeerconnection.log/
+npm-debug.log
+testem.log
+typings/
+.angular/
+
+# e2e
+e2e/*.js
+e2e/*.map
+
+# System Files
+.DS_Store/
 
 # Node
 /node_modules
@@ -9,7 +41,6 @@ node_modules/
 ### Eclipse ###
 .metadata
 bin/
-tmp/
 *.tmp
 *.bak
 *.swp
@@ -91,10 +122,29 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
-# End of https://www.toptal.com/developers/gitignore/api/eclipse,maven
+### yarn ###
+# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+
+.yarn/*
+!.yarn/releases
+!.yarn/patches
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+
+# if you are NOT using Zero-installs, then:
+# comment the following lines
+!.yarn/cache
+
+# and uncomment the following lines
+# .pnp.*
+
+# End of https://www.toptal.com/developers/gitignore/api/yarn,maven,eclipse,angular
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
+
 *application.properties
 *.vscode
 
 *.idea
+

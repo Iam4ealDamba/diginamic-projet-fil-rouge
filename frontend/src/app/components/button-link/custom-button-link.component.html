@@ -1,0 +1,14 @@
+<a
+  [routerLink]="link"
+  class="inline-flex items-center justify-center px-4 py-2 border rounded-lg font-semibold {{
+    getRegularTheme()
+  }}"
+>
+  @if (iconLeft) {
+  <fa-icon [icon]="iconLeft" class="mr-2 {{ textSize }}"></fa-icon>
+  }
+  <p class="{{ textSize }}">{{ text }} <ng-content></ng-content></p>
+  @if (iconRight) {
+  <fa-icon [icon]="iconRight" class="ml-2"></fa-icon>
+  }
+</a>

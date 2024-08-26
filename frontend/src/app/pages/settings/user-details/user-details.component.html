@@ -1,0 +1,117 @@
+<app-layout>
+  <main>
+    <section aria-label="top-content">
+      <div aria-label="top" class="flex items-start gap-x-4 pb-6">
+        <div aria-label="img">
+          <img
+            src="https://picsum.photos/200"
+            alt=""
+            class="w-16 h-16 rounded-full"
+          />
+        </div>
+        <div aria-label="text" class="space-y-2">
+          <div>
+            <h2 class="font-semibold">Firstname Lastname</h2>
+            <h3 class="text-sm font-semibold text-tw_black/55">Job</h3>
+          </div>
+          <a
+            href="mailto:test@test.test"
+            class="inline-flex items-center gap-x-2 border px-2 py-1"
+            ><fa-icon [icon]="faEnvelopeIcon"></fa-icon>
+            <p class="text-sm">Send email</p>
+          </a>
+        </div>
+      </div>
+      <div aria-label="bottom-header-navigation">
+        <ul class="flex items-center py-2 border-b gap-x-4">
+          <li>
+            <app-custom-button-link-component
+              [iconLeft]="faUserIcon"
+              textSize="text-sm"
+              link="/settings/user-details"
+              >User details</app-custom-button-link-component
+            >
+          </li>
+          <li>
+            <app-custom-button-link-component
+              theme="border"
+              [iconLeft]="faKeyIcon"
+              textSize="text-sm"
+              link="/settings/change-password"
+              >Change password</app-custom-button-link-component
+            >
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section aria-label="bottom-content">
+      <form action="" class="w-full">
+        <div aria-label="button" class="flex justify-end">
+          <app-custom-button-component theme="regular"
+            >Modifier</app-custom-button-component
+          >
+        </div>
+        <div>
+          <div
+            aria-label="inputs-top"
+            class="max-w-[700px] grid grid-cols-2 gap-4 mb-4 text-sm"
+          >
+            <div aria-label="input" class="flex flex-col gap-y-2">
+              <label class="text-sm font-semibold" for="firstname"
+                >Prénom</label
+              >
+              <input
+                type="text"
+                id="firstname"
+                placeholder="Entrer votre prénom..."
+                class="py-2 px-4 border-2 bg-transparent"
+              />
+            </div>
+            <div aria-label="input" class="flex flex-col gap-y-2">
+              <label class="text-sm font-semibold" for="lastname">Nom</label>
+              <input
+                type="text"
+                id="lastname"
+                placeholder="Entrer votre nom..."
+                class="py-2 px-4 border-2 bg-transparent"
+              />
+            </div>
+            <div aria-label="input" class="flex flex-col gap-y-2">
+              <label class="text-sm font-semibold" for="birthdate"
+                >Date de naissance</label
+              >
+              <input
+                type="text"
+                id="birthdate"
+                placeholder="Entrer votre date de naissance..."
+                class="py-2 px-4 border-2 bg-transparent"
+              />
+            </div>
+            <div aria-label="input" class="flex flex-col gap-y-2">
+              <label class="text-sm font-semibold" for="phone">Téléphone</label>
+              <input
+                type="tel"
+                id="phone"
+                placeholder="Entrer votre numéro..."
+                class="py-2 px-4 border-2 bg-transparent"
+              />
+            </div>
+          </div>
+          <div aria-label="inputs-bottom" class="max-w-[700px] text-sm">
+            <div aria-label="input" class="flex flex-col gap-y-2">
+              <label class="text-sm font-semibold" for="email"
+                >Adresse email</label
+              >
+              <input
+                type="text"
+                id="email"
+                placeholder="Entrer votre adresse email..."
+                class="py-2 px-4 border-2 bg-transparent"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
+</app-layout>
