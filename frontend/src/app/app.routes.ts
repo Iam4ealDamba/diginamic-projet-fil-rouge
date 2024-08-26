@@ -3,9 +3,9 @@ import { LoginComponent } from './pages/auth/login/login.component';
 import { RegisterComponent } from './pages/auth/register/register.component';
 import { HomeComponent } from './pages/home/home.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { MissionsComponent } from './pages/missions/missions.component';
 import { MissionDetailsComponent } from './pages/missions/mission-details/mission-details.component';
 import { NewMissionViewComponent } from './pages/missions/new-mission-view/new-mission-view.component';
+import { MissionsListComponent } from './pages/missions/missions-list/missions-list.component';
 
 
 export const routes: Routes = [
@@ -25,7 +25,7 @@ export const routes: Routes = [
   },
   {
     path: 'missions',
-    component:MissionsComponent,
+    component:MissionsListComponent,
   },
   {
     path: 'missions/new',

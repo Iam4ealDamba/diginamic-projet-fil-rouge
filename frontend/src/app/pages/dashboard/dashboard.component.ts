@@ -94,65 +94,6 @@ export class DashboardComponent {
     { label: 'Montant prime', value: 'bountyAmount', displayCurrency: true },
     { label: 'Dates missions', value: 'startDate' },
   ];
-
-  dummyData = [
-    {
-      nom: 'Dupont',
-      prenom: 'Thomas',
-      signeAstro: 'Bélier',
-      taille: 175,
-      humeur: "Joyeux",
-      poids: 70
-    },
-    {
-      nom: 'Martin',
-      prenom: 'Sophie',
-      signeAstro: 'Cancer',
-      taille: 160,
-      humeur: "Calme",
-      poids: 60
-    },
-    {
-      nom: 'Durand',
-      prenom: 'Jean',
-      signeAstro: 'Vierge',
-      taille: 180,
-      humeur: "Sérieux",
-      poids: 75
-    },
-    {
-      nom: 'Leroy',
-      prenom: 'Marie',
-      signeAstro: 'Sagittaire',
-      taille: 165,
-      humeur: "Enthousiaste",
-      poids: 55
-    },
-    {
-      nom: 'Moreau',
-      prenom: 'Pierre',
-      signeAstro: 'Gémeaux',
-      taille: 170,
-      humeur: "Curieux",
-      poids: 68
-    },
-    {
-      nom: 'Petit',
-      prenom: 'Lucie',
-      signeAstro: 'Poissons',
-      taille: 158,
-      humeur: "Rêveuse",
-      poids: 52
-    },
-    {
-      nom: 'Rousseau',
-      prenom: 'Henri',
-      signeAstro: 'Scorpion',
-      taille: 185,
-      humeur: "Passionné",
-      poids: 80
-    }
-  ];
  
   loading = true;
   responseData?: responseData;
@@ -174,7 +115,6 @@ export class DashboardComponent {
     cancelButtonText: 'Annuler'
   };
   
-
 
   constructor(private route: ActivatedRoute, private router: Router, private missionService : MissionService, private expenseService: ExpenseService, private _location: Location){}
 
