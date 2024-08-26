@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { TransportEnum } from '../../enums/TransportEnum';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Expense } from '../../models/Expense';
 
 type HeaderConfigType = {
   label: string;
@@ -64,9 +65,11 @@ export class TableComponent {
   @Input() headers: HeaderConfigType[] = [];
   @Input() data: Mission[] = [];
   @Input() totalElements: number = 0; 
+  @Input() showPagination: boolean = true; 
   @Input() pageIndex: number = 0; 
   @Input() pageSize: number = 5; 
 
+  @Output() delete = new EventEmitter<Mission>();
   @Output() pageChange = new EventEmitter<PageEvent>(); 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   
@@ -88,10 +91,9 @@ export class TableComponent {
       this.paginator.page.subscribe((event: PageEvent) => {
         this.pageChange.emit(event);
       });
-    } else {
-      console.error('Paginator is not initialized');
     }
   }
+
   
   handlePageEvent(event: PageEvent) {
     this.pageChange.emit(event);
@@ -108,6 +110,14 @@ export class TableComponent {
   getTransportLabel(transport: string): string {
     const upperCaseStatus = transport.toUpperCase() as keyof typeof TransportEnum;
     return this.transportEnum[upperCaseStatus] || transport;
+  }
+
+  getTotalExpense(exp: Expense){
+    return exp.expenseLines?.map(e => e.amount).reduce((a,b) => a + b, 0);
+  }
+
+  deleteMission(mission : Mission) {
+    this.delete.emit(mission);
   }
   
 }

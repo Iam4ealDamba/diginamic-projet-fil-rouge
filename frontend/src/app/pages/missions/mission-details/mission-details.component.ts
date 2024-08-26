@@ -18,7 +18,7 @@ import { MissionFormComponent } from '../mission-form/mission-form.component';
 export class MissionDetailsComponent {
 
   mission?: Mission;
-  updatedMission?: Mission;
+  // updatedMission?: Mission;
   expense: any = {};
   statusEnum = StatusEnum;
   transportEnum = TransportEnum;
@@ -33,15 +33,10 @@ export class MissionDetailsComponent {
         this.missionService.getMissionById(id).subscribe({
           next: (mission) => {
             this.mission = mission;
-            this.updatedMission = {...mission};
+            console.log(this.mission);
 
-            if(mission.expenseId){
-              this.expenseService.getExpenseById(mission.expenseId.toString(), undefined).subscribe({
-                next: (exp) => {
-                  this.expense = exp;
-                  console.log("exp", exp);
-                }
-              }) 
+            if(mission.expense){
+              this.expense = mission.expense; 
             }
           },
           error: (error) => {
@@ -52,6 +47,19 @@ export class MissionDetailsComponent {
 
       }
 
+    })
+  }
+
+  deleteMission(id : number){
+    this.missionService.deleteMission(id.toString()).subscribe({
+      next: () => {
+        this. goBack();
+
+      },
+      error: (error) => {
+        console.error(error);
+        this.router.navigate(["/404"]);
+      }
     })
   }
 
@@ -79,6 +87,7 @@ export class MissionDetailsComponent {
       return total + line.amount + tvaAmount;
     }, 0);
   }
+
    /**
    * Method to navigate back to the previous location.
    */
@@ -86,6 +95,4 @@ export class MissionDetailsComponent {
     this._location.back();
   }
   
-//TODO:
-//Create component for expense
 }

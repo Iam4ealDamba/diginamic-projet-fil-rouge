@@ -17,25 +17,28 @@
   [totalElements]="responseData?.totalElements ?? 0" 
   [pageIndex]="responseData?.number ?? 0"
   [pageSize]="responseData?.size ?? 5"
+  [showPagination]="false"
   (pageChange)="handlePageEvent($event)"
+  (delete)="showDialog($event)"
   >
 </app-table>
 
 
-  <div class="flex justify-between items-center mt-12" *ngIf="expenses.length">
+  <div class="flex justify-between items-center mt-12" *ngIf="missionsWithExpenses.length">
     <h6 class="font-medium leading-tight text-gray-700">Dernières notes de frais</h6>
     <a routerLink="/notes-de-frais" class="text-gray-500 hover:text-gray-800">Afficher tout</a>
   </div>
   <div class="table mt-12"></div>
-  <!-- <app-table 
-  *ngIf="expenses.length"
+  <app-table 
+  *ngIf="missionsWithExpenses.length"
   [headers]="headers_expenses" 
-  [data]="expenses" 
-  [totalElements]="expensesData?.totalElements ?? 0" 
-  [pageIndex]="expensesData?.number ?? 0"
-  [pageSize]="expensesData?.size ?? 5"
-  (pageChange)="handleExpenseEvent($event)"
-  ></app-table> -->
+  [data]="missionsWithExpenses" 
+  [totalElements]="respMissionsWithExpenseData?.totalElements ?? 0" 
+  [pageIndex]="respMissionsWithExpenseData?.number ?? 0"
+  [pageSize]="respMissionsWithExpenseData?.size ?? 5"
+  [showPagination]="false"
+  (pageChange)="handleMissionsWithExpenses($event)"
+  ></app-table>
 
   <div class="flex justify-between items-center mt-12">
     <h6 class="font-medium leading-tight text-gray-700">Dernières primes</h6>
@@ -45,7 +48,18 @@
   <app-table 
   [headers]="headers_bounties"
    [data]="bounties"
+   [showPagination]="false"
    ></app-table>
+
+   <app-confirm-dialog
+   *ngIf="showConfirmDialog"
+   [dialogData]="dialogData"
+   (confirm)="deleteMission()"
+   (cancel)="cancelDialog()"
+   [dialogData]="dialogData"
+ ></app-confirm-dialog>
+ 
+ 
 
   </div>
   

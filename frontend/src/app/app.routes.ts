@@ -5,6 +5,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MissionsComponent } from './pages/missions/missions.component';
 import { MissionDetailsComponent } from './pages/missions/mission-details/mission-details.component';
+import { NewMissionViewComponent } from './pages/missions/new-mission-view/new-mission-view.component';
 
 
 export const routes: Routes = [
@@ -27,8 +28,11 @@ export const routes: Routes = [
     component:MissionsComponent,
   },
   {
+    path: 'missions/new',
+    component:NewMissionViewComponent,
+  },
+  {
     path: 'missions/:id',
     component:MissionDetailsComponent,
   },
-
 ];

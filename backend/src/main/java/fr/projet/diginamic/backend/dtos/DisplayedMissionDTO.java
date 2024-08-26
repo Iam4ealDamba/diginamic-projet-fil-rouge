@@ -66,6 +66,6 @@ public class DisplayedMissionDTO {
     private Long natureMissionId;
 
     /** The unique identifier of the associated expense */
-    private Long expenseId;
+    private ExpenseWithLinesDto expense;
 }
 

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet, RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { StatCardComponent } from '../../components/stat-card/stat-card.component';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, Location } from '@angular/common';
 import { TableComponent } from '../../components/table/table.component';
 import { Mission } from '../../models/Mission';
 import { MissionService } from '../../services/mission/mission.service';
@@ -9,6 +9,7 @@ import { StatusEnum } from '../../enums/StatusEnum';
 import { PageEvent } from '@angular/material/paginator';
 import { ExpenseService } from '../../services/expense/expense.service';
 import { Expense } from '../../models/Expense';
+import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
 
 type HeaderConfigType = {
   label: string;
@@ -62,7 +63,7 @@ type responseData =  {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [StatCardComponent, CommonModule, TableComponent, RouterLink, RouterOutlet],
+  imports: [StatCardComponent, CommonModule, TableComponent, RouterLink, RouterOutlet, ConfirmDialogComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -84,7 +85,7 @@ export class DashboardComponent {
     { label: 'Nature', value: 'labelNatureMission' },
     { label: 'Villes', value: 'departureCity' },
     { label: 'Transport', value: 'transport' },
-    { label: 'Frais', value: 'expenseId' }, //TODO: update this
+    { label: 'Frais', value: 'expense' },
   ];
 
   headers_bounties: HeaderConfigType[] = [
@@ -156,31 +157,47 @@ export class DashboardComponent {
   loading = true;
   responseData?: responseData;
   missions : Mission[] = [];
-  expenses: Expense[] = [];
+  missionsWithExpenses: Mission[] = [];
   expensesData? : ExpensesData;
+  respMissionsWithExpenseData? : responseData;
   bounties : Mission[] = [];
   nbPendingMissions : number = 0;
   nbValidatedMissions : number = 0;
   nbMissionsInProgress : number = 0;
   totalBountiesAmountOfYear : number = 0;
+  showConfirmDialog = false;
+  selectedMission?: Mission;
+  dialogData = {
+    title: '', 
+    message: 'Êtes-vous sûr de vouloir supprimer cette mission ? Cette action est irréversible.',
+    confirmButtonText: 'Supprimer',
+    cancelButtonText: 'Annuler'
+  };
+  
 
-  constructor(private route: ActivatedRoute, private router: Router, private missionService : MissionService, private expenseService: ExpenseService){}
+
+  constructor(private route: ActivatedRoute, private router: Router, private missionService : MissionService, private expenseService: ExpenseService, private _location: Location){}
 
   ngOnInit(): void {
     this.loadAllMissionsForStats();
    this.fetchData();
-   this.fetchExpenses();
+   this.fetchMissionsWithExpenses();
   }
 
   handlePageEvent(event: PageEvent) {
-    this.fetchData(event.pageIndex, event.pageSize);
+    this.fetchData(event);
   }
-  handleExpenseEvent(event: PageEvent) {
-    this.fetchData(event.pageIndex, event.pageSize);
+  handleMissionsWithExpenses(event: PageEvent) {
+    this.fetchMissionsWithExpenses(event);
   }
   
-  fetchData(pageIndex = 0, pageSize = 5){
-    this.missionService.getMissions(pageIndex, pageSize, undefined).subscribe({
+  fetchData(event : PageEvent | null = null){
+    const queries = {
+      page : event?.pageIndex || 0,
+      size : event?.pageSize || 5,
+      searchbar: undefined,
+    };
+    this.missionService.getMissions(queries).subscribe({
       next: (response : any) => {
         this.responseData = response;
         this.missions = response.content;
@@ -194,23 +211,36 @@ export class DashboardComponent {
     });
   }
 
-  fetchExpenses(pageIndex = 0, pageSize = 5){
-    this.expenseService.getExpenses().subscribe({
-      next: (res : any) => {
-        this.expenses = res.content;
-        this.expensesData = res;
+  fetchMissionsWithExpenses(event : PageEvent | null = null){
+    const queries = {
+      page : event?.pageIndex || 0,
+      size : event?.pageSize || 5,
+      searchbar: undefined,
+      withExpense: true,
+    };
+    this.missionService.getMissions(queries).subscribe({
+      next: (response : any) => {
+        // console.log("missions w/ exp: ", response);
+        this.respMissionsWithExpenseData = response;
+        this.missionsWithExpenses = response.content;
+        this.loading = false;
       },
       error: (error) => {
         console.error(error);
         this.router.navigate(['/404']);
         this.loading = false;
       }
-
     });
   }
 
+  //TODO: fetch missions with bountyAmount (non-paginated)
   loadAllMissionsForStats() {
-    this.missionService.getMissions(0).subscribe({
+    const queries = {
+      page : 0,
+      size : undefined,
+      searchbar: undefined,
+    };
+    this.missionService.getMissions(queries).subscribe({
       next: (response: any) => {
         // this.allMissions = response.content;
         this.calculateStats(response.content);
@@ -223,10 +253,10 @@ export class DashboardComponent {
   }
 
   calculateStats(missions : Mission[]) {
-    
-    this.nbPendingMissions = [...missions].filter(m => m.status == StatusEnum.WAITING).length;
-    this.nbMissionsInProgress = [...missions].filter(m => m.status == StatusEnum.IN_PROGRESS).length;
-    this.nbValidatedMissions = [...missions].filter(m => m.status == StatusEnum.VALIDATED).length;
+    this.nbPendingMissions = [...missions].filter(m => m.status.toUpperCase() === "WAITING").length;
+
+    this.nbMissionsInProgress = [...missions].filter(m => m.status.toUpperCase() === "IN_PROGRESS").length;
+    this.nbValidatedMissions = [...missions].filter(m => m.status.toUpperCase() === "VALIDATED").length;
     this.totalBountiesAmountOfYear = [...missions]
                               .filter(m => 
                                 new Date(m.endDate).getFullYear() === new Date().getFullYear()
@@ -234,5 +264,37 @@ export class DashboardComponent {
                               .map(m => m.bountyAmount || 0).reduce((a,b) => a + b, 0); 
     this.bounties = [...missions].filter(m => m.bountyAmount && m.bountyAmount > 0);
   }
+
+  deleteMission(){
+    if (this.selectedMission) {
+      this.missionService.deleteMission(this.selectedMission.id.toString()).subscribe({
+        next: () => {
+          this.fetchData();
+          this.showConfirmDialog = false;
+
+  
+        },
+        error: (error) => {
+          console.error(error);
+          this.router.navigate(["/404"]);
+        }
+      })    
+    }
+  }
+
+  cancelDialog(){
+    this.selectedMission = undefined;
+    this.showConfirmDialog = false;
+  }
+
+  goBack() : void{
+    this._location.back();
+  }
+
+  showDialog(mission: Mission) {
+    this.selectedMission = mission;
+    this.dialogData = {...this.dialogData, title:`Supprimer la mission #${mission.id}`};
+    this.showConfirmDialog = true;
+  }  
 
 }

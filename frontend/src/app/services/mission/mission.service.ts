@@ -15,12 +15,12 @@ export class MissionService {
 
   constructor(private http: HttpClient) {}
 
-  token = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiTUFOQUdFUiIsInN1YiI6Im1pc3NseWx5ZHU3NUBob3RtYWlsLmZyIiwiaWF0IjoxNzI0NTM0NDE3LCJleHAiOjE3MjQ1NTI0MTd9.GGJIgFkNyzOR44XXghYLY7CxT5zx49HzLUmWQUKZGMFjTOPvThOoV1U0W-PUxMfm";
+  token = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiTUFOQUdFUiIsInN1YiI6Im1pc3NseWx5ZHU3NUBob3RtYWlsLmZyIiwiaWF0IjoxNzI0NjIwMjI0LCJleHAiOjE3MjQ2MzgyMjR9.D0BfwGP0gqRfUnOO4F8spIZCnAYAw1d6ahNFBv-6BIev6yAjY8RX-yhQSbIwtgIM";
 
-  // Get the list of missions
-  getMissions(page: number, size?: number, searchbar?: string): Observable<any> {
+  getMissions(queryParams: { page: number, size?: number, searchbar?: string, withExpense?: boolean }): Observable<any> {
 
-    
+    const { page, size, searchbar, withExpense } = queryParams;
+ 
     let params = new HttpParams()
     .set('page', page.toString());
     
@@ -30,12 +30,15 @@ export class MissionService {
     if(searchbar && searchbar.trim() !== ""){
       params = params.set('searchbar', searchbar);
     }
+    if(withExpense){
+      params = params.set('withExpense', withExpense);
+    }
 
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.token}`
     });
     
-    return this.http.get<any >(this.apiURL, { headers, params }).pipe(
+    return this.http.get<any>(this.apiURL, { headers, params }).pipe(
       catchError(this.handleError)
     );
   }
@@ -47,8 +50,8 @@ export class MissionService {
     });
     return this.http.get<Mission>(`${this.apiURL}/${id}`, {headers}).pipe(
       catchError((error: HttpErrorResponse) => {
-        console.error(`Mission with ID ${id} not found`, error);
-        return throwError(() => new Error('Not Found'));
+        console.error(`Error on getMission with ID ${id}:`, error);
+        return throwError(() => new Error( error.message));
       })
     );
   }
@@ -61,7 +64,7 @@ export class MissionService {
     return this.http.post<Mission>(this.apiURL, mission, {headers}).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error(`Mission ${mission.label} cannot be created`, error);
-        return throwError(() => new Error('Creation error'));
+        return throwError(() => new Error( error.message));
       })
     );
   }
@@ -71,10 +74,11 @@ export class MissionService {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.token}`
     });
+
     return this.http.put<Mission>(`${this.apiURL}/${mission.id}`, mission, {headers}).pipe(
       catchError((error: HttpErrorResponse) => {
-        console.error(`Mission with ID ${mission.id} not found`, error);
-        return throwError(() => new Error('Not Found'));
+        console.error(`Error on updateMission with ID ${mission.id} :`, error);
+        return throwError(() => new Error( error.message));
       })
     );
   }
@@ -87,15 +91,15 @@ export class MissionService {
 
     return this.http.delete<void>(`${this.apiURL}/${id}`, {headers}).pipe(
       catchError((error: HttpErrorResponse) => {
-        console.error(`Mission with ID ${id} not found`, error);
-        return throwError(() => new Error('Not Found'));
+        console.error(error);
+        return throwError(() => new Error(error.message));
       })
     );
   }
   // Handle errors
   private handleError(error: HttpErrorResponse) {
     console.error('An error occurred:', error);
-    return throwError(() => new Error('Something bad happened; please try again later.'));
+    return throwError(() => new Error(error.message));
   }
 
 }

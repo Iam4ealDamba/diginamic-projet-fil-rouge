@@ -6,6 +6,13 @@
         <input matInput formControlName="label" placeholder="Mission n° 678">
         <mat-error *ngIf="missionForm.controls.label.invalid">Le libellé est obligatoire.</mat-error>
       </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Type de mission</mat-label>
+        <mat-select formControlName="natureMissionId">
+          <mat-option *ngFor="let nature of natureMissions" [value]="nature.id">{{nature.label}}</mat-option>
+        </mat-select>
+      </mat-form-field>
   
       <mat-form-field>
         <mat-label>Date de début de la mission</mat-label>
@@ -23,6 +30,15 @@
         <mat-error *ngIf="missionForm.controls.endDate.invalid">Date invalide.</mat-error>
       </mat-form-field>
   
+      <mat-form-field>
+        <mat-label>Transport</mat-label>
+        <mat-select formControlName="transport">
+          <mat-option *ngFor="let transport of transportModes" [value]="transport.key">
+            {{transport.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      
       <mat-form-field>
         <mat-label>Ville de départ</mat-label>
         <mat-select formControlName="departureCity">
@@ -43,5 +59,11 @@
       </div>
   
     </form>
+    <app-confirm-dialog
+      *ngIf="showConfirmDialog"
+      [dialogData]="dialogData"
+      (confirm)="cancelChanges()"
+      (cancel)="cancelDialog()"
+    ></app-confirm-dialog>
   </div>
   

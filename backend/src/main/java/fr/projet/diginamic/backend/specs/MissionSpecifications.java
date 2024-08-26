@@ -143,6 +143,16 @@ public class MissionSpecifications {
         };
     }
 
+    public static Specification<Mission> hasExpense(String withExpense) {
+        return (root, query, criteriaBuilder) -> {
+            if (withExpense == null) {
+                return criteriaBuilder.disjunction();
+            } else {
+                return criteriaBuilder.isNotNull(root.get("expense"));
+            }
+        };
+    }
+
     /**
      * Creates a specification to find missions eligible for bounty calculation.
      * This specification filters missions based on the following criteria:
@@ -250,7 +260,7 @@ public class MissionSpecifications {
      *         the provided criteria.
      */
     public static Specification<Mission> filterMissionsByCriteriaForEmployee(Long userId, String status, String nature,
-            String label) {
+            String label, String withExpense) {
         Specification<Mission> spec = Specification.where(null);
 
         if(userId != null){
@@ -266,6 +276,11 @@ public class MissionSpecifications {
         if (label != null && !label.isEmpty()) {
             spec = spec.and(hasLabel(label));
         }
+
+        if (withExpense != null && !withExpense.isEmpty()) {
+            spec = spec.and(hasExpense(withExpense));
+        }
+
         return spec;
     }
 

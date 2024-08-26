@@ -1,5 +1,6 @@
 import { StatusEnum } from "../enums/StatusEnum";
 import { TransportEnum } from "../enums/TransportEnum";
+import { Expense } from "./Expense";
 
 export interface Mission {
     /** The unique identifier of the mission */
@@ -45,6 +46,6 @@ export interface Mission {
     natureMissionId: number;
   
     /** The unique identifier of the associated expense */
-    expenseId?: number;
+    expense: Expense;
   }
   
