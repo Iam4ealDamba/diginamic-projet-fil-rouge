@@ -46,36 +46,57 @@ public class MissionSpecifications {
 
     /**
      * Specification to filter missions by status using the 'type' field of the
-     * StatusEnum.
+     * StatusEnum. This specification attempts to match the provided status
+     * string with a valid StatusEnum value. If the status string is null,
+     * empty, or does not correspond to any valid StatusEnum value, no filtering
+     * by status is applied, and the query continues without considering this
+     * criterion.
      * 
-     * @param statusStr The status description to filter missions by.
+     * @param statusStr The status description to filter missions by. It should
+     *                  match one of the values defined in StatusEnum. The match
+     *                  is case-insensitive.
      * @return A Specification object that filters missions based on their status
-     *         description.
+     *         description. If the status string is invalid, the specification 
+     *         will not apply any filtering for the status.
      */
     public static Specification<Mission> hasStatus(String statusStr) {
         return (root, query, criteriaBuilder) -> {
-            if (statusStr == null) {
+            if (statusStr == null || statusStr.isEmpty()) {
+                return criteriaBuilder.conjunction(); 
+            }
+            try {
+                StatusEnum statusEnum = StatusEnum.fromString(statusStr);
+                return criteriaBuilder.equal(root.get("status"), statusEnum);
+            } catch (IllegalArgumentException e) {
                 return criteriaBuilder.conjunction();
             }
-            return criteriaBuilder.equal(root.get("status"), statusStr);
+        };
+    }
+    
+    /**
+     * Specification to filter missions by the label of their nature. This
+     * specification attempts to match the provided nature string with a valid
+     * NatureMission label in a case-insensitive manner. If the nature string is null,
+     * empty, or does not correspond to any valid NatureMission label, no filtering
+     * by nature is applied, and the query continues without considering this
+     * criterion.
+     * 
+     * @param natureStr The label of the nature to filter missions by. The match is
+     *                  case-insensitive.
+     * @return A Specification<Mission> object that filters missions based on their
+     *         nature's label. If the nature string is invalid, the specification
+     *         will not apply any filtering for the nature.
+     */
+    public static Specification<Mission> hasNature(String natureStr) {
+        return (root, query, criteriaBuilder) -> {
+            if (natureStr == null || natureStr.isEmpty()) {
+                return criteriaBuilder.conjunction(); // No filtering if nature is not specified
+            }
+            return criteriaBuilder.equal(criteriaBuilder.lower(root.join("natureMission").get("label")),
+                                        natureStr.toLowerCase());
         };
     }
 
-    /**
-     * Specification to filter missions by the label of their nature.
-     * 
-     * @param nature The label of the nature to filter missions by.
-     * @return A Specification<Mission> object that filters missions based on their
-     *         nature's label.
-     */
-    public static Specification<Mission> hasNature(String nature) {
-        return (root, query, criteriaBuilder) -> {
-            if (nature == null) {
-                return criteriaBuilder.conjunction(); // Returns all if no nature is specified
-            }
-            return criteriaBuilder.equal(root.join("NatureMission").get("label"), nature);
-        };
-    }
 
     /**
      * Specification to filter missions by the user's name (either first or last

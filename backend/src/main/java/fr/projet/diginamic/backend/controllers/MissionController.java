@@ -183,7 +183,7 @@ public class MissionController {
 			@RequestParam(value = "order", defaultValue = "asc") String order,
 			@RequestParam(value = "sort", defaultValue = "startDate") String sortField,
 			@RequestParam(value = "status", required = false) String status,
-			@RequestParam(value = "nature", required = false) String natureMission,
+			@RequestParam(value = "natureMission", required = false) String natureMission,
 			@RequestParam(value = "withExpense", required = false) String withExpense,
 			@RequestParam(value = "searchbar", required = false) String userNameOrLabel,
 			@RequestHeader(HttpHeaders.AUTHORIZATION) String token
