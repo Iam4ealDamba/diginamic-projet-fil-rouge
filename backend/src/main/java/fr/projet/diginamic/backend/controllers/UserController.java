@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.projet.diginamic.backend.dtos.UserDto;
+import fr.projet.diginamic.backend.dtos.user.UserDto;
+import fr.projet.diginamic.backend.dtos.user.UserPasswordDto;
 import fr.projet.diginamic.backend.entities.UserEntity;
+import fr.projet.diginamic.backend.services.AuthService;
 import fr.projet.diginamic.backend.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +30,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class UserController {
     @Autowired
     UserService userService;
+
+    @Autowired
+    AuthService authService;
 
     /** Get all users */
     @GetMapping
@@ -115,6 +121,31 @@ public class UserController {
         }
 
         return ResponseEntity.ok(usersDto);
+    }
+
+    /**
+     * Update user password
+     * 
+     * @param id      - the id of the user
+     * @param userDto - the dto of the user
+     */
+    @PutMapping("/password/{id}")
+    public ResponseEntity<String> updatePassword(@PathVariable Long id,
+            @RequestBody UserPasswordDto userPasswordDto) {
+        UserEntity user = authService.updatePassword(id, userPasswordDto);
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setBirthDate(user.getBirthDate());
+        dto.setEmail(user.getEmail());
+
+        return new ResponseEntity("Request successfully processed", HttpStatus.OK);
     }
 
     /**
