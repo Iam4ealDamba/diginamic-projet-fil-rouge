@@ -100,7 +100,7 @@ export class TableComponent {
   }
   
   navigateToMission(id: number) {
-    this.router.navigate([`missions/${id}`],{relativeTo: this.route});
+    this.router.navigate([`missions/${id}`],{relativeTo: this.route.parent});
   }
 
   getStatusLabel(status: string): string {
