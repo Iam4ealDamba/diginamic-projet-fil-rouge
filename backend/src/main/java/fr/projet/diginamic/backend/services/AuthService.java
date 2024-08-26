@@ -1,7 +1,5 @@
 package fr.projet.diginamic.backend.services;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import fr.projet.diginamic.backend.dtos.LoginDto;
 import fr.projet.diginamic.backend.dtos.RegisterDto;
-import fr.projet.diginamic.backend.dtos.UserDto;
+import fr.projet.diginamic.backend.dtos.user.UserDto;
+import fr.projet.diginamic.backend.dtos.user.UserPasswordDto;
 import fr.projet.diginamic.backend.entities.Role;
 import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.repositories.interfaces.UserRepository;
@@ -66,7 +65,7 @@ public class AuthService {
      * 
      * @param register - the dto to register a new user
      */
-    public UserDto register(RegisterDto register) {
+    public String register(RegisterDto register) {
         Optional<UserEntity> user = userRepository.findByEmail(register.getEmail());
 
         if (user.isPresent()) {
@@ -81,18 +80,18 @@ public class AuthService {
             user_role.setType("USER");
         } else {
             switch (register.getRole()) {
-                case "ADMIN":
+                case "ADMIN" -> {
                     user_role.setId(1);
                     user_role.setType("ADMIN");
-                    break;
-                case "MANAGER":
+                }
+                case "MANAGER" -> {
                     user_role.setId(2);
                     user_role.setType("MANAGER");
-                    break;
-                default:
+                }
+                default -> {
                     user_role.setId(3);
                     user_role.setType("USER");
-                    break;
+                }
             }
         }
 
@@ -105,8 +104,21 @@ public class AuthService {
         newUser.setRole(user_role);
         userRepository.save(newUser);
 
-        return new UserDto(newUser.getId(), newUser.getFirstName(), newUser.getLastName(),
-                newUser.getBirthDate(), newUser.getEmail(), newUser.getRole().getType());
+        return jwtService.generateToken(userService.loadUserByUsername(newUser.getEmail()),
+                newUser.getRole().getType());
+    }
+
+    /**
+     * Get the current user with the access token
+     * 
+     * @param token - the token
+     */
+    public UserDto getCurrentUser(String token) {
+        String email = jwtService.extractUsername(token);
+        UserEntity user = userService.getOneByEmail(email);
+
+        return new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getEmail(),
+                user.getRole().getType());
     }
 
     /**
@@ -121,4 +133,32 @@ public class AuthService {
         }
         return jwtService.refreshToken(oldToken);
     }
+
+    /**
+     * Update one user
+     * 
+     * @param id      - the id of the user
+     * @param userDto - the dto of the user
+     */
+    public UserEntity updatePassword(Long id, UserPasswordDto userPasswordDto) {
+        Optional<UserEntity> user = userRepository.findById(id);
+
+        if (user.isEmpty() || userPasswordDto.getOldPassword() == null) {
+            return null;
+        }
+
+        UserEntity newUser = user.get();
+
+        if (!newUser.getPassword().equals(userPasswordDto.getOldPassword())) {
+            return null;
+        }
+
+        String hash = passwordEncoder.encode(userPasswordDto.getNewPassword());
+
+        newUser.setPassword(hash);
+        userRepository.save(newUser);
+
+        return newUser;
+    }
+
 }
