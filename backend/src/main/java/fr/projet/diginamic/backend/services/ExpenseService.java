@@ -139,7 +139,7 @@ public void exportExpense(Long id, HttpServletResponse response, String token) t
 		document.addTitle("Note de frais de " +expense.getMission().getUser().getFirstName()+" "+expense.getMission().getUser().getLastName());
 
 		// Add logo to the upper right corner
-		Image logo = Image.getInstance("backend/src/main/resources/logo.png");
+		Image logo = Image.getInstance("src/main/resources/logo.png");
 		logo.setAbsolutePosition(document.right() - 100, document.top() - 50);  // Adjust position as needed
 		logo.scaleToFit(100, 50);  // Adjust size as needed
 

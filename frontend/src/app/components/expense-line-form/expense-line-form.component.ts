@@ -18,12 +18,14 @@ export class ExpenseLineFormComponent {
     amount: 0,
     expenseType: ''
   };
+  @Input() isNewMode: boolean = false;
 
   @Output() formSubmit = new EventEmitter<ExpenseLine>();
 
   onSubmit(form: NgForm) {
     if (form.valid) {
       this.formSubmit.emit(this.expenseLine);
+      console.log("dans l'event form")
     }
   }
 

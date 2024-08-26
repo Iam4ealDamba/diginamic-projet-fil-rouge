@@ -39,9 +39,10 @@ export interface ExpenseLine {
 export class ExpenseService {
   private apiUrl: string = 'http://localhost:8080/api';
 
-  private tokenTest: string = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNzI0MzM0MTI0LCJleHAiOjE3MjQzMzU5MjR9.0jTXQ2ivLDDVV9nx7cGve76kBSlgPuX9PY0ARFKhBEIhJxM10Pj2Y9Yotb3njvd7"
+  private tokenTest: string = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNzI0NzA1NjM0LCJleHAiOjE3MjQ3MDc0MzR9.Oa0xlLcBeVj1T9UQ1v4G3_-qiL-z4AmtMH0GHvlM4RtFb1A87_vc_VTToBq8LLso"
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+   }
 
   getExpenseById(id: string, token: string) {
     const headers = new HttpHeaders({
@@ -58,9 +59,17 @@ export class ExpenseService {
 
   addLine(expenseLine: ExpenseLine):Observable<void>{
     const headers = new HttpHeaders({
+      'Content-Type': 'application/json', 
       'Authorization': `Bearer ${this.tokenTest}`
     });
-    return this.http.post<void>(this.apiUrl+"/expenseLines", {expenseLine}, { headers })
+    return this.http.post<void>(this.apiUrl+"/expenseLines", expenseLine, { headers, responseType: 'text' as 'json' })
+    .pipe(
+      catchError(error => {
+        console.error('Error adding expense line:', error);
+        return throwError(() => new Error('Failed to add expense line'));
+      })
+    );
+
   }
 
   removeLine(id: string): Observable<void> {
@@ -72,7 +81,8 @@ export class ExpenseService {
 
 updateLine(id: string, updatedLine: ExpenseLine, token:string): Observable<ExpenseLine> {
   const headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.tokenTest}` }); // Définition des headers pour la requête
-  return this.http.put<ExpenseLine>(`${this.apiUrl}/expenseLines/${id}`, updatedLine, { headers }) // Met à jour la ligne existante
+  console.log(`Updating expense line with ID ${id}`, updatedLine);
+  return this.http.put<ExpenseLine>(`${this.apiUrl}/expenseLines/${id}`, updatedLine, { headers, responseType: 'text' as 'json' }) // Met à jour la ligne existante
     .pipe(
       catchError(error => {
         console.error(`Error updating expense line with ID ${id}: `, error); // Gestion des erreurs
@@ -93,4 +103,18 @@ getExpenseLineById(id: string, token: string) {
     })
   );
 }
+
+exportExpensePdf(id: string, token: string) {
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${this.tokenTest}`
+  });
+
+  return this.http.get(`${this.apiUrl}/expenses/pdf/${id}`, { headers, responseType: 'blob' }).pipe(
+    catchError(error => {
+      console.error(`Error fetching PDF for Expense with ID ${id}`, error);
+      return throwError(() => new Error('Failed to fetch PDF'));
+    })
+  );
+}
+
 }

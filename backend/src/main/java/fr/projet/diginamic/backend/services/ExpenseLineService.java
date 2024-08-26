@@ -17,6 +17,7 @@ import fr.projet.diginamic.backend.entities.ExpenseType;
 import fr.projet.diginamic.backend.repositories.interfaces.ExpenseLineRepository;
 import fr.projet.diginamic.backend.repositories.interfaces.ExpenseTypeRepository;
 import fr.projet.diginamic.backend.utils.ExpenseLineMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 /** Service for all ExpenseLine's related method */
 @Service
@@ -83,22 +84,26 @@ public class ExpenseLineService {
 	 * @param id,          the id of the expenseLine to modify
 	 * @return the expenseLine after modification
 	 */
-	public ExpenseLine modifyExpenseLine(ExpenseLineDto expenseLine, Long id)  {
-		ExpenseLine expenseLineBdd = expenseLineRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Expense not find with id: " +id ));
+	@Transactional
+	public ExpenseLine modifyExpenseLine(ExpenseLineDto expenseLine, Long id) {
+
+		ExpenseLine expenseLineBdd = expenseLineRepo.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Expense not found with id: " + id));
+
 		expenseLineBdd.setTva(expenseLine.getTva());
 		expenseLineBdd.setAmount(expenseLine.getAmount());
 		expenseLineBdd.setDate(expenseLine.getDate());
+
+		// Handle ExpenseType
 		ExpenseType expType = expenseTypeRepo.findByType(expenseLine.getExpenseType());
 		if (expType == null) {
 			ExpenseType expTypeNew = new ExpenseType();
 			expTypeNew.setType(expenseLine.getExpenseType());
-			expenseTypeRepo.save(expTypeNew);
-			expenseLineBdd.setExpenseType(expTypeNew);
-		} else {
-			expenseLineBdd.setExpenseType(expType);
+			expType = expenseTypeRepo.save(expTypeNew);
 		}
+		expenseLineBdd.setExpenseType(expType);
 
-		return expenseLineBdd;
+		return expenseLineRepo.save(expenseLineBdd);
 	}
 
 }

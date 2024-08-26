@@ -1,15 +1,39 @@
-<div *ngIf="expense$ | async as expense" class="min-h-screen flex items-center justify-center bg-gray-100">
-  <div class="bg-white p-6 rounded shadow-lg w-full max-w-4xl">
-    <h2 class="text-2xl font-semibold mb-4 text-center">Expense Details</h2>
-    <p class="text-gray-700"><strong>Date:</strong> {{ expense.date | date }}</p>
-    <p class="text-gray-700 mb-4"><strong>Status:</strong> {{ expense.status }}</p>
+<div *ngIf="expense$ | async as expense" class="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
 
+  <div class="flex justify-between items-center w-full max-w-4xl mb-4">
+    <h2 class="text-2xl font-semibold">Détails de la note de frais</h2>
+    <button 
+      class="bg-black text-white px-4 py-2 rounded shadow hover:bg-gray-800"
+      (click)="newLine()"
+    >
+      Ajouter une nouvelle ligne de frais
+    </button>
+  </div>
+
+  <div class="w-full max-w-4xl mb-4">
+    <p class="text-gray-700"><strong>Date:</strong> {{ expense.date | date:'longDate':'medium':'fr' }}</p>
+    <p class="text-gray-700"><strong>Statut:</strong> {{ expense.status }}</p>
+  </div>
+
+
+  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
     <app-expense-line-table 
       [expenseLines]="expense.expenseLines"
       [expenseId]="expense.id"
-      (modifyLine)="modifyExpenseLine()"
+      [expenseLineId]="expenseLineId"
+      [isNewLine]="isNewLine"
+      (modifyLine)="modifyExpenseLine($event)"
       (removeLine)="removeExpenseLine($event)"
-      (addLine)="addExpenseLine($event)">
+      (formSubmit)="onFormSubmit($event)">
+      
     </app-expense-line-table>
+  </div>
+  <div class="flex justify-center w-full mt-6">
+    <button 
+      class="bg-black text-white px-4 py-2 rounded shadow hover:bg-gray-800"
+      (click)="exportExpenseToPdf()"
+    >
+      Exporter au format pdf
+    </button>
   </div>
 </div>

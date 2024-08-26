@@ -28,6 +28,7 @@ public class ExpenseLineMapper {
 		if (ExpType == null) {
 			ExpenseType newExpType = new ExpenseType();
 			newExpType.setType(exp.getExpenseType());
+			expenseTypeRepository.save(newExpType);
 			newExpLine.setExpenseType(newExpType);
 		} else {
 			newExpLine.setExpenseType(ExpType);
