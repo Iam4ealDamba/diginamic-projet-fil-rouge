@@ -145,5 +145,6 @@ buildNumber.properties
 
 *application.properties
 *.vscode
+
 *.idea
 
