@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Mission } from '../../models/Mission';
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environnement } from '../../../environnements/environnement';
@@ -10,7 +10,6 @@ import { environnement } from '../../../environnements/environnement';
 })
 export class MissionService {
 
-  //API url
   private apiURL = environnement.apiUrlMissions;
 
   constructor(private http: HttpClient) {}
@@ -20,8 +19,6 @@ export class MissionService {
   getMissions(queryParams: { page: number, size?: number, searchbar?: string, withExpense?: boolean, natureMission?: string, order?: string, status?: string }): Observable<any> {
 
     const { page, size, searchbar, withExpense, natureMission, order, status } = queryParams;
- 
-    console.log("queries", queryParams);
     
     let params = new HttpParams()
     .set('page', page.toString());
@@ -115,6 +112,23 @@ export class MissionService {
     });
 
     return this.http.get<any>(`${this.apiURL}/bounties`, {headers}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error(error);
+        return throwError(() => new Error(error.message));
+      })
+    )
+  }
+
+  exportBounties() : Observable<HttpResponse<Blob>> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`
+    });
+
+    return this.http.get(`${this.apiURL}/csv-export-bounties`, {
+      headers,
+      responseType: 'blob',
+      observe: 'response' 
+    }).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error(error);
         return throwError(() => new Error(error.message));

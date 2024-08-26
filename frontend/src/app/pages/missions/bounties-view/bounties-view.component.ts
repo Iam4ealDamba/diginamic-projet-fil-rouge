@@ -110,6 +110,23 @@ export class BountiesViewComponent {
     }
     return orderedBounties;
   }
+
+  exportBountiesToExcelFormat() {
+    this.missionService.exportBounties().subscribe(response => {
+      const blob = new Blob([response.body!], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'bounties.csv';
+      a.click();
+      window.URL.revokeObjectURL(url); 
+
+      console.log("Export réussi !");
+    }, error => {
+      console.error('Erreur lors du téléchargement du CSV', error);
+    });
+  }
+
   goBack() : void{
     this._location.back();
   }
