@@ -231,6 +231,13 @@ export class DashboardComponent {
     this._location.back();
   }
 
+  goToBountiesView() : void {
+    console.log(this.route)
+    this.router.navigate(['missions/bounties'],
+      {relativeTo: this.route}
+    );
+  };
+
   showDialog(mission: Mission) {
     this.selectedMission = mission;
     this.dialogData = {...this.dialogData, title:`Supprimer la mission #${mission.id}`};

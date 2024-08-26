@@ -95,7 +95,7 @@ export class MissionFormComponent {
     this.missionForm = this.fb.group({
       ...(this.mission && {id: this.mission.id}),
       label: [this.mission?.label || '', Validators.required],
-      totalPrice: [this.mission?.totalPrice || 0, Validators.required],
+      totalPrice: [this.mission?.totalPrice || 10, Validators.required],
       status: [this.mission?.status || 'INITIAL', Validators.required],
       startDate: [this.mission?.startDate || today, Validators.required],
       endDate: [this.mission?.endDate || tomorrow, Validators.required],
@@ -126,6 +126,7 @@ export class MissionFormComponent {
           }
         ),
         (error: any) => {
+          console.log("error on edition: ", this.missionForm.value);
           console.error(error);
         }
       } else {
@@ -135,12 +136,14 @@ export class MissionFormComponent {
           }
         ),
         (error: any) => {
+          console.log("error on crea: ", this.missionForm.value);
+          
           console.error(error);
         }
       }
     } else {
-      console.log(this.missionForm.value);
-      console.log(this.missionForm);
+      
+      console.log("form not valid: ", this.missionForm);
     }
   }
 

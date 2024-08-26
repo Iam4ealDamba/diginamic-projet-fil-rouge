@@ -15,12 +15,14 @@ export class MissionService {
 
   constructor(private http: HttpClient) {}
 
-  token = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiTUFOQUdFUiIsInN1YiI6Im1pc3NseWx5ZHU3NUBob3RtYWlsLmZyIiwiaWF0IjoxNzI0NjIwMjI0LCJleHAiOjE3MjQ2MzgyMjR9.D0BfwGP0gqRfUnOO4F8spIZCnAYAw1d6ahNFBv-6BIev6yAjY8RX-yhQSbIwtgIM";
+  token = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiTUFOQUdFUiIsInN1YiI6Im1pc3NseWx5ZHU3NUBob3RtYWlsLmZyIiwiaWF0IjoxNzI0Njk0OTE3LCJleHAiOjE3MjQ3MTI5MTd9.PXmtSiwwcrvdWw1arXcXLSC3yqtMW9FLW5NwuZPnYPSYFpFDkTSo_AOK3OLxeL4i";
 
-  getMissions(queryParams: { page: number, size?: number, searchbar?: string, withExpense?: boolean }): Observable<any> {
+  getMissions(queryParams: { page: number, size?: number, searchbar?: string, withExpense?: boolean, natureMission?: string, order?: string, status?: string }): Observable<any> {
 
-    const { page, size, searchbar, withExpense } = queryParams;
+    const { page, size, searchbar, withExpense, natureMission, order, status } = queryParams;
  
+    console.log("queries", queryParams);
+    
     let params = new HttpParams()
     .set('page', page.toString());
     
@@ -32,6 +34,15 @@ export class MissionService {
     }
     if(withExpense){
       params = params.set('withExpense', withExpense);
+    }
+    if(natureMission){
+      params = params.set('natureMission', natureMission);
+    }
+    if(order){
+      params = params.set('order', order);
+    }
+    if(status){
+      params = params.set('status', status);
     }
 
     const headers = new HttpHeaders({
@@ -61,6 +72,7 @@ export class MissionService {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.token}`
     });
+
     return this.http.post<Mission>(this.apiURL, mission, {headers}).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error(`Mission ${mission.label} cannot be created`, error);
@@ -95,6 +107,19 @@ export class MissionService {
         return throwError(() => new Error(error.message));
       })
     );
+  }
+
+  getBounties() : Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`
+    });
+
+    return this.http.get<any>(`${this.apiURL}/bounties`, {headers}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error(error);
+        return throwError(() => new Error(error.message));
+      })
+    )
   }
   // Handle errors
   private handleError(error: HttpErrorResponse) {

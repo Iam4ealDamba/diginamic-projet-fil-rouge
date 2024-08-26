@@ -3,12 +3,15 @@ import { Component } from '@angular/core';
 import { ConfirmDialogComponent } from '../../../components/confirm-dialog/confirm-dialog.component';
 import { TableComponent } from '../../../components/table/table.component';
 import { Mission } from '../../../models/Mission';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MissionService } from '../../../services/mission/mission.service';
 import { PageEvent } from '@angular/material/paginator';
 import { MatFormField } from '@angular/material/form-field';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+import { StatusEnum } from '../../../enums/StatusEnum';
+import { NatureMission } from '../../../models/NatureMission';
+import { NatureMissionService } from '../../../services/expense/nature-mission/nature-mission.service';
 
 type HeaderConfigType = {
   label: string;
@@ -49,7 +52,7 @@ type responseData =  {
 @Component({
   selector: 'app-missions-list',
   standalone: true,
-  imports: [CommonModule,FormsModule, ConfirmDialogComponent, TableComponent, MatFormField, MatSelect, MatOption],
+  imports: [CommonModule,FormsModule, ConfirmDialogComponent, TableComponent, MatFormField, MatSelect, MatOption, RouterLink, RouterLinkActive],
   templateUrl: './missions-list.component.html',
   styleUrls: ['./missions-list.component.scss']
 })
@@ -76,21 +79,29 @@ export class MissionsListComponent {
     confirmButtonText: 'Supprimer',
     cancelButtonText: 'Annuler'
   };
+  natureMissions : NatureMission[] = [];
+  debounceTimer: any;
  
-  selectedDateSort = '';
-  selectedStatus = '';
-  searchType = '';
-  searchQuery = '';
-  selectedNatureMission = '';
+  queryParams= {
+    searchQuery : '',
+    orderFilter : "desc",
+    statusFilter : "",
+    natureMissionFilter : "",
 
-  constructor(private route: ActivatedRoute, private router: Router, private missionService : MissionService, private _location: Location){}
+  }
+  statusEnum = Object.entries(StatusEnum);
+
+  constructor(private route: ActivatedRoute, private router: Router, private missionService : MissionService, private _location: Location, private natureMissionService: NatureMissionService){}
 
   ngOnInit(): void {
    this.fetchData();
+   this.getNatureMissions();
   }
 
-   onFilterChange() {
-    this.fetchData();
+  onFilterChange(delay : number = 500) {
+    this.debounce(() => {
+      this.fetchData();
+    }, delay);
   }
 
   handlePageEvent(event: PageEvent) {
@@ -101,7 +112,10 @@ export class MissionsListComponent {
     const queries = {
       page : event?.pageIndex || 0,
       size : event?.pageSize || 5,
-      searchbar: undefined,
+      searchbar: this.queryParams.searchQuery,
+      order: this.queryParams.orderFilter,
+      status: this.queryParams.statusFilter,
+      natureMission: this.queryParams.natureMissionFilter,
     };
     this.missionService.getMissions(queries).subscribe({
       next: (response : any) => {
@@ -115,6 +129,46 @@ export class MissionsListComponent {
         this.loading = false;
       }
     });
+  }
+
+  get haveFiltersChanged(){
+    const queryParams = {
+      searchQuery : '',
+      orderFilter : "desc",
+      statusFilter : "",
+      natureMissionFilter : "",
+  
+    }
+    return JSON.stringify(queryParams) !== JSON.stringify(this.queryParams);
+  }
+  resetFilters(){
+    this.queryParams= {
+      searchQuery : '',
+      orderFilter : "desc",
+      statusFilter : "",
+      natureMissionFilter : "",
+    }
+    this.fetchData();
+  }
+
+  debounce(func: Function, delay: number) {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+    this.debounceTimer = setTimeout(() => {
+      func();
+    }, delay);
+  }
+
+  getNatureMissions(){
+    this.natureMissionService.getNatureMissions().subscribe({
+      next : (nm: NatureMission[]) => {
+        this.natureMissions = nm;
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    })
   }
 
   deleteMission(){
@@ -133,6 +187,7 @@ export class MissionsListComponent {
       })    
     }
   }
+
 
   cancelDialog(){
     this.selectedMission = undefined;

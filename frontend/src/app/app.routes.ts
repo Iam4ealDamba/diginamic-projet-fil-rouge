@@ -6,6 +6,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MissionDetailsComponent } from './pages/missions/mission-details/mission-details.component';
 import { NewMissionViewComponent } from './pages/missions/new-mission-view/new-mission-view.component';
 import { MissionsListComponent } from './pages/missions/missions-list/missions-list.component';
+import { BountiesViewComponent } from './pages/missions/bounties-view/bounties-view.component';
 
 
 export const routes: Routes = [
@@ -30,6 +31,10 @@ export const routes: Routes = [
   {
     path: 'missions/new',
     component:NewMissionViewComponent,
+  },
+  {
+    path: 'missions/bounties',
+    component:BountiesViewComponent,
   },
   {
     path: 'missions/:id',

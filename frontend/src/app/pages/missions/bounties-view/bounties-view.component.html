@@ -1,0 +1,26 @@
+<div class="py-5 bg-slate-50 px-12 min-h-full">
+    <div class="my-10">
+        <button (click)="goBack()" class="flex items-center text-gray-600 hover:text-gray-800">
+          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Retour
+        </button>
+      </div>
+    <h6 class="mt-4 mb-6">Récapitulatif des primes sur l'année {{currentYear}}</h6>
+    <div class="cards grid grid-cols-3 gap-4 pl-10">
+        <app-stat-card title="nombre total de primes" [value]="bountiesData?.totalNumberOfBounties || 0"></app-stat-card>
+        <app-stat-card title="Meilleure prime" [value]="bountiesData?.highestBountyAmount + '€' || '0€'"></app-stat-card>
+        <app-stat-card title="montant total primes (année en cours)" [value]="bountiesData?.totalAmountOfBounties + '€' || '0' + '€'" class="h-40"></app-stat-card>
+    </div>
+
+
+    <div class="mt-12">
+        <canvas baseChart
+        [data]="barChartData"
+        [options]="barChartOptions"
+        [type]="'bar'">
+      </canvas>
+      
+    </div>
+</div>
