@@ -1,4 +1,4 @@
-package fr.projet.diginamic.backend.dtos;
+package fr.projet.diginamic.backend.dtos.user;
 
 import java.util.Date;
 
