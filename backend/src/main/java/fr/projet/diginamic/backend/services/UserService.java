@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import fr.projet.diginamic.backend.dtos.UserDto;
+import fr.projet.diginamic.backend.dtos.user.UserDto;
 import fr.projet.diginamic.backend.entities.UserEntity;
 import fr.projet.diginamic.backend.repositories.interfaces.UserRepository;
 import fr.projet.diginamic.backend.services.interfaces.ServiceInterface;
@@ -128,6 +128,4 @@ public class UserService implements ServiceInterface<UserEntity, UserDto>, UserD
             throw new UsernameNotFoundException(email);
         }
     }
-
 }
-

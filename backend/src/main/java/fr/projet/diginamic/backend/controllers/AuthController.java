@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.projet.diginamic.backend.dtos.LoginDto;
 import fr.projet.diginamic.backend.dtos.RegisterDto;
-import fr.projet.diginamic.backend.dtos.UserDto;
+import fr.projet.diginamic.backend.dtos.user.UserDto;
 import fr.projet.diginamic.backend.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -52,13 +51,36 @@ public class AuthController {
      */
     @Operation(summary = "Register a new user", description = "Register a new user in the system")
     @PostMapping("/register")
-    public ResponseEntity<UserDto> register(@RequestBody RegisterDto registerDto) {
-        UserDto userDto = authService.register(registerDto);
+    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
+        String token = authService.register(registerDto);
 
-        if (userDto == null) {
+        if (token == null) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(userDto);
+        return ResponseEntity.ok(token);
+    }
+
+    /**
+     * Route for get current user
+     * 
+     * @param token - the access token
+     */
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getMe(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        // remove "Bearer " from the token
+        token = token.substring(7);
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        UserDto currentUser = authService.getCurrentUser(token);
+
+        if (currentUser == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(currentUser);
     }
 
     /**

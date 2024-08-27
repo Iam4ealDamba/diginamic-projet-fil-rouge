@@ -1,5 +1,7 @@
 package fr.projet.diginamic.backend.configs;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import fr.projet.diginamic.backend.middlewares.JWTAuthMiddleware;
 import fr.projet.diginamic.backend.services.UserService;
@@ -24,11 +29,16 @@ import fr.projet.diginamic.backend.services.UserService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    /** User service */
+
+    /**
+     * User service
+     */
     @Autowired
     private UserService userService;
 
-    /** JWT auth middleware */
+    /**
+     * JWT auth middleware
+     */
     @Autowired
     private JWTAuthMiddleware jwtAuthMidlleware;
 
@@ -48,14 +58,14 @@ public class SecurityConfig {
 
     /**
      * Security filter chain
-     * 
+     *
      * @param http - the http security
      * @throws Exception exception
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // .cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
 
@@ -68,9 +78,11 @@ public class SecurityConfig {
                             .requestMatchers(SWAGGER_WHITELIST)
                             .permitAll();
                     registry
-                            .requestMatchers("/api/auth/user").hasAnyRole("USER", "MANAGER", "ADMIN");
+                            .requestMatchers("/api/auth/user")
+                            .hasAnyRole("USER", "MANAGER", "ADMIN");
                     registry
-                            .requestMatchers("/api/auth/manager").hasAnyRole("MANAGER", "ADMIN");
+                            .requestMatchers("/api/auth/manager")
+                            .hasAnyRole("MANAGER", "ADMIN");
                     registry
                             .requestMatchers("/api/auth/admin").hasRole("ADMIN");
                     registry
@@ -84,13 +96,33 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /** User details service */
+    /**
+     * Cors configuration source
+     */
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+
+    /**
+     * User details service
+     */
     @Bean
     public UserDetailsService userDetailsService() {
         return userService;
     }
 
-    /** Authentication provider */
+    /**
+     * Authentication provider
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -99,13 +131,17 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    /** Authentication manager */
+    /**
+     * Authentication manager
+     */
     @Bean
     public AuthenticationManager authenticationManager() {
         return new ProviderManager(authenticationProvider());
     }
 
-    /** Password encoder */
+    /**
+     * Password encoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

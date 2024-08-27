@@ -10,6 +10,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { ExpenseService } from '../../services/expense/expense.service';
 import { Expense } from '../../models/Expense';
 import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
+import { LayoutComponent } from '../../layout/layout.component';
 
 type HeaderConfigType = {
   label: string;
@@ -71,7 +72,7 @@ type BountiesReport = {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [StatCardComponent, CommonModule, TableComponent, RouterLink, RouterOutlet, ConfirmDialogComponent],
+  imports: [StatCardComponent, CommonModule, TableComponent, RouterLink, RouterOutlet, ConfirmDialogComponent, LayoutComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
