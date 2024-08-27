@@ -22,6 +22,7 @@ export class MissionDetailsComponent {
   mission?: Mission;
   // updatedMission?: Mission;
   expense: any = {};
+  idMission? : string;
   statusEnum = StatusEnum;
   transportEnum = TransportEnum;
   editionMode = false;
@@ -39,24 +40,30 @@ export class MissionDetailsComponent {
     this.route.paramMap.subscribe(params => {
       const id: string | null = params.get('id');
       if(id){
-        this.missionService.getMissionById(id).subscribe({
-          next: (mission) => {
-            this.mission = mission;
-            console.log(this.mission);
-
-            if(mission.expense){
-              this.expense = mission.expense; 
-            }
-          },
-          error: (error) => {
-            console.error(error);
-            this.router.navigate(["/404"]);
-          }
-        })
+        this.idMission = id;
+        this.fetchData();
 
       }
 
     })
+  }
+
+  fetchData(){
+    if(this.idMission){
+      this.missionService.getMissionById(this.idMission).subscribe({
+        next: (mission) => {
+          this.mission = mission;
+  
+          if(mission.expense){
+            this.expense = mission.expense; 
+          }
+        },
+        error: (error) => {
+          console.error(error);
+          this.router.navigate(["/404"]);
+        }
+      })
+    }
   }
 
   deleteMission(id : number){
@@ -73,7 +80,7 @@ export class MissionDetailsComponent {
   }
 
   handleMissionUpdate(updatedMission: Mission){
-    this.mission = {...updatedMission};
+    this.fetchData();
     this.editionMode = false;
   }
 
