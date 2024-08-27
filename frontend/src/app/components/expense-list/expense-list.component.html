@@ -1,0 +1,15 @@
+
+
+  <div *ngIf="expense$ | async as expense"  class="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl ">
+    <app-expense-line-table 
+      [expenseLines]="expense.expenseLines"
+      [expenseId]="expense.id"
+      [expenseLineId]="expenseLineId"
+      [isNewLine]="isNewLine"
+      (modifyLine)="modifyExpenseLine($event)"
+      (removeLine)="removeExpenseLine($event)"
+      (formSubmit)="onFormSubmit($event)">
+      
+    </app-expense-line-table>
+  </div>
+

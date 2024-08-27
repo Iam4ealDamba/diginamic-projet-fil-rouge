@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
 import { HomeComponent } from './components/home/home.component';
-import { ExpenseListComponent } from './pages/expense-list/expense-list.component';
+import { ExpenseViewComponent } from './pages/expense-view/expense-view.component';
 
 export const routes: Routes = [
   {
@@ -20,14 +20,6 @@ export const routes: Routes = [
   },
   {
     path: 'expense/:expenseId',
-    component: ExpenseListComponent
+    component: ExpenseViewComponent
   },
-  {
-    path: 'expense/:expenseId/:lineId',
-    component: ExpenseListComponent
-  },
-  {
-    path: 'expense/:expenseId/add',
-    component: ExpenseListComponent
-  }
 ];

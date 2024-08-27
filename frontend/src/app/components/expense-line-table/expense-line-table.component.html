@@ -1,6 +1,13 @@
-<h3 class="text-2xl font-semibold mb-4 text-center">Lignes de frais:</h3>
+<div class="flex items-center mb-4 space-x-4">
+  <h3 class="text-2xl font-semibold flex-grow">Lignes de frais:</h3>
+  <button 
+    class="bg-black text-white px-4 py-2 rounded shadow hover:bg-gray-800"
+    (click)="onNewLine()">
+    Ajouter une nouvelle ligne de frais
+  </button>
+</div>
 
-<div class="overflow-x-auto">
+<div class="overflow-x-auto max-h-[calc(100vh-150px)]"> <!-- Adjust max height to suit your needs -->
   <table class="min-w-full border border-gray-300 bg-white rounded-xl">
     <thead class="bg-gray-200 text-gray-700 border-b border-gray-300">
       <tr>
@@ -43,7 +50,7 @@
       </tr>
 
       <tr *ngIf="isNewLine">
-        <td colspan="5">
+        <td colspan="5" class="relative">
           <app-expense-line-form
             [isNewMode]="true"
             (formSubmit)="onFormSubmit($event)">
@@ -53,4 +60,6 @@
     </tbody>
   </table>
 </div>
+
+
 

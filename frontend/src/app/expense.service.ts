@@ -39,7 +39,7 @@ export interface ExpenseLine {
 export class ExpenseService {
   private apiUrl: string = 'http://localhost:8080/api';
 
-  private tokenTest: string = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNzI0NzQzODM3LCJleHAiOjE3MjQ3NDU2Mzd9.2C8c-RfVQfENJeES2fRmuxdLNvGyGqk7NfGrSHFTo7pCPOaet2kQ28QWYDILXekb"
+  private tokenTest: string = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNzI0NzYyNTIxLCJleHAiOjE3MjQ3NjQzMjF9.vt2Wd0enbRFeLH56BjpEWxVntVtdf6ubY5Bu0npq_nQs4_iYWawtgvWEQ2N85q8r"
 
   constructor(private http: HttpClient) {
    }
@@ -76,7 +76,7 @@ export class ExpenseService {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.tokenTest}`
     });
-    return this.http.delete<void>(`${this.apiUrl}/expenseLines/${id}`, { headers });
+    return this.http.delete<void>(`${this.apiUrl}/expenseLines/${id}`, { headers, responseType: 'text' as 'json' });
 }
 
 updateLine(id: string, updatedLine: ExpenseLine, token:string): Observable<ExpenseLine> {
