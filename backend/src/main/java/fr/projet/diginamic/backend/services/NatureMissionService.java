@@ -1,14 +1,5 @@
 package fr.projet.diginamic.backend.services;
 
-import fr.projet.diginamic.backend.dtos.NatureMissionDTO;
-import fr.projet.diginamic.backend.entities.NatureMission;
-import fr.projet.diginamic.backend.repositories.NatureMissionRepository;
-import jakarta.persistence.EntityNotFoundException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -74,8 +65,10 @@ public class NatureMissionService {
      */
     public NatureMissionDTO createNatureMission(NatureMissionDTO natureMissionDTO) {
         // Check for unique label
+        System.out.println(natureMissionDTO);
         if (natureMissionRepository.existsByLabelAndEndDateIsNull(natureMissionDTO.getLabel())) {
             throw new RuntimeException("A nature with the same label is already active.");
+
         }
 
         // Set start date to today
@@ -155,8 +148,10 @@ public class NatureMissionService {
 
     // Helper methods to convert between entity and DTO
     private NatureMissionDTO convertToDTO(NatureMission entity) {
+        if (entity == null) return null;
+        
         return new NatureMissionDTO(
-                entity.getId(),
+                
                 entity.getLabel(),
                 entity.getAdr(),
                 entity.getIsBilled(),
@@ -166,18 +161,22 @@ public class NatureMissionService {
                 entity.getIsEligibleToBounty()
         );
     }
-
+    
     private NatureMission convertToEntity(NatureMissionDTO dto) {
-        return new NatureMission(
-                dto.getId(),
-                dto.getLabel(),
-                dto.getAdr(),
-                dto.getIsBilled(),
-                dto.getStartDate(),
-                dto.getEndDate(),
-                dto.getBountyRate(),
-                dto.getIsEligibleToBounty(),
-                new HashSet<>() // Assuming no missions are set in the DTO
-        );
+        if (dto == null) return null;
+        
+        NatureMission natureMission = new NatureMission();
+        // Id peut être null lors de la création
+        natureMission.setLabel(dto.getLabel());
+        natureMission.setAdr(dto.getAdr());
+        natureMission.setIsBilled(dto.getIsBilled());
+        natureMission.setStartDate(dto.getStartDate());
+        natureMission.setEndDate(dto.getEndDate());
+        natureMission.setBountyRate(dto.getBountyRate());
+        natureMission.setIsEligibleToBounty(dto.getIsEligibleToBounty());
+        natureMission.setMissions(new HashSet<>()); // Gérer les missions si nécessaire
+    
+        return natureMission;
     }
+    
 }

@@ -7,7 +7,6 @@
   background-color: #f5f5f5;
   padding: 20px;
 }
-
 .sidebar ul {
   list-style-type: none;
   padding: 0;
@@ -17,14 +16,6 @@
   padding: 10px 0;
   display: flex;
   align-items: center;
-}
-
-.sidebar ul li.active {
-  font-weight: bold;
-}
-
-.sidebar ul li img {
-  margin-right: 10px;
 }
 
 .content {
@@ -49,14 +40,25 @@
   margin-right: 10px;
 }
 
-.mission-list {
-  margin-top: 20px;
-}
-
-.search-bar {
+.mission-list .search-bar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.add-button {
+  background-color: #000;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.add-button:hover {
+  opacity: 0.9;
 }
 
 .mission-table {
@@ -65,9 +67,9 @@
 }
 
 .mission-table th, .mission-table td {
-  padding: 10px;
+  padding: 12px;
+  border: 1px solid #ddd;
   text-align: left;
-  border-bottom: 1px solid #ddd;
 }
 
 .mission-table th {
@@ -81,11 +83,20 @@
 }
 
 .pagination button {
-  padding: 5px 10px;
+  background-color: #000;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
   margin: 0 5px;
+  cursor: pointer;
 }
 
-.pagination .active {
-  font-weight: bold;
-  background-color: #ddd;
+.pagination button.active {
+  background-color: #333;
+}
+
+.pagination button[disabled] {
+  background-color: #ccc;
+  cursor: not-allowed;
 }

@@ -1,1 +1,71 @@
-<p>nature-mission-edit works!</p>
+<div class="page-container">
+  <aside class="sidebar">
+    <ul>
+      <li><a routerLink="/dashboard">Tableau de bord</a></li>
+      <li><a routerLink="/missions">Missions</a></li>
+      <li><a routerLink="/naturemissions">Nature Missions</a></li>
+      <li><a routerLink="/notes-de-frais">Notes de frais</a></li>
+      <li><a routerLink="/primes">Primes</a></li>
+      <li><a routerLink="/parametres">Paramètres</a></li>
+      <li><a routerLink="/deconnexion">Déconnexion</a></li>
+    </ul>
+  </aside>
+
+  <main class="content">
+    <header class="header">
+      <h1>Modifier une Mission</h1>
+      <div class="user-info">
+        <img src="assets/icons/user-icon.svg" alt="User">
+        <div class="user-details">
+          <span>Thomas Dupont</span>
+          <small>Consultant Informatique</small>
+        </div>
+      </div>
+    </header>
+  
+    <form [formGroup]="form" (ngSubmit)="saveNatureMission()">
+      <div class="form-group">
+        <label for="label">Label</label>
+        <input type="text" id="label" formControlName="label" required />
+      </div>
+
+      <div class="form-group">
+        <label for="adr">Prime</label>
+        <input type="number" id="adr" formControlName="adr" required />
+      </div>
+
+      <div class="form-group">
+        <label for="startDate">Date de début</label>
+        <input type="date" id="startDate" formControlName="dateStart" required />
+      </div>
+
+      <div class="form-group">
+        <label for="endDate">Date de fin</label>
+        <input type="date" id="endDate" formControlName="DateEnd" required />
+      </div>
+
+      <div class="form-group">
+        <label for="bountyRate">Taux Prime</label>
+        <input type="number" id="bountyRate" formControlName="tauxPrime" />
+      </div>
+
+      <div class="form-group">
+        <label for="isEligibleToBounty">Facture</label>
+        <input type="checkbox" id="isEligibleToBounty" formControlName="isEligibleToBounty" />
+      </div>
+
+      <div class="form-group">
+        <label for="isBilled">Date de début</label>
+        <input type="checkbox" id="isBilled" formControlName="isBilled" />
+      </div>
+
+      <div class="form-group">
+        <label for="isInvoiced">Taux TJM</label>
+        <input type="checkbox" id="isInvoiced" formControlName="isInvoiced" />
+      </div>
+
+      <button type="submit" class="save-button">Sauvegarder</button>
+      <button type="button" class="cancel-button" (click)="cancel()">Annuler</button>
+    </form>
+  </main>
+</div>

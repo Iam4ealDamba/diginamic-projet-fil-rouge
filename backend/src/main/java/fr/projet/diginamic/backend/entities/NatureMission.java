@@ -60,4 +60,16 @@ public class NatureMission {
     /** The missions associated with this nature */
     @OneToMany(mappedBy = "natureMission")
     private Set<Mission> missions;
+
+    public NatureMission(Long id, String label, Double adr, Boolean isBilled, Date startDate, Date endDate, Double bountyRate, Boolean isEligibleToBounty) {
+        this.id = id;
+        this.label = label;
+        this.adr = adr;
+        this.isBilled = isBilled;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.BountyRate = bountyRate;
+        this.isEligibleToBounty = isEligibleToBounty;
+        
+    }
 }

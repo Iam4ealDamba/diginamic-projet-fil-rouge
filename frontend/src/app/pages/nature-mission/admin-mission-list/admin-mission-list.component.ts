@@ -4,22 +4,27 @@ import { Router } from '@angular/router';
 import { NatureMission } from '../../../interfaces/nature-mission.interface';
 import { NatureMissionService } from '../../../services/nature-mission.service';
 
+
 @Component({
-  selector: 'app-nature-mission-list',
+  selector: 'app-admin-mission-list',
   standalone: true,
   imports: [CommonModule],
   providers: [Router],
-  templateUrl: './nature-mission-list.component.html',
-  styleUrls: ['./nature-mission-list.component.scss']
+  templateUrl: './admin-mission-list.component.html',
+  styleUrls: ['./admin-mission-list.component.scss'],
+
 })
-export class NatureMissionListComponent implements OnInit {
+export class AdminMissionListComponent implements OnInit {
   natureMissions: NatureMission[] = [];
-  currentPage = 1;
-  itemsPerPage = 10;
-  totalItems = 0;
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  totalItems: number = 0;
   pages: number[] = [];
 
-  constructor(private natureMissionService: NatureMissionService, private router: Router) {}
+  constructor(
+    private natureMissionService: NatureMissionService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadMissions();
@@ -27,11 +32,15 @@ export class NatureMissionListComponent implements OnInit {
 
   loadMissions(): void {
     this.natureMissionService.getNatureMissions().subscribe(data => {
+      console.log('Missions reçues :', data); // Ajoutez cette ligne pour déboguer
       this.totalItems = data.length;
       this.pages = Array(Math.ceil(this.totalItems / this.itemsPerPage)).fill(0).map((x, i) => i + 1);
       this.natureMissions = data.slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
+    }, error => {
+      console.error('Erreur lors du chargement des missions :', error);
     });
   }
+  
 
   goToPage(page: number): void {
     this.currentPage = page;
@@ -52,17 +61,19 @@ export class NatureMissionListComponent implements OnInit {
     }
   }
 
-  editNatureMission(id: number): void {
-    console.log(`Editing mission with ID ${id}`);
-    // Implémentation de la navigation vers le formulaire d'édition
-    this.router.navigate(['/naturemissions', id]);
+  onAddNew(): void {
+    this.router.navigate(['/naturemissions-create']);
   }
 
-  deleteNatureMission(id: number): void {
+  onEdit(id: number): void {
+    this.router.navigate(['/naturemissions', id]);// il faut rajouter une page avec la mission déja excitee pour la modifier 
+  }
+
+  onDelete(id: number): void {
     this.natureMissionService.deleteNatureMission(id).subscribe(() => {
-      this.natureMissions = this.natureMissions.filter(nature => nature.id !== id);
+      this.natureMissions = this.natureMissions.filter(mission => mission.id !== id);
       this.totalItems--;
-      this.pages = Array(Math.ceil(this.totalItems / this.itemsPerPage)).fill(0).map((x, i) => i + 1);
+      this.pages = Array(Math.ceil(this.totalItems / this.itemsPerPage)).fill(0).map((_, i) => i + 1);
       if (this.natureMissions.length === 0 && this.currentPage > 1) {
         this.currentPage--;
       }
@@ -72,19 +83,13 @@ export class NatureMissionListComponent implements OnInit {
 
   searchMission(event: any): void {
     const query = event.target.value.toLowerCase();
-    // Implémenter la logique de recherche ici
     this.natureMissionService.getNatureMissions().subscribe(data => {
-      const filteredMissions = data.filter(nature =>
-        nature.label.toLowerCase().includes(query)
+      const filteredMissions = data.filter(mission =>
+        mission.label.toLowerCase().includes(query)
       );
       this.totalItems = filteredMissions.length;
-      this.pages = Array(Math.ceil(this.totalItems / this.itemsPerPage)).fill(0).map((x, i) => i + 1);
+      this.pages = Array(Math.ceil(this.totalItems / this.itemsPerPage)).fill(0).map((_, i) => i + 1);
       this.natureMissions = filteredMissions.slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
     });
-  }
-
-  addNewMission(): void {
-    console.log('Navigating to add new mission page');
-    this.router.navigate(['/naturemissions/create']);
   }
 }
