@@ -1,24 +1,24 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
+  ActivatedRoute,
   Router,
   RouterLink,
   RouterModule,
-  ActivatedRoute,
 } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { CommonModule } from '@angular/common';
-import { CookieService } from 'ngx-cookie-service';
 import {
-  faHouse,
-  faUsers,
   faBook,
-  faSuitcase,
-  faScroll,
   faCoins,
   faGear,
+  faHouse,
   faRightFromBracket,
+  faScroll,
+  faSuitcase,
+  faUsers,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
+import { CookieService } from 'ngx-cookie-service';
 import { SidebarMenuType } from '../interfaces/types';
 
 @Component({
@@ -62,7 +62,7 @@ export class LayoutComponent implements OnInit {
       },
       {
         icon: this.faSuitcaseIcon,
-        link: '/mission-nature',
+        link: '/naturemissions',
         name: 'Nature des missions',
         active: false,
       },

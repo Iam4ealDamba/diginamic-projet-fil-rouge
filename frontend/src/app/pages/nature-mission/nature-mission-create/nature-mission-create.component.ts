@@ -34,7 +34,7 @@ export class NatureMissionCreateComponent {
         next: () => {
           console.log('formulaire', this.form.value);
           // Après la création, naviguer vers la liste des missions
-          this.router.navigate(['/naturemissions-create/list']);
+          this.router.navigate(['create']);
         },
         error: (error) => console.error('Error creating nature mission', error),
       });
@@ -45,6 +45,6 @@ export class NatureMissionCreateComponent {
   
 
   cancel(): void {
-    this.router.navigate(['/naturemissions']);
+    this.router.navigate(['naturemissions']);
   }
 }

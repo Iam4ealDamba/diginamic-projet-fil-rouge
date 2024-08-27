@@ -1,18 +1,18 @@
-import { AuthService } from './../../../services/auth/auth.service';
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink, RouterModule } from '@angular/router';
 import {
-  ReactiveFormsModule,
-  FormGroup,
   FormControl,
+  FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { CustomButtonComponent } from '../../../components/buttons/custom-button.component';
+import ms from 'ms';
 import { CookieService } from 'ngx-cookie-service';
 import { ToastrService } from 'ngx-toastr';
-import ms from 'ms';
+import { CustomButtonComponent } from '../../../components/buttons/custom-button.component';
+import { AuthService } from './../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-login',

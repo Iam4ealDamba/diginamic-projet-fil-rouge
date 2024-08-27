@@ -2,13 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NatureMission } from '../../../interfaces/nature-mission.interface';
+import { LayoutComponent } from '../../../layout/layout.component';
 import { NatureMissionService } from '../../../services/nature-mission.service';
-
 
 @Component({
   selector: 'app-admin-mission-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LayoutComponent],
   providers: [Router],
   templateUrl: './admin-mission-list.component.html',
   styleUrls: ['./admin-mission-list.component.scss'],
@@ -32,12 +32,9 @@ export class AdminMissionListComponent implements OnInit {
 
   loadMissions(): void {
     this.natureMissionService.getNatureMissions().subscribe(data => {
-      console.log('Missions reçues :', data); // Ajoutez cette ligne pour déboguer
       this.totalItems = data.length;
       this.pages = Array(Math.ceil(this.totalItems / this.itemsPerPage)).fill(0).map((x, i) => i + 1);
       this.natureMissions = data.slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
-    }, error => {
-      console.error('Erreur lors du chargement des missions :', error);
     });
   }
   
@@ -62,11 +59,11 @@ export class AdminMissionListComponent implements OnInit {
   }
 
   onAddNew(): void {
-    this.router.navigate(['/naturemissions-create']);
+    this.router.navigate(['/naturemissions/create']);
   }
 
   onEdit(id: number): void {
-    this.router.navigate(['/naturemissions', id]);// il faut rajouter une page avec la mission déja excitee pour la modifier 
+    this.router.navigate(['/url pour edit', id]);// il faut rajouter une page avec la mission déja excitee pour la modifier 
   }
 
   onDelete(id: number): void {
