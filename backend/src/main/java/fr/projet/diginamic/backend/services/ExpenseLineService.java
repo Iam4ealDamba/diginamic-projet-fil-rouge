@@ -2,6 +2,7 @@ package fr.projet.diginamic.backend.services;
 
 import java.util.ArrayList;
 
+import fr.projet.diginamic.backend.repositories.interfaces.ExpenseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import fr.projet.diginamic.backend.repositories.interfaces.ExpenseLineRepository
 import fr.projet.diginamic.backend.repositories.interfaces.ExpenseTypeRepository;
 import fr.projet.diginamic.backend.utils.ExpenseLineMapper;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /** Service for all ExpenseLine's related method */
 @Service
@@ -30,7 +32,9 @@ public class ExpenseLineService {
 
 	@Autowired
 	private ExpenseLineMapper expenseLineMapper;
-	
+	@Autowired
+	private ExpenseRepository expenseRepository;
+
 	/** method to get all ExpenseLines and transform them into ExpenseLineDto
      * @return expenseLinesDto, a Dto with all ExpenseLines
      */
@@ -59,8 +63,10 @@ public class ExpenseLineService {
 	 * @param expenseLine, the expenseLine to save
 	 * @return the expenseLine who was saved
 	 */
-	public ExpenseLine saveExpenseLine(ExpenseLineDto expenseLine) {
+	public ExpenseLine saveExpenseLine(ExpenseLineDto expenseLine, Long id) {
 		ExpenseLine expenseLineSave = expenseLineMapper.dtoToBean(expenseLine);
+		Expense expense= expenseRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Expense not find with id: " +id ));
+		expenseLineSave.setExpense(expense);
 		expenseLineSave = expenseLineRepo.save(expenseLineSave);
 		return expenseLineSave;
 	}

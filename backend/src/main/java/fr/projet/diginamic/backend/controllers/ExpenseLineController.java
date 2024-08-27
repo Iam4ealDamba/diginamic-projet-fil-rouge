@@ -52,9 +52,9 @@ public class ExpenseLineController {
 			 @ApiResponse(responseCode = "500", description = "Internal Server Error",
 					 content = @Content(mediaType = "application/json"))
 	 })
-	 @PostMapping
-	    public  ResponseEntity<String> saveExpenseLine(@RequestBody ExpenseLineDto expenseLine)  {
-		 ExpenseLine expenseLineSave= expenseLineService.saveExpenseLine(expenseLine);
+	 @PostMapping("/{idExpense}")
+	    public  ResponseEntity<String> saveExpenseLine(@RequestBody ExpenseLineDto expenseLine, @PathVariable Long idExpense)  {
+		 ExpenseLine expenseLineSave= expenseLineService.saveExpenseLine(expenseLine, idExpense);
 		 if(expenseLineSave== null) {
 			 new ResponseEntity<>("fail", HttpStatus.NOT_IMPLEMENTED);
 	    	}
@@ -93,7 +93,7 @@ public class ExpenseLineController {
 			 @ApiResponse(responseCode = "404", description = "ExpenseLine not found",
 					 content = @Content(mediaType = "application/json"))
 	 })
-	 @DeleteMapping
+	 @DeleteMapping("/{id}")
 	    public ResponseEntity<String> DeleteExpenseLine(@PathVariable Long id)  {
 		 ExpenseLine expenseLine= expenseLineService.deleteExpenseLine(id);
 	        if(expenseLine== null) {

@@ -39,7 +39,7 @@ export interface ExpenseLine {
 export class ExpenseService {
   private apiUrl: string = 'http://localhost:8080/api';
 
-  private tokenTest: string = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNzI0NzA1NjM0LCJleHAiOjE3MjQ3MDc0MzR9.Oa0xlLcBeVj1T9UQ1v4G3_-qiL-z4AmtMH0GHvlM4RtFb1A87_vc_VTToBq8LLso"
+  private tokenTest: string = "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNzI0NzQzODM3LCJleHAiOjE3MjQ3NDU2Mzd9.2C8c-RfVQfENJeES2fRmuxdLNvGyGqk7NfGrSHFTo7pCPOaet2kQ28QWYDILXekb"
 
   constructor(private http: HttpClient) {
    }
@@ -57,12 +57,12 @@ export class ExpenseService {
     );
   }
 
-  addLine(expenseLine: ExpenseLine):Observable<void>{
+  addLine(expenseLine: ExpenseLine, idExpense: string):Observable<void>{
     const headers = new HttpHeaders({
       'Content-Type': 'application/json', 
       'Authorization': `Bearer ${this.tokenTest}`
     });
-    return this.http.post<void>(this.apiUrl+"/expenseLines", expenseLine, { headers, responseType: 'text' as 'json' })
+    return this.http.post<void>(`${this.apiUrl}/expenseLines/${idExpense}`, expenseLine, { headers, responseType: 'text' as 'json' })
     .pipe(
       catchError(error => {
         console.error('Error adding expense line:', error);

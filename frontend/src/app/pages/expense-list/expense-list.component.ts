@@ -68,7 +68,7 @@ export class ExpenseListComponent implements OnInit {
   }
 
   addExpenseLine(expenseLine: ExpenseLine) {
-    this.expenseService.addLine(expenseLine).subscribe({
+    this.expenseService.addLine(expenseLine, this.expenseId.toString()).subscribe({
       next: () => this.router.navigate([`/expense/${this.expenseId}`]),
       error: (error) => console.error('Error adding expense line:', error)
     });
