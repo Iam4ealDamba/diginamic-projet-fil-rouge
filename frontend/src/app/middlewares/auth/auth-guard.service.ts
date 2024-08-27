@@ -21,10 +21,7 @@ export class AuthGuardService implements CanActivate {
    */
   constructor(private router: Router, private cookie: CookieService) {}
 
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean {
+  canActivate(): boolean {
     let userStatus = this.cookie.check('jwt_token');
     if (!userStatus) this.router.navigate(['/login']);
 
