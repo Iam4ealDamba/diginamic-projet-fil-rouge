@@ -91,10 +91,10 @@ public class AuthController {
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/refresh")
     public ResponseEntity<String> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String oldToken) {
-        if (oldToken == null || oldToken.substring(7).isEmpty()) {
+        oldToken = oldToken.substring(7);
+        if (oldToken == null || oldToken.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-
         String newToken = authService.refreshToken(oldToken);
 
         if (newToken == null) {
