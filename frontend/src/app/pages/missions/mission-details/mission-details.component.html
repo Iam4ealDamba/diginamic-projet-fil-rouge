@@ -1,6 +1,6 @@
    
    <app-layout>
-   <div *ngIf="mission && mission.status" class="container mx-auto mx-auto min-w-full px-12 min-h-full">
+   <div *ngIf="mission && mission.status" class="container min-w-full">
 
     <div class="mb-6">
       <button (click)="goBack()" class="flex items-center text-gray-600 hover:text-gray-800">
@@ -91,10 +91,12 @@
         </div>
         
       </div>
+    
+      <div *ngIf="editionMode">
+        <app-mission-form [mission]="mission" (closeForm)="editionMode = false" (closeFormAndSave)="handleMissionUpdate($event)" ></app-mission-form>
 
-      <!-- <div class="bg-white p-6 rounded-lg shadow-md p-0"> -->
-        <app-mission-form *ngIf="editionMode" [mission]="mission" (closeForm)="editionMode = false" (closeFormAndSave)="handleMissionUpdate($event)" class=""></app-mission-form>
-      <!-- </div> -->
+      </div>
+     
   
       <div *ngIf="expense?.expenseLines?.length" class="bg-white p-6 rounded-lg shadow-md">
         <div class="mb-4">
