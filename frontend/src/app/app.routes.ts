@@ -10,6 +10,7 @@ import { AuthGuardService } from './middlewares/auth/auth-guard.service';
 import { UserDetailsComponent } from './pages/settings/user-details/user-details.component';
 import { UserChangePasswordComponent } from './pages/settings/user-change-password/user-change-password.component';
 import { NewMissionViewComponent } from './pages/missions/new-mission-view/new-mission-view.component';
+import { CollaboratorsHomeComponent } from './pages/collaborators/home/collaborators-home.component';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,10 @@ export const routes: Routes = [
   {
     path: 'register',
     component: RegisterComponent,
+  },
+  {
+    path: 'collaborators',
+    component: CollaboratorsHomeComponent,
   },
   {
     path: 'settings',

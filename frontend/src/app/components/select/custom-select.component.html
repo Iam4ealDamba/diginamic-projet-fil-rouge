@@ -1,0 +1,15 @@
+<div
+  class="px-2 py-1 inline-flex gap-x-2 items-center border shadow-md bg-tw_white rounded-lg"
+>
+  <label for="select-{{ title }}"><fa-icon [icon]="icon"></fa-icon></label>
+  <select
+    class="outline-none"
+    name="select-{{ title }}"
+    id="select-{{ title }}"
+  >
+    <option disabled selected class="inline-flex items-center justify-center">
+      <p>{{ title }}</p>
+    </option>
+    <ng-content></ng-content>
+  </select>
+</div>

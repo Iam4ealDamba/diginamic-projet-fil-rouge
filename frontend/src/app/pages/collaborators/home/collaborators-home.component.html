@@ -1,0 +1,45 @@
+<app-layout>
+  <main class="space-y-10">
+    <section aria-label="title" class="flex justify-between items-center">
+      <h1 class="text-xl font-semibold">Liste des collaborateurs</h1>
+      <div class="button">
+        <app-custom-button-link-component
+          link="/collaborators/create"
+          [iconLeft]="faUserPlus"
+        >
+          Ajouter</app-custom-button-link-component
+        >
+      </div>
+    </section>
+    <nav class="flex items-center justify-between">
+      <ul class="flex gap-x-4">
+        <li>
+          <app-custom-select-component title="Date" [icon]="faClockIcon">
+            <option>Tous</option>
+            <option>De la plus ancienne</option>
+            <option>De la plus recente</option>
+          </app-custom-select-component>
+        </li>
+      </ul>
+      <div
+        aria-label="search"
+        class="pl-4 py-1 inline-flex gap-x-2 items-center border shadow-md bg-tw_white rounded-lg"
+      >
+        <label for="search" class="cursor-pointer"
+          ><fa-icon [icon]="faSearchIcon"></fa-icon
+        ></label>
+        <input
+          type="search"
+          id="search"
+          placeholder="Rechercher un collaborateur..."
+          class="mr-4 text-sm outline-none"
+        />
+      </div>
+    </nav>
+    <section>
+      <div><h2 class="text-base font-semibold">27 Collaborateurs</h2></div>
+      <div></div>
+      <div></div>
+    </section>
+  </main>
+</app-layout>
