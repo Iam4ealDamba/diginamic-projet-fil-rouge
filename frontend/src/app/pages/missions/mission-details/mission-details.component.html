@@ -81,11 +81,11 @@
           <button 
             class="text-white px-4 py-2 rounded"
             [ngClass]="{
-              'bg-gray-500': mission.status?.toUpperCase() === 'INITIAL',
-              'bg-gray-200 cursor-not-allowed': mission.status?.toUpperCase() !== 'INITIAL'
+              'bg-gray-500': mission.status?.toUpperCase() === 'INITIAL' || mission.status?.toUpperCase() === 'REJECTED',
+              'bg-gray-200 cursor-not-allowed': mission.status?.toUpperCase() !== 'INITIAL' && mission.status?.toUpperCase() !== 'REJECTED'
             }" 
             (click)="editionMode = true" 
-            [disabled]="mission.status?.toUpperCase() !== 'INITIAL'">
+            [disabled]="mission.status?.toUpperCase() !== 'INITIAL' && mission.status?.toUpperCase() !== 'REJECTED'">
             Modifier
           </button>
         </div>
