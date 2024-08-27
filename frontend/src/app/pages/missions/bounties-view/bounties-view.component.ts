@@ -22,6 +22,7 @@ import {
 import { TableComponent } from '../../../components/table/table.component';
 import { LayoutComponent } from '../../../layout/layout.component';
 
+
 Chart.register(...registerables);
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
