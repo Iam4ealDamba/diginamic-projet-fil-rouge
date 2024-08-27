@@ -1,12 +1,12 @@
 // app.routes.ts
 import { Routes } from '@angular/router';
-import { AdminMissionListComponent } from '../../../frontend/src/app/pages/nature-mission/admin-mission-list/admin-mission-list.component';
 import { LoginComponent } from './pages/auth/login/login.component';
 import { RegisterComponent } from './pages/auth/register/register.component';
 import { HomeComponent } from './pages/home/home.component';
-import { NatureMissionCreateComponent } from './pages/nature-mission/nature-mission-create/nature-mission-create.component';
-import { NatureMissionEditComponent } from './pages/nature-mission/nature-mission-edit/nature-mission-edit.component';
-import { NatureMissionListComponent } from './pages/nature-mission/nature-mission-list/nature-mission-list.component';
+import { AuthGuardService } from './middlewares/auth/auth-guard.service';
+import { UserDetailsComponent } from './pages/settings/user-details/user-details.component';
+import { UserChangePasswordComponent } from './pages/settings/user-change-password/user-change-password.component';
+
 export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
@@ -21,4 +21,31 @@ export const routes: Routes = [
   
  // { path: 'dashboard', component: DashboardComponent },
  //  { path: 'missions', component: MissionsComponent },
+  {
+    path: '',
+    component: HomeComponent,
+    pathMatch: 'full',
+    canActivate: [AuthGuardService],
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+  },
+  {
+    path: 'settings',
+    children: [
+      {
+        path: 'user-details',
+        component: UserDetailsComponent,
+      },
+      {
+        path: 'change-password',
+        component: UserChangePasswordComponent,
+      },
+    ],
+  },
 ];
