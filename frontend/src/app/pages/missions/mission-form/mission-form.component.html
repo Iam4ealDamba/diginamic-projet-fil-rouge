@@ -72,7 +72,8 @@
     ></app-confirm-dialog>
   </div>
   
-  <div *ngIf="!mission" class="bg-white p-6 rounded-lg shadow-md ml-8" style="height: 25vh;">
+  <div *ngIf="!mission" class="bg-white p-6 rounded-lg shadow-md ml-8" style="min-height: fit-content; height: 28vh;">
+
     <p class="text-xl leading-tight text-gray-500 mb-4 text-center pb-7">À vérifier</p>
     <ul class="my-auto">
       <li class="text-s py-4 flex items-center" [ngClass]="{
@@ -103,8 +104,5 @@
   </li>
     </ul>
   </div>
-  
 
-
-</div>
-  
+</div> 

@@ -15,6 +15,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatNativeDateModule, MAT_DATE_FORMATS, DateAdapter, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { LayoutComponent } from '../../../layout/layout.component';
+
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -40,7 +42,8 @@ export const MY_DATE_FORMATS = {
     MatButtonModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    LayoutComponent
   ],
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },

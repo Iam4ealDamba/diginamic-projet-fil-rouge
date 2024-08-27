@@ -20,6 +20,8 @@ import {
   registerables,
 } from 'chart.js';
 import { TableComponent } from '../../../components/table/table.component';
+import { LayoutComponent } from '../../../layout/layout.component';
+
 
 Chart.register(...registerables);
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -42,7 +44,7 @@ type BountiesReport = {
 @Component({
   selector: 'app-bounties-view',
   standalone: true,
-  imports: [CommonModule, StatCardComponent, BaseChartDirective, TableComponent],
+  imports: [CommonModule, StatCardComponent, BaseChartDirective, TableComponent, LayoutComponent],
   templateUrl: './bounties-view.component.html',
   styleUrl: './bounties-view.component.scss'
 })
