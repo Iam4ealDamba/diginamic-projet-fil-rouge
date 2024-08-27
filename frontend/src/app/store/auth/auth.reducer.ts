@@ -2,11 +2,11 @@ import {  createReducer, on } from '@ngrx/store';
 import { UserType } from '../../interfaces/types';
 import { loginAction, logoutAction } from './auth.actions';
 
-export type AuthState = {
+export type AuthStateReducer = {
   user: UserType | null;
 };
 
-export const initialState: AuthState = {
+export const initialState: AuthStateReducer = {
   user: null,
 };
 

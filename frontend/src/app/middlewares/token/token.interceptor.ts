@@ -1,24 +1,15 @@
-import {
-  HttpClient,
-  HttpEvent,
-  HttpHandlerFn,
-  HttpHeaders,
-  HttpRequest,
-} from '@angular/common/http';
+import { HttpHeaders, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment.development';
+import { catchError, Observable, of, retry } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
+import ms from 'ms';
+import { AuthService } from '../../services/auth/auth.service';
 
-export function tokenInterceptor(
-  req: HttpRequest<unknown>,
-  next: HttpHandlerFn
-): Observable<HttpEvent<unknown>> {
+export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   // The CookieService is injected in the variable
-  const http = inject(HttpClient);
   const cookieService = inject(CookieService);
-
+  
   // Retrieve the token from cookie
   const token = cookieService.get('jwt_token');
 
@@ -33,30 +24,15 @@ export function tokenInterceptor(
     return next(req);
   }
 
-  // If the token is valid, refresh it
-  let newToken = '';
-  http
-    .get<any>(`${environment.apiURL}/auth/refresh`, {
-      headers: {
-        Authorization: 'Bearer ' + token,
-      },
-    })
-    .subscribe((data: string) => {
-      newToken = data;
-      cookieService.set('jwt_token', data);
-    });
-
-  // Add the new token to the header
-  const headers = new HttpHeaders({
-    Authorization: 'Bearer ' + newToken,
-  });
-  const newReq = req.clone({
-    headers,
+  req = req.clone({
+    headers: new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    }),
   });
 
   // Return the new request
-  return next(newReq);
-}
+  return next(req);
+};
 
 function verifyToken(token: string): boolean {
   const today = new Date().getTime() / 1000;

@@ -1,5 +1,7 @@
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
+type role = 'USER' | 'MANAGER' | 'ADMIN';
+
 // SidebarMenuType
 export type SidebarMenuType = {
   top: {
@@ -20,10 +22,10 @@ export type SidebarMenuType = {
 export type UserType = {
   id: number;
   email: string;
-  firstname: string;
-  lastname: string;
-  birthdate: Date;
-  roles: string;
+  firstName: string;
+  lastName: string;
+  birthDate: Date;
+  role?: role;
 };
 
 // ------------- DTO -------------

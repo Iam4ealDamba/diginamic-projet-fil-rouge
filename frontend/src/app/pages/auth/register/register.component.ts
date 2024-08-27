@@ -12,6 +12,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../../services/auth/auth.service';
+import ms from 'ms';
 
 @Component({
   selector: 'app-register',
@@ -67,7 +68,7 @@ export class RegisterComponent {
           password: this.registerForm.get('password')?.value!,
         };
 
-        this.authService.register(formData).subscribe(() => {
+        this.authService.register(formData).subscribe((data: string) => {
           this.registerForm.setValue({
             firstname: '',
             lastname: '',
@@ -75,8 +76,10 @@ export class RegisterComponent {
             password: '',
             confirmPassword: '',
           });
-
+          const today = new Date(Date.now() + ms('30m'));
           this.toastr.success('Votre compte a bien été crée!', 'Compte crée');
+          this.cookie.set('jwt_token', data, { expires: today });
+          this.router.navigate(['/']);
         });
       }
     } else {
