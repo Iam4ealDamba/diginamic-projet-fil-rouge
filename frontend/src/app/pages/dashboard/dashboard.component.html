@@ -1,5 +1,4 @@
 <app-layout>
-<div class="py-5 bg-slate-50 px-12">
   <div class="cards grid grid-cols-4 gap-4">
     <app-stat-card title="missions en attente de validation" [value]="nbPendingMissions" class="h-40"></app-stat-card>
     <app-stat-card title="missions acceptées" [value]="nbValidatedMissions" class="h-40"></app-stat-card>
@@ -59,6 +58,4 @@
    (cancel)="cancelDialog()"
    [dialogData]="dialogData"
  ></app-confirm-dialog>
- 
-  </div>
 </app-layout>

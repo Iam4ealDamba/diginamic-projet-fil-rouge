@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { StatusEnum } from '../../../enums/StatusEnum';
 import { NatureMission } from '../../../models/NatureMission';
 import { NatureMissionService } from '../../../services/expense/nature-mission/nature-mission.service';
+import { LayoutComponent } from '../../../layout/layout.component';
 
 type HeaderConfigType = {
   label: string;
@@ -52,7 +53,7 @@ type responseData =  {
 @Component({
   selector: 'app-missions-list',
   standalone: true,
-  imports: [CommonModule,FormsModule, ConfirmDialogComponent, TableComponent, MatFormField, MatSelect, MatOption, RouterLink, RouterLinkActive],
+  imports: [CommonModule,FormsModule, ConfirmDialogComponent, TableComponent, MatFormField, MatSelect, MatOption, RouterLink, RouterLinkActive, LayoutComponent],
   templateUrl: './missions-list.component.html',
   styleUrls: ['./missions-list.component.scss']
 })

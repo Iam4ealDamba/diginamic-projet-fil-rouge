@@ -8,11 +8,12 @@ import { StatusEnum } from '../../../enums/StatusEnum';
 import { TransportEnum } from '../../../enums/TransportEnum';
 import { MissionFormComponent } from '../mission-form/mission-form.component';
 import { ConfirmDialogComponent } from '../../../components/confirm-dialog/confirm-dialog.component';
+import { LayoutComponent } from '../../../layout/layout.component';
 
 @Component({
   selector: 'app-mission-details',
   standalone: true,
-  imports: [CommonModule,RouterLink, RouterOutlet,CurrencyPipe, DatePipe, MissionFormComponent, ConfirmDialogComponent],
+  imports: [CommonModule,RouterLink, RouterOutlet,CurrencyPipe, DatePipe, MissionFormComponent, ConfirmDialogComponent, LayoutComponent],
   templateUrl: './mission-details.component.html',
   styleUrl: './mission-details.component.scss'
 })
