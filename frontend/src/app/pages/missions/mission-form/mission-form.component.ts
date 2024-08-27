@@ -6,20 +6,34 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { TransportEnum } from '../../../enums/TransportEnum';
 import { MissionService } from '../../../services/mission/mission.service';
 import { NatureMission } from '../../../models/NatureMission';
 import { NatureMissionService } from '../../../services/expense/nature-mission/nature-mission.service';
 import { ConfirmDialogComponent } from '../../../components/confirm-dialog/confirm-dialog.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatNativeDateModule, MAT_DATE_FORMATS, DateAdapter, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
 
+export const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 @Component({
   selector: 'app-mission-form',
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    MatIconModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -27,6 +41,10 @@ import { ConfirmDialogComponent } from '../../../components/confirm-dialog/confi
     MatDatepickerModule,
     MatNativeDateModule,
     ConfirmDialogComponent
+  ],
+  providers: [
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
   ],
   templateUrl: './mission-form.component.html',
   styleUrls: ['./mission-form.component.scss']
@@ -51,6 +69,7 @@ export class MissionFormComponent {
     label: TransportEnum[key as keyof typeof TransportEnum]
   }));
   natureMissions : NatureMission[] = [];
+  formSubmitted = false;
 
   constructor(private fb: FormBuilder, private missionService: MissionService, private natureMissionService: NatureMissionService, private _location: Location) {}
 
@@ -63,7 +82,39 @@ export class MissionFormComponent {
       if(selectedNature){
         this.missionForm.patchValue({labelNatureMission: selectedNature.label});
       }
-    })
+    });
+  }
+  get isStartDateValid(): boolean {
+    const startDate = this.missionForm.get('startDate')?.value;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to midnight for accurate comparison
+    return startDate && new Date(startDate) > today;
+  }
+
+  get isTransportConditionValid(): boolean {
+    const transport = this.missionForm.get('transport')?.value;
+    const startDate = this.missionForm.get('startDate')?.value;
+    const today = new Date();
+    const requiredDate = new Date();
+    requiredDate.setDate(today.getDate() + 7); // Add 7 days to today's date
+
+    if (transport === 'AIRPLANE') {
+      return startDate && new Date(startDate) >= requiredDate;
+    }
+    return true; // If not airplane, this condition is automatically valid
+  }
+
+  get isEndDateValid(): boolean {
+    const startDate = this.missionForm.get('startDate')?.value;
+    const endDate = this.missionForm.get('endDate')?.value;
+    return endDate && startDate && new Date(endDate) >= new Date(startDate);
+  }
+
+  get areFormAndConditionsListValid() : boolean {
+    const isFormValid = this.missionForm && this.missionForm.valid;
+    const areConditionsListValid = [this.isStartDateValid, this.isEndDateValid, this.isTransportConditionValid].every(condition => condition);
+
+    return isFormValid && areConditionsListValid;
   }
 
   formHasChanges(): boolean {
@@ -88,17 +139,13 @@ export class MissionFormComponent {
   }
 
   private initializeForm(): void {
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-
     this.missionForm = this.fb.group({
       ...(this.mission && {id: this.mission.id}),
       label: [this.mission?.label || '', Validators.required],
       totalPrice: [this.mission?.totalPrice || 10, Validators.required],
       status: [this.mission?.status || 'INITIAL', Validators.required],
-      startDate: [this.mission?.startDate || today, Validators.required],
-      endDate: [this.mission?.endDate || tomorrow, Validators.required],
+      startDate: [this.mission?.startDate || undefined, Validators.required],
+      endDate: [this.mission?.endDate || undefined, Validators.required],
       transport: [this.mission?.transport || '', Validators.required],
       departureCity: [this.mission?.departureCity || '', Validators.required],
       arrivalCity: [this.mission?.arrivalCity || '', Validators.required],
@@ -115,7 +162,7 @@ export class MissionFormComponent {
   }
 
   submit(): void {
-    if (this.missionForm.valid) {
+    if (this.areFormAndConditionsListValid) {
       const missionData = this.missionForm.value;
       
       if(this.mission) {
@@ -142,9 +189,9 @@ export class MissionFormComponent {
         }
       }
     } else {
-      
       console.log("form not valid: ", this.missionForm);
     }
+
   }
 
   cancel(): void {

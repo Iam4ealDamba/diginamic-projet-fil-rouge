@@ -7,11 +7,12 @@ import { ExpenseService } from '../../../services/expense/expense.service';
 import { StatusEnum } from '../../../enums/StatusEnum';
 import { TransportEnum } from '../../../enums/TransportEnum';
 import { MissionFormComponent } from '../mission-form/mission-form.component';
+import { ConfirmDialogComponent } from '../../../components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-mission-details',
   standalone: true,
-  imports: [CommonModule,RouterLink, RouterOutlet,CurrencyPipe, DatePipe, MissionFormComponent],
+  imports: [CommonModule,RouterLink, RouterOutlet,CurrencyPipe, DatePipe, MissionFormComponent, ConfirmDialogComponent],
   templateUrl: './mission-details.component.html',
   styleUrl: './mission-details.component.scss'
 })
@@ -23,6 +24,13 @@ export class MissionDetailsComponent {
   statusEnum = StatusEnum;
   transportEnum = TransportEnum;
   editionMode = false;
+  showConfirmDialog = false;
+  dialogData = {
+    title: 'Supprimer la mission',
+    message: 'Êtes-vous sûr de vouloir supprimer la mission ? Cette action est irréversible.',
+    confirmButtonText: 'Confirmer',
+    cancelButtonText: 'Annuler'
+  };
 
   constructor(private route: ActivatedRoute, public router: Router, private missionService : MissionService,private expenseService: ExpenseService, private _location: Location){}
 
@@ -87,8 +95,12 @@ export class MissionDetailsComponent {
       return total + line.amount + tvaAmount;
     }, 0);
   }
+  displayConfirmDialog(){
+    this.dialogData.title = this.mission ? `Supprimer la mission #${this.mission.id}` : this.dialogData.title;
+    this.showConfirmDialog = true;
+  }
 
-   /**
+  /**
    * Method to navigate back to the previous location.
    */
    goBack() : void{

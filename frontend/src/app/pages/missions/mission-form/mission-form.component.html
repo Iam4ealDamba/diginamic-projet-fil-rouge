@@ -1,3 +1,4 @@
+<div class="container flex justify-between grid grid-cols-2">
 <div class="bg-white p-6 rounded-lg shadow-md">
     <form [formGroup]="missionForm" (ngSubmit)="submit()" class="grid grid-cols-2 gap-4 mb-4">
       
@@ -55,10 +56,14 @@
   
       <div class="col-span-2 flex justify-evenly mt-6">
         <button mat-button type="button" class="bg-gray-400 text-white" (click)="cancel()">Annuler</button>
-        <button mat-raised-button color="primary" type="submit">Enregistrer</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!areFormAndConditionsListValid">
+          <span *ngIf="!mission">Créer</span>
+          <span *ngIf="mission">Enregistrer</span>
+        </button>
       </div>
   
     </form>
+    
     <app-confirm-dialog
       *ngIf="showConfirmDialog"
       [dialogData]="dialogData"
@@ -66,4 +71,40 @@
       (cancel)="cancelDialog()"
     ></app-confirm-dialog>
   </div>
+  
+  <div *ngIf="!mission" class="bg-white p-6 rounded-lg shadow-md ml-8" style="height: 25vh;">
+    <p class="text-xl leading-tight text-gray-500 mb-4 text-center pb-7">À vérifier</p>
+    <ul class="my-auto">
+      <li class="text-s py-4 flex items-center" [ngClass]="{
+            'text-gray-500': !isStartDateValid,
+            'text-gray-700': isStartDateValid
+          }">
+        <mat-icon *ngIf="isStartDateValid" class="text-green-500 mr-2">check</mat-icon>
+        <mat-icon *ngIf="!isStartDateValid" class="text-red-500 mr-2">close</mat-icon>
+        La mission doit commencer à partir de demain.
+      </li>
+
+      <li class="text-s py-4 flex items-center" [ngClass]="{
+            'text-gray-500': !isEndDateValid && !formSubmitted,
+            'text-gray-700': isEndDateValid
+          }">
+        <mat-icon *ngIf="isEndDateValid" class="text-green-500 mr-2">check</mat-icon>
+        <mat-icon *ngIf="!isEndDateValid" class="text-red-500 mr-2">close</mat-icon>
+        La date de fin doit être égale ou postérieure à la date de début.
+      </li>
+
+      <li class="text-s py-4 flex items-center" [ngClass]="{
+        'text-gray-500': !isTransportConditionValid,
+        'text-gray-700': isTransportConditionValid
+      }">
+    <mat-icon *ngIf="isTransportConditionValid" class="text-green-500 mr-2">check</mat-icon>
+    <mat-icon *ngIf="!isTransportConditionValid" class="text-red-500 mr-2">close</mat-icon>
+    En avion, la mission doit être planifiée au moins 7 jours à l'avance.
+  </li>
+    </ul>
+  </div>
+  
+
+
+</div>
   

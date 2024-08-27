@@ -65,9 +65,29 @@
         </div>
   
         <div class="mt-10 mx-auto flex justify-evenly">
-          <button class="bg-red-400 text-white px-4 py-2 rounded" (click)="deleteMission(mission.id)">Supprimer</button>
-          <button class="bg-gray-400 text-white px-4 py-2 rounded" (click)="editionMode = true">Modifier</button>
+          <button 
+            class="text-white px-4 py-2 rounded"
+            [ngClass]="{
+              'bg-red-400': mission.status?.toUpperCase() !== 'FINISHED',
+              'bg-gray-200 cursor-not-allowed': mission.status?.toUpperCase() === 'FINISHED'
+            }" 
+            (click)="displayConfirmDialog()" 
+            [disabled]="mission.status?.toUpperCase() === 'FINISHED'">
+            Supprimer
+          </button>
+        
+          <button 
+            class="text-white px-4 py-2 rounded"
+            [ngClass]="{
+              'bg-gray-500': mission.status?.toUpperCase() === 'INITIAL',
+              'bg-gray-200 cursor-not-allowed': mission.status?.toUpperCase() !== 'INITIAL'
+            }" 
+            (click)="editionMode = true" 
+            [disabled]="mission.status?.toUpperCase() !== 'INITIAL'">
+            Modifier
+          </button>
         </div>
+        
       </div>
 
       <!-- <div class="bg-white p-6 rounded-lg shadow-md p-0"> -->
@@ -102,5 +122,11 @@
         </div>
       </div>
     </div>
+    <app-confirm-dialog
+    *ngIf="showConfirmDialog"
+    [dialogData]="dialogData"
+    (confirm)="deleteMission(mission.id)"
+    (cancel)="showConfirmDialog = false"
+  ></app-confirm-dialog>
   </div>
   
