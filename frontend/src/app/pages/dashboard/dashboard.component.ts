@@ -60,6 +60,14 @@ type responseData =  {
   pageable: Pageable;
   empty: boolean;
 };
+
+type BountiesReport = {
+  totalNumberOfBounties: number,
+  highestBountyAmount: number,
+  totalAmountOfBounties: number,
+  totalBountiesPerMonth: { string : number},
+  missionsWithBounties: Mission[],  
+}
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -100,8 +108,9 @@ export class DashboardComponent {
   missions : Mission[] = [];
   missionsWithExpenses: Mission[] = [];
   expensesData? : ExpensesData;
-  respMissionsWithExpenseData? : responseData;
+  bountiesData? : BountiesReport;
   bounties : Mission[] = [];
+  respMissionsWithExpenseData? : responseData;
   nbPendingMissions : number = 0;
   nbValidatedMissions : number = 0;
   nbMissionsInProgress : number = 0;
@@ -119,9 +128,10 @@ export class DashboardComponent {
   constructor(private route: ActivatedRoute, private router: Router, private missionService : MissionService, private expenseService: ExpenseService, private _location: Location){}
 
   ngOnInit(): void {
+    this.fetchData();
+    this.fetchMissionsWithBounties();
     this.loadAllMissionsForStats();
-   this.fetchData();
-   this.fetchMissionsWithExpenses();
+    this.fetchMissionsWithExpenses();
   }
 
   handlePageEvent(event: PageEvent) {
@@ -173,7 +183,19 @@ export class DashboardComponent {
     });
   }
 
-  //TODO: fetch missions with bountyAmount (non-paginated)
+  fetchMissionsWithBounties() {
+    this.missionService.getBounties().subscribe({
+      next: (bounties: any) => {
+        this.bountiesData = bounties;
+        this.bounties = bounties.missionsWithBounties;
+      },
+      error: (error) => {
+        console.error(error);
+        this.router.navigate(['/404']);
+      }
+    });
+  }
+
   loadAllMissionsForStats() {
     const queries = {
       page : 0,
@@ -197,12 +219,7 @@ export class DashboardComponent {
 
     this.nbMissionsInProgress = [...missions].filter(m => m.status.toUpperCase() === "IN_PROGRESS").length;
     this.nbValidatedMissions = [...missions].filter(m => m.status.toUpperCase() === "VALIDATED").length;
-    this.totalBountiesAmountOfYear = [...missions]
-                              .filter(m => 
-                                new Date(m.endDate).getFullYear() === new Date().getFullYear()
-                              )
-                              .map(m => m.bountyAmount || 0).reduce((a,b) => a + b, 0); 
-    this.bounties = [...missions].filter(m => m.bountyAmount && m.bountyAmount > 0);
+    this.totalBountiesAmountOfYear = this.bountiesData?.totalAmountOfBounties || 0; 
   }
 
   deleteMission(){

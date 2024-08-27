@@ -61,7 +61,7 @@
             <mat-icon>reorder</mat-icon>
             <span>Détails</span>
           </button>
-          <button mat-menu-item (click)="deleteMission(row)">
+          <button mat-menu-item *ngIf="row.status.toUpperCase() !== 'FINISHED'" (click)="deleteMission(row)">
             <mat-icon>delete</mat-icon>
             <span>Supprimer</span>
           </button>

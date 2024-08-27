@@ -3,6 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MissionService } from '../../../services/mission/mission.service';
 import { StatCardComponent } from '../../../components/stat-card/stat-card.component';
+import { Mission } from '../../../models/Mission';
 import { BaseChartDirective } from 'ng2-charts';
 
 import {
@@ -18,20 +19,37 @@ import {
   Legend,
   registerables,
 } from 'chart.js';
+import { TableComponent } from '../../../components/table/table.component';
+
 Chart.register(...registerables);
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+type HeaderConfigType = {
+  label: string;
+  value: keyof Mission;
+  displayCurrency?: boolean;
+  isChip?: boolean;
+};
+
+type BountiesReport = {
+  totalNumberOfBounties: number,
+  highestBountyAmount: number,
+  totalAmountOfBounties: number,
+  totalBountiesPerMonth: { string : number},
+  missionsWithBounties: Mission[],  
+}
 
 @Component({
   selector: 'app-bounties-view',
   standalone: true,
-  imports: [CommonModule, StatCardComponent, BaseChartDirective],
+  imports: [CommonModule, StatCardComponent, BaseChartDirective, TableComponent],
   templateUrl: './bounties-view.component.html',
   styleUrl: './bounties-view.component.scss'
 })
 export class BountiesViewComponent {
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
-  bountiesData: any = null;
+  bountiesData? : BountiesReport;
+  bounties : Mission[] = [];
   currentYear = new Date().getFullYear();
   barChartOptions:  ChartOptions<'bar'>  = {
     scales: {
@@ -55,6 +73,17 @@ export class BountiesViewComponent {
       },
     ],
   };
+
+  headers_bounties: HeaderConfigType[] = [
+    { label: 'Nature mission', value: 'labelNatureMission' },
+    { label: 'Libelle mission', value: 'label' },
+    { label: 'Montant prime', value: 'bountyAmount', displayCurrency: true },
+    { label: 'Dates missions', value: 'startDate' },
+  ];
+
+
+  
+
   constructor(private route: ActivatedRoute, private router: Router, private missionService: MissionService, private _location: Location) {}
 
   ngOnInit() {
@@ -63,9 +92,10 @@ export class BountiesViewComponent {
 
   fetchData() {
     this.missionService.getBounties().subscribe({
-      next: (bounties: any) => {
-        this.bountiesData = bounties;
-        this.updateChartData(bounties.totalBountiesPerMonth);
+      next: (bountiesData: any) => {
+        this.bountiesData = bountiesData;
+        this.bounties = bountiesData.missionsWithBounties;
+        this.updateChartData(bountiesData.totalBountiesPerMonth);
       },
       error: (error) => {
         console.error(error);
