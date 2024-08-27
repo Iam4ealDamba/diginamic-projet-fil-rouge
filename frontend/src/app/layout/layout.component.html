@@ -10,9 +10,13 @@
         aria-label="card-image"
         class="w-8 h-8 rounded-full bg-neutral-700"
       ></div>
-      <div aria-label="card-text" class="font-semibold">
-        <p class="text-sm">Thomas Dupont</p>
-        <p class="text-xs text-tw_black/55">Consultant Informatique</p>
+      <div
+        *ngIf="user$ | async as user"
+        aria-label="card-text"
+        class="font-semibold"
+      >
+        <p class="text-sm">{{ user.firstName }} {{ user.lastName }}</p>
+        <p class="text-xs text-tw_black/55">{{ user.role | titlecase }}</p>
       </div>
     </div>
   </div>
@@ -32,22 +36,22 @@
         >
           <fa-icon [icon]="item.icon" class="w-6 h-6"></fa-icon>
           @if (item.active) {
-            <p class="text-sm font-bold">
-              {{ item.name }}
-            </p>
-            }@else {
-            <p class="text-sm">
-              {{ item.name }}
-            </p>
-            }
+          <p class="text-sm font-bold">
+            {{ item.name }}
+          </p>
+          }@else {
+          <p class="text-sm">
+            {{ item.name }}
+          </p>
+          }
         </a>
       </li>
     </ul>
 
     <ul>
       <li *ngFor="let item of sidebarMenu.bottom">
+        @if (item.link !== "/logout") {
         <a
-          *ngIf="item.link !== 'logout'"
           [routerLink]="item.link"
           [routerLinkActive]="'font-bold'"
           class="flex items-center gap-x-2 px-6 py-4 transition-all hover:font-bold"
@@ -66,9 +70,9 @@
           </p>
           }
         </a>
+        } @else {
         <a
           class="flex items-center gap-x-2 px-6 py-4 transition-all cursor-pointer hover:font-bold"
-          *ngIf="item.link == 'logout'"
           (click)="logout()"
         >
           <fa-icon [icon]="item.icon" class="text-base"></fa-icon>
@@ -76,6 +80,7 @@
             {{ item.name }}
           </p>
         </a>
+        }
       </li>
     </ul>
   </aside>

@@ -11,11 +11,14 @@
         </div>
         <div aria-label="text" class="space-y-2">
           <div>
-            <h2 class="font-semibold">Firstname Lastname</h2>
+            <h2 class="font-semibold" *ngIf="userData$ | async as userData">
+              {{ userData.firstName }} {{ userData.lastName }}
+            </h2>
             <h3 class="text-sm font-semibold text-tw_black/55">Job</h3>
           </div>
           <a
-            href="mailto:test@test.test"
+            *ngIf="userData$ | async as user"
+            href="mailto:{{ user?.email }}"
             class="inline-flex items-center gap-x-2 border px-2 py-1"
             ><fa-icon [icon]="faEnvelopeIcon"></fa-icon>
             <p class="text-sm">Send email</p>
@@ -45,9 +48,9 @@
       </div>
     </section>
     <section aria-label="bottom-content">
-      <form action="" class="w-full">
+      <form class="w-full" [formGroup]="form">
         <div aria-label="button" class="flex justify-end">
-          <app-custom-button-component theme="regular"
+          <app-custom-button-component (click)="onSubmit()" theme="regular"
             >Modifier</app-custom-button-component
           >
         </div>
@@ -63,6 +66,7 @@
               <input
                 type="text"
                 id="firstname"
+                formControlName="firstName"
                 placeholder="Entrer votre prénom..."
                 class="py-2 px-4 border-2 bg-transparent"
               />
@@ -72,6 +76,7 @@
               <input
                 type="text"
                 id="lastname"
+                formControlName="lastName"
                 placeholder="Entrer votre nom..."
                 class="py-2 px-4 border-2 bg-transparent"
               />
@@ -81,18 +86,10 @@
                 >Date de naissance</label
               >
               <input
-                type="text"
+                type="date"
                 id="birthdate"
+                formControlName="birthDate"
                 placeholder="Entrer votre date de naissance..."
-                class="py-2 px-4 border-2 bg-transparent"
-              />
-            </div>
-            <div aria-label="input" class="flex flex-col gap-y-2">
-              <label class="text-sm font-semibold" for="phone">Téléphone</label>
-              <input
-                type="tel"
-                id="phone"
-                placeholder="Entrer votre numéro..."
                 class="py-2 px-4 border-2 bg-transparent"
               />
             </div>
@@ -105,6 +102,7 @@
               <input
                 type="text"
                 id="email"
+                formControlName="email"
                 placeholder="Entrer votre adresse email..."
                 class="py-2 px-4 border-2 bg-transparent"
               />
