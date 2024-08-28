@@ -22,12 +22,12 @@
           </div>
 
           <div class="inline-block w-fit h-fit px-5 py-1 rounded-2xl text-sm font-medium text-center" [ngClass]="{
-            'status-initial': mission.status?.toUpperCase() === 'INITIAL',
-            'status-validated': mission.status?.toUpperCase() === 'VALIDATED',
-            'status-in-progress': mission.status?.toUpperCase() === 'IN_PROGRESS',
-            'status-rejected': mission.status?.toUpperCase() === 'REJECTED',
-            'status-finished': mission.status?.toUpperCase() === 'FINISHED', 
-            'status-waiting': mission.status?.toUpperCase() === 'WAITING'
+            'status-initial': mission.status.toUpperCase() === 'INITIAL',
+            'status-validated': mission.status.toUpperCase() === 'VALIDATED',
+            'status-in-progress': mission.status.toUpperCase() === 'IN_PROGRESS',
+            'status-rejected': mission.status.toUpperCase() === 'REJECTED',
+            'status-finished': mission.status.toUpperCase() === 'FINISHED', 
+            'status-waiting': mission.status.toUpperCase() === 'WAITING'
           }">
             {{ getStatusLabel(mission.status) }}
           </div>
@@ -70,22 +70,22 @@
           <button 
             class="text-white px-4 py-2 rounded"
             [ngClass]="{
-              'bg-red-400': mission.status?.toUpperCase() !== 'FINISHED',
-              'bg-gray-200 cursor-not-allowed': mission.status?.toUpperCase() === 'FINISHED'
+              'bg-red-400': mission.status.toUpperCase() !== 'FINISHED',
+              'bg-gray-200 cursor-not-allowed': mission.status.toUpperCase() === 'FINISHED'
             }" 
             (click)="displayConfirmDialog()" 
-            [disabled]="mission.status?.toUpperCase() === 'FINISHED'">
+            [disabled]="mission.status.toUpperCase() === 'FINISHED'">
             Supprimer
           </button>
         
           <button 
             class="text-white px-4 py-2 rounded"
             [ngClass]="{
-              'bg-gray-500': mission.status?.toUpperCase() === 'INITIAL' || mission.status?.toUpperCase() === 'REJECTED',
-              'bg-gray-200 cursor-not-allowed': mission.status?.toUpperCase() !== 'INITIAL' && mission.status?.toUpperCase() !== 'REJECTED'
+              'bg-gray-500': mission.status.toUpperCase() === 'INITIAL' || mission.status.toUpperCase() === 'REJECTED',
+              'bg-gray-200 cursor-not-allowed': mission.status.toUpperCase() !== 'INITIAL' && mission.status.toUpperCase() !== 'REJECTED'
             }" 
             (click)="editionMode = true" 
-            [disabled]="mission.status?.toUpperCase() !== 'INITIAL' && mission.status?.toUpperCase() !== 'REJECTED'">
+            [disabled]="mission.status.toUpperCase() !== 'INITIAL' && mission.status.toUpperCase() !== 'REJECTED'">
             Modifier
           </button>
         </div>
