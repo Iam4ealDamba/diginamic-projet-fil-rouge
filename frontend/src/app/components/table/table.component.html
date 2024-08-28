@@ -31,12 +31,12 @@
             </div>
     
             <div *ngSwitchCase="'status'" class="px-2 py-1 rounded-full text-center" [ngClass]="{
-              'status-initial': row.status?.toUpperCase() === 'INITIAL',
-              'status-validated': row.status?.toUpperCase() === 'VALIDATED',
-              'status-in-progress': row.status?.toUpperCase() === 'IN_PROGRESS',
-              'status-rejected': row.status?.toUpperCase() === 'REJECTED',
-              'status-finished': row.status?.toUpperCase() === 'FINISHED', 
-              'status-waiting': row.status?.toUpperCase() === 'WAITING'
+              'status-initial': row.status.toUpperCase() === 'INITIAL',
+              'status-validated': row.status.toUpperCase() === 'VALIDATED',
+              'status-in-progress': row.status.toUpperCase() === 'IN_PROGRESS',
+              'status-rejected': row.status.toUpperCase() === 'REJECTED',
+              'status-finished': row.status.toUpperCase() === 'FINISHED', 
+              'status-waiting': row.status.toUpperCase() === 'WAITING'
             }">
                 {{getStatusLabel(row.status)}}
             </div>  
