@@ -1,6 +1,6 @@
-<div class="container flex justify-between grid grid-cols-2">
-<div class="bg-white p-6 rounded-lg shadow-md">
-    <form [formGroup]="missionForm" (ngSubmit)="submit()" class="grid grid-cols-2 gap-4 mb-4">
+<div class="flex justify-between" [ngClass]="{'grid grid-cols-1 md:grid-cols-2 gap-4': !mission}">
+<div class="bg-white p-6 rounded-lg shadow-md min-w-full">
+    <form [formGroup]="missionForm" (ngSubmit)="submit()" class="grid grid-cols-2 gap-4">
       
       <mat-form-field class="col-span-2">
         <mat-label>Libellé de la mission</mat-label>
@@ -72,7 +72,8 @@
     ></app-confirm-dialog>
   </div>
   
-  <div *ngIf="!mission" class="bg-white p-6 rounded-lg shadow-md ml-8" style="height: 25vh;">
+  <div *ngIf="!mission" class="bg-white p-6 rounded-lg shadow-md ml-8" style="min-height: fit-content; height: 28vh;">
+
     <p class="text-xl leading-tight text-gray-500 mb-4 text-center pb-7">À vérifier</p>
     <ul class="my-auto">
       <li class="text-s py-4 flex items-center" [ngClass]="{
@@ -81,7 +82,7 @@
           }">
         <mat-icon *ngIf="isStartDateValid" class="text-green-500 mr-2">check</mat-icon>
         <mat-icon *ngIf="!isStartDateValid" class="text-red-500 mr-2">close</mat-icon>
-        La mission doit commencer à partir de demain.
+        La mission doit commencer au plus tôt demain.
       </li>
 
       <li class="text-s py-4 flex items-center" [ngClass]="{
@@ -103,8 +104,5 @@
   </li>
     </ul>
   </div>
-  
 
-
-</div>
-  
+</div> 

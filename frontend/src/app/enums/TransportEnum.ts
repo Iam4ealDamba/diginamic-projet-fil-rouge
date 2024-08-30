@@ -1,4 +1,5 @@
 export enum TransportEnum {
+    NONE = 'Aucun',
     AIRPLANE = 'Avion',
     CARPOOLING = 'Covoiturage',
     TRAIN = 'Train',

@@ -1,5 +1,7 @@
    
-   <div *ngIf="mission && mission.status" class="container mx-auto p-8 bg-slate-50 container mx-auto min-w-full px-12 min-h-full">
+   <app-layout>
+   <div *ngIf="mission && mission.status" class="container min-w-full">
+
     <div class="mb-6">
       <button (click)="goBack()" class="flex items-center text-gray-600 hover:text-gray-800">
         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -20,12 +22,12 @@
           </div>
 
           <div class="inline-block w-fit h-fit px-5 py-1 rounded-2xl text-sm font-medium text-center" [ngClass]="{
-            'status-initial': mission.status?.toUpperCase() === 'INITIAL',
-            'status-validated': mission.status?.toUpperCase() === 'VALIDATED',
-            'status-in-progress': mission.status?.toUpperCase() === 'IN_PROGRESS',
-            'status-rejected': mission.status?.toUpperCase() === 'REJECTED',
-            'status-finished': mission.status?.toUpperCase() === 'FINISHED', 
-            'status-waiting': mission.status?.toUpperCase() === 'WAITING'
+            'status-initial': mission.status.toUpperCase() === 'INITIAL',
+            'status-validated': mission.status.toUpperCase() === 'VALIDATED',
+            'status-in-progress': mission.status.toUpperCase() === 'IN_PROGRESS',
+            'status-rejected': mission.status.toUpperCase() === 'REJECTED',
+            'status-finished': mission.status.toUpperCase() === 'FINISHED', 
+            'status-waiting': mission.status.toUpperCase() === 'WAITING'
           }">
             {{ getStatusLabel(mission.status) }}
           </div>
@@ -68,31 +70,33 @@
           <button 
             class="text-white px-4 py-2 rounded"
             [ngClass]="{
-              'bg-red-400': mission.status?.toUpperCase() !== 'FINISHED',
-              'bg-gray-200 cursor-not-allowed': mission.status?.toUpperCase() === 'FINISHED'
+              'bg-red-400': mission.status.toUpperCase() !== 'FINISHED',
+              'bg-gray-200 cursor-not-allowed': mission.status.toUpperCase() === 'FINISHED'
             }" 
             (click)="displayConfirmDialog()" 
-            [disabled]="mission.status?.toUpperCase() === 'FINISHED'">
+            [disabled]="mission.status.toUpperCase() === 'FINISHED'">
             Supprimer
           </button>
         
           <button 
             class="text-white px-4 py-2 rounded"
             [ngClass]="{
-              'bg-gray-500': mission.status?.toUpperCase() === 'INITIAL',
-              'bg-gray-200 cursor-not-allowed': mission.status?.toUpperCase() !== 'INITIAL'
+              'bg-gray-500': mission.status.toUpperCase() === 'INITIAL' || mission.status.toUpperCase() === 'REJECTED',
+              'bg-gray-200 cursor-not-allowed': mission.status.toUpperCase() !== 'INITIAL' && mission.status.toUpperCase() !== 'REJECTED'
             }" 
             (click)="editionMode = true" 
-            [disabled]="mission.status?.toUpperCase() !== 'INITIAL'">
+            [disabled]="mission.status.toUpperCase() !== 'INITIAL' && mission.status.toUpperCase() !== 'REJECTED'">
             Modifier
           </button>
         </div>
         
       </div>
+    
+      <div *ngIf="editionMode">
+        <app-mission-form [mission]="mission" (closeForm)="editionMode = false" (closeFormAndSave)="handleMissionUpdate($event)" ></app-mission-form>
 
-      <!-- <div class="bg-white p-6 rounded-lg shadow-md p-0"> -->
-        <app-mission-form *ngIf="editionMode" [mission]="mission" (closeForm)="editionMode = false" (closeFormAndSave)="handleMissionUpdate($event)" class=""></app-mission-form>
-      <!-- </div> -->
+      </div>
+     
   
       <div *ngIf="expense?.expenseLines?.length" class="bg-white p-6 rounded-lg shadow-md">
         <div class="mb-4">
@@ -129,4 +133,5 @@
     (cancel)="showConfirmDialog = false"
   ></app-confirm-dialog>
   </div>
-  
+</app-layout>
+

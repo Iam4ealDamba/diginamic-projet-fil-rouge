@@ -15,6 +15,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatNativeDateModule, MAT_DATE_FORMATS, DateAdapter, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { LayoutComponent } from '../../../layout/layout.component';
+
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -40,7 +42,8 @@ export const MY_DATE_FORMATS = {
     MatButtonModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    LayoutComponent
   ],
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
@@ -87,7 +90,7 @@ export class MissionFormComponent {
   get isStartDateValid(): boolean {
     const startDate = this.missionForm.get('startDate')?.value;
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time to midnight for accurate comparison
+    today.setHours(0, 0, 0, 0); 
     return startDate && new Date(startDate) > today;
   }
 
@@ -96,12 +99,12 @@ export class MissionFormComponent {
     const startDate = this.missionForm.get('startDate')?.value;
     const today = new Date();
     const requiredDate = new Date();
-    requiredDate.setDate(today.getDate() + 7); // Add 7 days to today's date
+    requiredDate.setDate(today.getDate() + 7);
 
     if (transport === 'AIRPLANE') {
       return startDate && new Date(startDate) >= requiredDate;
     }
-    return true; // If not airplane, this condition is automatically valid
+    return true; 
   }
 
   get isEndDateValid(): boolean {
@@ -141,7 +144,7 @@ export class MissionFormComponent {
   private initializeForm(): void {
     this.missionForm = this.fb.group({
       ...(this.mission && {id: this.mission.id}),
-      label: [this.mission?.label || '', Validators.required],
+      label: [this.mission?.label || '', [Validators.required, Validators.maxLength(150)]],
       totalPrice: [this.mission?.totalPrice || 10, Validators.required],
       status: [this.mission?.status || 'INITIAL', Validators.required],
       startDate: [this.mission?.startDate || undefined, Validators.required],
@@ -228,6 +231,3 @@ export class MissionFormComponent {
     this._location.back();
   }
 }
-
-//TODO:
-//Handle modal confirmations action

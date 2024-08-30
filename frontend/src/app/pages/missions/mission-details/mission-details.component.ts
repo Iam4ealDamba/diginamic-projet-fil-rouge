@@ -8,11 +8,12 @@ import { StatusEnum } from '../../../enums/StatusEnum';
 import { TransportEnum } from '../../../enums/TransportEnum';
 import { MissionFormComponent } from '../mission-form/mission-form.component';
 import { ConfirmDialogComponent } from '../../../components/confirm-dialog/confirm-dialog.component';
+import { LayoutComponent } from '../../../layout/layout.component';
 
 @Component({
   selector: 'app-mission-details',
   standalone: true,
-  imports: [CommonModule,RouterLink, RouterOutlet,CurrencyPipe, DatePipe, MissionFormComponent, ConfirmDialogComponent],
+  imports: [CommonModule,RouterLink, RouterOutlet,CurrencyPipe, DatePipe, MissionFormComponent, ConfirmDialogComponent, LayoutComponent],
   templateUrl: './mission-details.component.html',
   styleUrl: './mission-details.component.scss'
 })
@@ -21,6 +22,7 @@ export class MissionDetailsComponent {
   mission?: Mission;
   // updatedMission?: Mission;
   expense: any = {};
+  idMission? : string;
   statusEnum = StatusEnum;
   transportEnum = TransportEnum;
   editionMode = false;
@@ -38,24 +40,30 @@ export class MissionDetailsComponent {
     this.route.paramMap.subscribe(params => {
       const id: string | null = params.get('id');
       if(id){
-        this.missionService.getMissionById(id).subscribe({
-          next: (mission) => {
-            this.mission = mission;
-            console.log(this.mission);
-
-            if(mission.expense){
-              this.expense = mission.expense; 
-            }
-          },
-          error: (error) => {
-            console.error(error);
-            this.router.navigate(["/404"]);
-          }
-        })
+        this.idMission = id;
+        this.fetchData();
 
       }
 
     })
+  }
+
+  fetchData(){
+    if(this.idMission){
+      this.missionService.getMissionById(this.idMission).subscribe({
+        next: (mission) => {
+          this.mission = mission;
+  
+          if(mission.expense){
+            this.expense = mission.expense; 
+          }
+        },
+        error: (error) => {
+          console.error(error);
+          this.router.navigate(["/404"]);
+        }
+      })
+    }
   }
 
   deleteMission(id : number){
@@ -72,7 +80,7 @@ export class MissionDetailsComponent {
   }
 
   handleMissionUpdate(updatedMission: Mission){
-    this.mission = {...updatedMission};
+    this.fetchData();
     this.editionMode = false;
   }
 

@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { MissionFormComponent } from '../mission-form/mission-form.component';
 import { CommonModule, Location } from '@angular/common';
 import { ConfirmDialogComponent } from '../../../components/confirm-dialog/confirm-dialog.component';
+import { LayoutComponent } from '../../../layout/layout.component';
 @Component({
   selector: 'app-new-mission-view',
   standalone: true,
-  imports: [CommonModule, MissionFormComponent, ConfirmDialogComponent],
+  imports: [CommonModule, MissionFormComponent, ConfirmDialogComponent, LayoutComponent],
   templateUrl: './new-mission-view.component.html',
   styleUrl: './new-mission-view.component.scss'
 })
