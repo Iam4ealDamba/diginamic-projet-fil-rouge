@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
-  ActivatedRoute,
   Router,
   RouterLink,
-  RouterModule,
+  RouterModule
 } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -18,14 +17,21 @@ import {
   faUsers,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
+import { Store } from '@ngrx/store';
+import ms from 'ms';
+import { Observable } from 'rxjs';
+import { SidebarMenuType, UserType } from '../interfaces/types';
+import { AuthService } from '../services/auth/auth.service';
+import { loginAction } from '../store/auth/auth.actions';
+import { AuthStateReducer } from '../store/auth/auth.reducer';
+import { authSelector } from '../store/auth/auth.selectors';
 import { CookieService } from 'ngx-cookie-service';
-import { SidebarMenuType } from '../interfaces/types';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
   imports: [FontAwesomeModule, CommonModule, RouterModule],
-  providers: [Router, CookieService, RouterLink],
+  providers: [AuthService, Router, CookieService, RouterLink],
   templateUrl: './layout.component.html',
 })
 export class LayoutComponent implements OnInit {
@@ -94,6 +100,7 @@ export class LayoutComponent implements OnInit {
 
   // User Status
   userStatus: boolean = false;
+  user$: Observable<UserType | null> | null = null;
 
   /**
    * constructor
@@ -101,17 +108,24 @@ export class LayoutComponent implements OnInit {
   constructor(
     private router: Router,
     private cookie: CookieService,
-    private route: ActivatedRoute
+    private authService: AuthService,
+    private store: Store<AuthStateReducer>
   ) {}
 
   ngOnInit() {
     // Redirection to Login page if user is not connected
-    this.activePage = this.router.url.replace('/', '').split('/')[0];
-
     this.userStatus = this.cookie.check('jwt_token');
     if (!this.userStatus) this.router.navigateByUrl('/login');
+    else {
+      this.refreshToken();
+      this.fetchCurrentUser();
+      this.getCurrentUser();
+    }
 
-    // Else set active page
+    // Get the active page
+    this.activePage = this.router.url.replace('/', '').split('/')[0];
+
+    // Set active page
     for (const item of this.sidebarMenu.top) {
       if (item.link === this.activePage) {
         item.active = true;
@@ -125,8 +139,36 @@ export class LayoutComponent implements OnInit {
     }
   }
 
+  /**  Logout the user
+   *
+   * Delete the cookie and redirect to the login page
+   */
   async logout() {
     this.cookie.delete('jwt_token');
     await this.router.navigate(['/login']);
+  }
+
+  /** Refresh the token
+   * Call the API to refresh the token
+   */
+  refreshToken() {
+    // Call the API to refresh the token
+    this.authService.refresh().subscribe((data: string) => {
+      const today = new Date(Date.now() + ms('30m'));
+      this.cookie.set('jwt_token', data, { expires: today });
+    });
+  }
+
+  /** Get the current user
+   * Call the API to get the current user
+   */
+  fetchCurrentUser() {
+    this.authService.currentUser().subscribe((user) => {
+      this.store.dispatch(loginAction({ user }));
+    });
+  }
+
+  getCurrentUser() {
+    this.user$ = this.store.select(authSelector);
   }
 }

@@ -8,11 +8,14 @@ import {
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { Store } from '@ngrx/store';
 import ms from 'ms';
 import { CookieService } from 'ngx-cookie-service';
 import { ToastrService } from 'ngx-toastr';
 import { CustomButtonComponent } from '../../../components/buttons/custom-button.component';
-import { AuthService } from './../../../services/auth/auth.service';
+import { AuthService } from '../../../services/auth/auth.service';
+import { loginAction } from '../../../store/auth/auth.actions';
+import { AuthStateReducer } from '../../../store/auth/auth.reducer';
 
 @Component({
   selector: 'app-login',
@@ -42,7 +45,8 @@ export class LoginComponent implements OnInit {
     private authService: AuthService,
     private cookie: CookieService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private store: Store<AuthStateReducer>
   ) {}
 
   ngOnInit() {
@@ -53,8 +57,18 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.getRawValue()).subscribe((data) => {
         const today = new Date(Date.now() + ms('30m'));
-        this.cookie.set('jwt_token', data);
-        this.router.navigate(['/']);
+        this.cookie.set('jwt_token', data, {
+          expires: today,
+        });
+
+        this.authService.currentUser().subscribe((data) => {
+          this.store.dispatch(
+            loginAction({
+              user: data,
+            })
+          );
+          this.router.navigate(['/']);
+        });
       });
     } else {
       this.toastr.error('Veuillez renseigner tous les champs', 'Erreur');

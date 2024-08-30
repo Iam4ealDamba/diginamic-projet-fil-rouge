@@ -1,29 +1,53 @@
-import { Component, Inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { NatureMissionService } from '../../../services/nature-mission.service';
+// import { Component, EventEmitter, Output } from '@angular/core';
 
-@Component({
-  selector: 'app-nature-mission-delete-modal',
-  templateUrl: './nature-mission-delete-modal.component.html',
-  styleUrls: ['./nature-mission-delete-modal.component.scss']
-})
-export class NatureMissionDeleteModalComponent {
+// @Component({
+//   selector: 'app-nature-mission-delete-modal',
+//   template: `
+//     <div class="modal">
+//       <div class="modal-content">
+//         <h3>Confirmation</h3>
+//         <p>Es-tu sûr de vouloir supprimer cette mission ?</p>
+//         <div class="modal-actions">
+//           <button (click)="onConfirm()">Confirmer</button>
+//           <button (click)="onCancel()">Annuler</button>
+//         </div>
+//       </div>
+//     </div>
+//   `,
+//   styles: [`
+//     .modal {
+//       position: fixed;
+//       top: 0;
+//       left: 0;
+//       width: 100%;
+//       height: 100%;
+//       background-color: rgba(0, 0, 0, 0.5);
+//       display: flex;
+//       justify-content: center;
+//       align-items: center;
+//     }
+//     .modal-content {
+//       background-color: white;
+//       padding: 20px;
+//       border-radius: 8px;
+//       text-align: center;
+//     }
+//     .modal-actions {
+//       display: flex;
+//       justify-content: space-around;
+//       margin-top: 20px;
+//     }
+//   `]
+// })
+// export class NatureMissionDeleteModalComponent {
+//   @Output() confirm = new EventEmitter<void>();
+//   @Output() cancel = new EventEmitter<void>();
 
-  constructor(
-    public dialogRef: MatDialogRef<NatureMissionDeleteModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { id: number },
-    private natureMissionService: NatureMissionService,
-    private router: Router
-  ) {}
+//   onConfirm() {
+//     this.confirm.emit();
+//   }
 
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-
-  confirmDelete(): void {
-    this.natureMissionService.deleteNatureMission(this.data.id).subscribe(() => {
-      this.dialogRef.close(true);
-    });
-  }
-}
+//   onCancel() {
+//     this.cancel.emit();
+//   }
+// }

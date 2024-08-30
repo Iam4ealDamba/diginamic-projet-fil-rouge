@@ -1,62 +1,63 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NatureMissionService } from '../../../services/nature-mission.service';
+import { NatureMission } from '../../../interfaces/nature-mission.interface';
+import { LayoutComponent } from '../../../layout/layout.component';
 
 @Component({
   selector: 'app-nature-mission-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, LayoutComponent],
   templateUrl: './nature-mission-edit.component.html',
   styleUrls: ['./nature-mission-edit.component.scss'],
 })
 export class NatureMissionEditComponent implements OnInit {
-  form: FormGroup;
+  editMissionForm: FormGroup;
+  missionId: number;
 
   constructor(
+    private fb: FormBuilder,
     private natureMissionService: NatureMissionService,
-    private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
-    this.form = new FormGroup({
-      label: new FormControl('', Validators.required),
-      adr: new FormControl(0, Validators.required),
-      endDate: new FormControl(new Date(), Validators.required),
-      dateStart: new FormControl(new Date(), Validators.required),
-      bountyRate: new FormControl(20, Validators.required),
-      isBilled: new FormControl(true, Validators.required),
-      isEligibleToBounty: new FormControl(false, Validators.required),
+    this.editMissionForm = this.fb.group({
+      label: [''],
+      prime: [''],
+      startDate: [''],
+      endDate: [''],
+      rate: [''],
+      eligibility: [''],
+      billing: [''],
     });
+    this.missionId = 0;
   }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.natureMissionService.getNatureMission(Number(id)).subscribe({
-        next: (data) => {
-          this.form.patchValue(data);
+    this.missionId = +this.route.snapshot.paramMap.get('id')!;
+    this.natureMissionService.getNatureMission(this.missionId).subscribe({
+      next: (mission: NatureMission) => {
+        this.editMissionForm.patchValue(mission);
+      },
+      error: (error) => console.error('Erreur lors de la récupération de la mission', error),
+    });
+  }
+
+  onSubmit(): void {
+    if (this.editMissionForm.valid) {
+      this.natureMissionService.updateNatureMission(this.missionId, this.editMissionForm.value).subscribe({
+        next: () => {
+          console.log('Mission mise à jour avec succès');
+          this.router.navigate(['/naturemissions']);
         },
-        error: (error) => console.error('Error fetching nature mission', error)
+        error: (error) => console.error('Erreur lors de la mise à jour de la mission', error),
       });
     }
   }
 
-  saveNatureMission(): void {
-    if (this.form.valid) {
-      const id = this.route.snapshot.paramMap.get('id');
-      if (id) {
-        this.natureMissionService.updateNatureMission(Number(id), this.form.getRawValue()).subscribe({
-          next: () => this.router.navigate(['/naturemissions']),
-          error: (error) => console.error('Error updating nature mission', error),
-        });
-      }
-    } else {
-      console.log('Form is invalid:', this.form.value);
-    }
-  }
-
-  cancel(): void {
+  onCancel(): void {
     this.router.navigate(['/naturemissions']);
   }
 }

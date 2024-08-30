@@ -1,29 +1,5 @@
-
-<div class="page-container">
-  <aside class="sidebar">
-    <ul>
-      <li><a routerLink="/dashboard">Tableau de bord</a></li>
-      <li><a routerLink="/missions">Missions</a></li>
-      <li><a routerLink="/naturemissions">Nature Missions</a></li>
-      <li><a routerLink="/notes-de-frais">Notes de frais</a></li>
-      <li><a routerLink="/primes">Primes</a></li>
-      <li><a routerLink="/parametres">Paramètres</a></li>
-      <li><a routerLink="/deconnexion">Déconnexion</a></li>
-    </ul>
-  </aside>
-
-  <main class="content">
-    <header class="header">
-      <h1>Ajouter une Mission</h1>
-      <div class="user-info">
-        <!-- <img src="assets/icons/user-icon.svg" alt="User"> -->
-        <div class="user-details">
-          <span>Thomas Dupont</span>
-          <small>Consultant Informatique</small>
-        </div>
-      </div>
-    </header>
-  
+<app-layout>
+  <section class="nature-mission-create">
     <form [formGroup]="form" (ngSubmit)="createNatureMission()">
       <div class="form-group">
         <label for="label">Label</label>
@@ -46,13 +22,8 @@
       </div>
 
       <div class="form-group">
-        <label for="bountyRate">Taux Prime</label>
-        <input type="number" id="bountyRate" formControlName="bountyRate" placeholder="Saisir le taux de prime..." />
-      </div>
-
-      <div class="form-group">
-        <label for="isEligibleToBounty">Éligible à la prime</label>
-        <input type="checkbox" id="isEligibleToBounty" formControlName="isEligibleToBounty" />
+        <label for="bountyRate">Taux de prime</label>
+        <input type="number" id="bountyRate" formControlName="bountyRate" required />
       </div>
 
       <div class="form-group">
@@ -60,8 +31,15 @@
         <input type="checkbox" id="isBilled" formControlName="isBilled" />
       </div>
 
-      <button type="submit" class="save-button">Ajouter</button>
-      <button type="button" class="cancel-button" (click)="cancel()">Annuler</button>
+      <div class="form-group">
+        <label for="isEligibleToBounty">Éligible à la prime</label>
+        <input type="checkbox" id="isEligibleToBounty" formControlName="isEligibleToBounty" />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Créer</button>
+        <button type="button" (click)="cancel()" class="btn btn-secondary">Annuler</button>
+      </div>
     </form>
-  </main>
-</div>
+  </section>
+</app-layout>

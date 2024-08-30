@@ -97,5 +97,11 @@ public class NatureMissionController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/id-by-label/{label}")
+    public ResponseEntity<Long> getIdByLabel(@PathVariable String label) {
+    Long id = natureMissionService.getIdByLabel(label);
+    return ResponseEntity.ok(id);
+}
+
 }
 

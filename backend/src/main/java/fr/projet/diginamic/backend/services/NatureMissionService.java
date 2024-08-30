@@ -21,6 +21,8 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class NatureMissionService {
 
+    
+
     @Autowired
     private NatureMissionRepository natureMissionRepository;
 
@@ -58,6 +60,26 @@ public class NatureMissionService {
     }
 
     /**
+ * Get the ID of a NatureMission by its label.
+ *
+ * @param label the label of the NatureMission.
+ * @return the ID of the NatureMission.
+ */
+    @Transactional(readOnly = true)
+    public Long getIdByLabel(String label) {
+    NatureMission natureMission = natureMissionRepository.findByLabel(label)
+        .orElseThrow(() -> new RuntimeException("NatureMission not found"));
+    return natureMission.getId();
+    }
+
+
+    
+
+    
+
+
+
+    /**
      * Create a new NatureMission.
      *
      * @param natureMissionDTO the NatureMissionDTO to create.
@@ -78,6 +100,8 @@ public class NatureMissionService {
         NatureMission savedNatureMission = natureMissionRepository.save(natureMission);
         return convertToDTO(savedNatureMission);
     }
+
+    
 
 
 
@@ -132,6 +156,7 @@ public class NatureMissionService {
      */
     @Transactional
     public boolean deleteNatureMission(Long id) {
+        
         NatureMission natureMission = natureMissionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("NatureMission not found"));
 

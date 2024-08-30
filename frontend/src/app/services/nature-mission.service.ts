@@ -29,12 +29,15 @@ export class NatureMissionService {
   }
 
   // Méthode pour mettre à jour une nature de mission existante
-  updateNatureMission(id: number, mission: NatureMission): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, mission);
+  updateNatureMission(id: number, natureMissionmission: NatureMission): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, natureMissionmission);
   }
 
-  // Méthode pour supprimer une nature de mission
   deleteNatureMission(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+  getIdByLabel(label: string): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/id-by-label/${label}`);
+  }
+  
 }

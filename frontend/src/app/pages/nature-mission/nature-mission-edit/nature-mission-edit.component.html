@@ -1,71 +1,30 @@
-<div class="page-container">
-  <aside class="sidebar">
-    <ul>
-      <li><a routerLink="/dashboard">Tableau de bord</a></li>
-      <li><a routerLink="/missions">Missions</a></li>
-      <li><a routerLink="/naturemissions">Nature Missions</a></li>
-      <li><a routerLink="/notes-de-frais">Notes de frais</a></li>
-      <li><a routerLink="/primes">Primes</a></li>
-      <li><a routerLink="/parametres">Paramètres</a></li>
-      <li><a routerLink="/deconnexion">Déconnexion</a></li>
-    </ul>
-  </aside>
+<app-layout>
+<div class="edit-container">
+  <h2>Modifier la Nature de Mission</h2>
+  <form [formGroup]="editMissionForm" (ngSubmit)="onSubmit()">
+    <label for="label">Libellé:</label>
+    <input id="label" formControlName="label" type="text">
 
-  <main class="content">
-    <header class="header">
-      <h1>Modifier une Mission</h1>
-      <div class="user-info">
-        <img src="assets/icons/user-icon.svg" alt="User">
-        <div class="user-details">
-          <span>Thomas Dupont</span>
-          <small>Consultant Informatique</small>
-        </div>
-      </div>
-    </header>
-  
-    <form [formGroup]="form" (ngSubmit)="saveNatureMission()">
-      <div class="form-group">
-        <label for="label">Label</label>
-        <input type="text" id="label" formControlName="label" required />
-      </div>
+    <label for="prime">Prime:</label>
+    <input id="prime" formControlName="prime" type="text">
 
-      <div class="form-group">
-        <label for="adr">Prime</label>
-        <input type="number" id="adr" formControlName="adr" required />
-      </div>
+    <label for="startDate">Date de début:</label>
+    <input id="startDate" formControlName="startDate" type="date">
 
-      <div class="form-group">
-        <label for="startDate">Date de début</label>
-        <input type="date" id="startDate" formControlName="dateStart" required />
-      </div>
+    <label for="endDate">Date de fin:</label>
+    <input id="endDate" formControlName="endDate" type="date">
 
-      <div class="form-group">
-        <label for="endDate">Date de fin</label>
-        <input type="date" id="endDate" formControlName="DateEnd" required />
-      </div>
+    <label for="rate">Taux:</label>
+    <input id="rate" formControlName="rate" type="text">
 
-      <div class="form-group">
-        <label for="bountyRate">Taux Prime</label>
-        <input type="number" id="bountyRate" formControlName="tauxPrime" />
-      </div>
+    <label for="eligibility">Éligibilité:</label>
+    <input id="eligibility" formControlName="eligibility" type="text">
 
-      <div class="form-group">
-        <label for="isEligibleToBounty">Facture</label>
-        <input type="checkbox" id="isEligibleToBounty" formControlName="isEligibleToBounty" />
-      </div>
+    <label for="billing">Facturation:</label>
+    <input id="billing" formControlName="billing" type="text">
 
-      <div class="form-group">
-        <label for="isBilled">Date de début</label>
-        <input type="checkbox" id="isBilled" formControlName="isBilled" />
-      </div>
-
-      <div class="form-group">
-        <label for="isInvoiced">Taux TJM</label>
-        <input type="checkbox" id="isInvoiced" formControlName="isInvoiced" />
-      </div>
-
-      <button type="submit" class="save-button">Sauvegarder</button>
-      <button type="button" class="cancel-button" (click)="cancel()">Annuler</button>
-    </form>
-  </main>
+    <button type="submit">Enregistrer</button>
+    <button type="button" (click)="onCancel()">Annuler</button>
+  </form>
 </div>
+</app-layout>
